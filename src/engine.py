@@ -64,7 +64,7 @@ class Entity(object):
     def adjusted_pos(self):
         x = self.x - (self.width // 2)
         y = self.y - (self.height // 2)
-        return x, y
+        return int(x), int(y)
 
     def update(self, boundary_rects, collision_mask):
         self._animate()
@@ -73,9 +73,9 @@ class Entity(object):
         velocity = [0, 0]
         velocity[0] += self.direction_x
         velocity[1] += self.momentum_y
-        self.momentum_y += 1
-        if self.momentum_y > 8:
-            self.momentum_y = 8
+        self.momentum_y += 0.3
+        if self.momentum_y > 4:
+            self.momentum_y = 4
         collision_directions = self._move_and_collide(
             velocity, boundary_rects, collision_mask
         )
@@ -143,7 +143,7 @@ class Entity(object):
         # Jumping
         if key[K_SPACE]:
             if self.air_timer < self.jump_buffer:
-                self.momentum_y = -8
+                self.momentum_y = -5
         # Move right
         if key[K_d]:
             direction += 1

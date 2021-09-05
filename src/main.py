@@ -69,8 +69,8 @@ while True:
     player.update(map_boundary_rects, map_mask)
     player.draw(display, offset)
 
-    if hasattr(player, "mask"):
-        player.mask.to_surface(display, dest=(player.x, player.y))
+    # if hasattr(player, "mask"):
+    # player.mask.to_surface(display, dest=(player.x, player.y))
 
     # System
     for event in pg.event.get():
