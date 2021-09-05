@@ -44,6 +44,7 @@ class Entity(object):
         self.y = y
         self.width = width
         self.height = height
+        self.run_speed = 1
         self.momentum_y = 0
         self.air_timer = 0
         self.jump_buffer = 6
@@ -53,7 +54,7 @@ class Entity(object):
         self.frames_since_idle = 0
         self.flip = False
         self.img = None
-        self.mask = None
+        self.mask = pg.mask.Mask(self.rect.size, True)
 
     @property
     def rect(self):
@@ -62,16 +63,24 @@ class Entity(object):
 
     @property
     def adjusted_pos(self):
+        return int(self.x), int(self.y)
         x = self.x - (self.width // 2)
         y = self.y - (self.height // 2)
         return int(x), int(y)
+
+    @property
+    def inverse_adjusted_pos(self):
+        return int(-self.x), int(-self.y)
+        x = self.x - (self.width // 2)
+        y = self.y - (self.height // 2)
+        return int(-x), int(-y)
 
     def update(self, boundary_rects, collision_mask):
         self._animate()
 
         self.direction_x = self._get_direction()
         velocity = [0, 0]
-        velocity[0] += self.direction_x
+        velocity[0] += self.direction_x * self.run_speed
         velocity[1] += self.momentum_y
         self.momentum_y += 0.3
         if self.momentum_y > 4:
@@ -135,7 +144,6 @@ class Entity(object):
         img_id = animation_frames[self.id][self.action][self.animation_frame]
         # TODO: Make more efficient
         self.img = pg.transform.flip(sprite_images[self.id][img_id], self.flip, False)
-        self.mask = pg.mask.from_surface(self.img)
 
     def _get_direction(self):
         direction = 0
@@ -158,27 +166,51 @@ class Entity(object):
         # Horizontal
         self.x += velocity[0]
 
+        def stop_going_right():
+            overlap = self.mask.overlap(collision_mask, self.inverse_adjusted_pos)
+            while overlap is not None:
+                self.x -= 1
+                overlap = self.mask.overlap(collision_mask, self.inverse_adjusted_pos)
+
+        def stop_going_left():
+            overlap = self.mask.overlap(collision_mask, self.inverse_adjusted_pos)
+            while overlap is not None:
+                self.x += 1
+                overlap = self.mask.overlap(collision_mask, self.inverse_adjusted_pos)
+
+        def try_sliding_slope():
+            nx, ny = self.adjusted_pos
+            for i in range(1, 4):
+                temp_y = ny - i
+                if collision_mask.overlap(self.mask, (nx, temp_y)) is None:
+                    self.y -= i
+                    return True
+            for i in range(1, 4):
+                temp_y = ny + i
+                if collision_mask.overlap(self.mask, (nx, temp_y)) is None:
+                    self.y += i
+                    return True
+            return False
+
         hit_list = self.rect.collidelistall(boundary_rects)
         for tile_i in hit_list:
             if velocity[0] > 0:
-                self.x = boundary_rects[tile_i].left - self.width // 2
+                self.x = boundary_rects[tile_i].left - self.width  # // 2
                 collision_types["right"] = True
             elif velocity[0] < 0:
-                self.x = boundary_rects[tile_i].right + self.width // 2
+                self.x = boundary_rects[tile_i].right  # + self.width // 2
                 collision_types["left"] = True
 
-        overlap = collision_mask.overlap_area(self.mask, self.adjusted_pos)
+        overlap = self.mask.overlap(collision_mask, self.inverse_adjusted_pos)
         if overlap is not None:
             if velocity[0] > 0:
-                while overlap > 0:
-                    self.x -= 1
-                    overlap = collision_mask.overlap_area(self.mask, self.adjusted_pos)
-                collision_types["right"] = True
+                if not try_sliding_slope():
+                    stop_going_right()
+                    collision_types["right"] = True
             elif velocity[0] < 0:
-                while overlap > 0:
-                    self.x += 1
-                    overlap = collision_mask.overlap_area(self.mask, self.adjusted_pos)
-                collision_types["left"] = True
+                if not try_sliding_slope():
+                    stop_going_left()
+                    collision_types["left"] = True
 
         # Vertical
         self.y += velocity[1]
@@ -186,26 +218,77 @@ class Entity(object):
         hit_list = self.rect.collidelistall(boundary_rects)
         for tile_i in hit_list:
             if velocity[1] > 0:
-                self.y = boundary_rects[tile_i].top - self.height // 2
+                self.y = boundary_rects[tile_i].top - self.height  # // 2
                 collision_types["bottom"] = True
             elif velocity[1] < 0:
-                self.y = boundary_rects[tile_i].bottom + self.height // 2
+                self.y = boundary_rects[tile_i].bottom  # + self.height // 2
                 collision_types["top"] = True
 
-        overlap = collision_mask.overlap_area(self.mask, self.adjusted_pos)
-        if overlap > 0:
+        overlap = self.mask.overlap(collision_mask, self.inverse_adjusted_pos)
+        if overlap is not None:
             if velocity[1] > 0:
-                while overlap > 0:
-                    self.y -= 1
-                    overlap = collision_mask.overlap_area(self.mask, self.adjusted_pos)
+                modifier = 1
+                if overlap[1] < self.height // 2:
+                    modifier = -1
+                while overlap is not None:
+                    self.y -= 1 * modifier
+                    overlap = self.mask.overlap(
+                        collision_mask, self.inverse_adjusted_pos
+                    )
                 collision_types["bottom"] = True
             elif velocity[1] < 0:
-                while overlap > 0:
-                    self.y += 1
-                    overlap = collision_mask.overlap_area(self.mask, self.adjusted_pos)
+                modifier = 1
+                if overlap[1] > self.height // 2:
+                    modifier = -1
+                while overlap is not None:
+                    self.y += 1 * modifier
+                    overlap = self.mask.overlap(
+                        collision_mask, self.inverse_adjusted_pos
+                    )
                 collision_types["top"] = True
 
         return collision_types
+
+    def _calculate_x_collision_type(self, overlap_mask, vel_x):
+        types = {
+            "left_top_slope": False,
+            "left_wall": False,
+            "left_bottom_slope": False,
+            "right_top_slope": False,
+            "right_wall": False,
+            "right_bottom_slope": False,
+        }
+        if vel_x > 0:
+            # Find all overlapping points on the right side
+            size = overlap_mask.get_size()
+            for x in range(size[0] - vel_x, self.width):
+                for y in range(size[1]):
+                    bit = overlap_mask.get_at((x, y))
+                    if bit == 1:
+                        if y <= 2:
+                            types["right_top_slope"] = True
+                        elif y >= size[1] - 3:
+                            types["right_bottom_slope"] = True
+                        else:
+                            types["right_wall"] = True
+            if types["right_top_slope"] and types["right_bottom_slope"]:
+                types["right_wall"] = True
+        if vel_x < 0:
+            # Find all overlapping points on the left side
+            size = overlap_mask.get_size()
+            for x in range(0, abs(vel_x)):
+                for y in range(size[1]):
+                    bit = overlap_mask.get_at((x, y))
+                    if bit == 1:
+                        if y <= 2:
+                            types["left_top_slope"] = True
+                        elif y >= size[1] - 3:
+                            types["left_bottom_slope"] = True
+                        else:
+                            types["left_wall"] = True
+            if types["left_top_slope"] and types["left_bottom_slope"]:
+                types["left_wall"] = True
+        return types
 
 
 class SpriteSheet(object):

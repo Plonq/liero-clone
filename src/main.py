@@ -18,7 +18,7 @@ display = pg.Surface(DISPLAY_SIZE)
 
 e.load_animation_data(ROOT_DIR / "assets/images/entities")
 
-player = e.Entity("player", x=50, y=300, width=16, height=16)
+player = e.Entity("player", x=90, y=350, width=16, height=16)
 map_boundary_rects = (
     pg.Rect(0, 0, DISPLAY_SIZE[0], 1),
     pg.Rect(0, 0, 1, DISPLAY_SIZE[1]),
@@ -70,7 +70,7 @@ while True:
     player.draw(display, offset)
 
     # if hasattr(player, "mask"):
-    # player.mask.to_surface(display, dest=(player.x, player.y))
+    #     player.mask.to_surface(display, dest=(player.x, player.y))
 
     # System
     for event in pg.event.get():
