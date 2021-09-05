@@ -163,34 +163,8 @@ class Entity(object):
     def _move_and_collide(self, velocity, boundary_rects, collision_mask):
         collision_types = {"top": False, "bottom": False, "right": False, "left": False}
 
-        # Horizontal
+        # Horizontal (+ slopes)
         self.x += velocity[0]
-
-        def stop_going_right():
-            overlap = self.mask.overlap(collision_mask, self.inverse_adjusted_pos)
-            while overlap is not None:
-                self.x -= 1
-                overlap = self.mask.overlap(collision_mask, self.inverse_adjusted_pos)
-
-        def stop_going_left():
-            overlap = self.mask.overlap(collision_mask, self.inverse_adjusted_pos)
-            while overlap is not None:
-                self.x += 1
-                overlap = self.mask.overlap(collision_mask, self.inverse_adjusted_pos)
-
-        def try_sliding_slope():
-            nx, ny = self.adjusted_pos
-            for i in range(1, 4):
-                temp_y = ny - i
-                if collision_mask.overlap(self.mask, (nx, temp_y)) is None:
-                    self.y -= i
-                    return True
-            for i in range(1, 4):
-                temp_y = ny + i
-                if collision_mask.overlap(self.mask, (nx, temp_y)) is None:
-                    self.y += i
-                    return True
-            return False
 
         hit_list = self.rect.collidelistall(boundary_rects)
         for tile_i in hit_list:
@@ -201,15 +175,15 @@ class Entity(object):
                 self.x = boundary_rects[tile_i].right  # + self.width // 2
                 collision_types["left"] = True
 
-        overlap = self.mask.overlap(collision_mask, self.inverse_adjusted_pos)
-        if overlap is not None:
-            if velocity[0] > 0:
-                if not try_sliding_slope():
-                    stop_going_right()
+        if self._collided_with_mask(collision_mask):
+            if not self._try_sliding_slope(collision_mask):
+                if velocity[0] > 0:
+                    while self._collided_with_mask(collision_mask):
+                        self.x -= 1
                     collision_types["right"] = True
-            elif velocity[0] < 0:
-                if not try_sliding_slope():
-                    stop_going_left()
+                elif velocity[0] < 0:
+                    while self._collided_with_mask(collision_mask):
+                        self.x += 1
                     collision_types["left"] = True
 
         # Vertical
@@ -224,71 +198,35 @@ class Entity(object):
                 self.y = boundary_rects[tile_i].bottom  # + self.height // 2
                 collision_types["top"] = True
 
-        overlap = self.mask.overlap(collision_mask, self.inverse_adjusted_pos)
-        if overlap is not None:
+        if self._collided_with_mask(collision_mask):
             if velocity[1] > 0:
-                modifier = 1
-                if overlap[1] < self.height // 2:
-                    modifier = -1
-                while overlap is not None:
-                    self.y -= 1 * modifier
-                    overlap = self.mask.overlap(
-                        collision_mask, self.inverse_adjusted_pos
-                    )
+                while self._collided_with_mask(collision_mask):
+                    self.y -= 1
                 collision_types["bottom"] = True
             elif velocity[1] < 0:
-                modifier = 1
-                if overlap[1] > self.height // 2:
-                    modifier = -1
-                while overlap is not None:
-                    self.y += 1 * modifier
-                    overlap = self.mask.overlap(
-                        collision_mask, self.inverse_adjusted_pos
-                    )
+                while self._collided_with_mask(collision_mask):
+                    self.y += 1
                 collision_types["top"] = True
 
         return collision_types
 
-    def _calculate_x_collision_type(self, overlap_mask, vel_x):
-        types = {
-            "left_top_slope": False,
-            "left_wall": False,
-            "left_bottom_slope": False,
-            "right_top_slope": False,
-            "right_wall": False,
-            "right_bottom_slope": False,
-        }
-        if vel_x > 0:
-            # Find all overlapping points on the right side
-            size = overlap_mask.get_size()
-            for x in range(size[0] - vel_x, self.width):
-                for y in range(size[1]):
-                    bit = overlap_mask.get_at((x, y))
-                    if bit == 1:
-                        if y <= 2:
-                            types["right_top_slope"] = True
-                        elif y >= size[1] - 3:
-                            types["right_bottom_slope"] = True
-                        else:
-                            types["right_wall"] = True
-            if types["right_top_slope"] and types["right_bottom_slope"]:
-                types["right_wall"] = True
-        if vel_x < 0:
-            # Find all overlapping points on the left side
-            size = overlap_mask.get_size()
-            for x in range(0, abs(vel_x)):
-                for y in range(size[1]):
-                    bit = overlap_mask.get_at((x, y))
-                    if bit == 1:
-                        if y <= 2:
-                            types["left_top_slope"] = True
-                        elif y >= size[1] - 3:
-                            types["left_bottom_slope"] = True
-                        else:
-                            types["left_wall"] = True
-            if types["left_top_slope"] and types["left_bottom_slope"]:
-                types["left_wall"] = True
-        return types
+    def _collided_with_mask(self, collision_mask):
+        rect = self.rect
+        return collision_mask.overlap(self.mask, (rect.x, rect.y)) is not None
+
+    def _try_sliding_slope(self, collision_mask):
+        nx, ny = self.adjusted_pos
+        for i in range(1, 4):
+            temp_y = ny - i
+            if collision_mask.overlap(self.mask, (nx, temp_y)) is None:
+                self.y -= i
+                return True
+        for i in range(1, 4):
+            temp_y = ny + i
+            if collision_mask.overlap(self.mask, (nx, temp_y)) is None:
+                self.y += i
+                return True
+        return False
 
 
 class SpriteSheet(object):
