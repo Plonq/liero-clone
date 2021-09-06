@@ -75,19 +75,26 @@ class Entity(object):
         y = self.y - (self.height // 2)
         return int(-x), int(-y)
 
-    def update(self, boundary_rects, collision_mask):
+    def update(self, boundary_rects, collision_mask, dt):
         self._animate()
-
         self.direction_x = self._get_direction()
+
+        # Movement
         velocity = [0, 0]
-        velocity[0] += self.direction_x * self.run_speed
-        velocity[1] += self.momentum_y
-        self.momentum_y += 0.3
+        velocity[0] += self.direction_x * self.run_speed * dt
+        velocity[1] += self.momentum_y * dt
+
+        # Gravity
+        self.momentum_y += 0.3 * dt
         if self.momentum_y > 4:
             self.momentum_y = 4
+
+        # Move and hit stuff
         collision_directions = self._move_and_collide(
             velocity, boundary_rects, collision_mask
         )
+
+        # What do if hit stuff?
         if collision_directions["bottom"]:
             self.momentum_y = 0
             self.air_timer = 0

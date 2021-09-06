@@ -1,4 +1,6 @@
 import sys
+from time import time
+from timeit import timeit
 
 import pygame as pg
 
@@ -37,10 +39,13 @@ game_map = DestroyableMap(ROOT_DIR / "assets/images/map-test.png")
 
 true_offset = [0, 0]
 
-last_frame_time = pg.time.get_ticks()
+last_time = time()
 
 
 while True:
+    dt = (time() - last_time) * 60
+    last_time = time()
+
     display.fill((53, 29, 15))
 
     # Camera follow player
@@ -62,7 +67,7 @@ while True:
 
     game_map.draw(display)
 
-    player.update(map_boundary_rects, game_map.mask)
+    player.update(map_boundary_rects, game_map.mask, dt)
     player.draw(display, offset)
 
     # System
