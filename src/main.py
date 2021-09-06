@@ -26,7 +26,7 @@ def mouse_pos_to_display_pos(pos):
 load_animation_data(ROOT_DIR / "assets/images/entities")
 
 # Main game components
-game_map = DestroyableMap(ROOT_DIR / "assets/images/map-test.png")
+game_map = DestroyableMap(ROOT_DIR / "assets/images/map.png")
 player = Entity("player", x=90, y=50, width=16, height=16)
 map_boundary_rects = (
     pg.Rect(0, 0, DISPLAY_SIZE[0], 1),
