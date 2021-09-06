@@ -1,25 +1,34 @@
 import random
+from time import time
 
 import pygame as pg
 from pygame.math import Vector2
 
-from src.constants import DISPLAY_SIZE, ROOT_DIR, WINDOW_SIZE
+from src.constants import ROOT_DIR
 from src.engine import DestroyableMap, Entity, load_animation_data
+
+clock = pg.time.Clock()
 
 
 class Game:
     true_offset = [0, 0]
+    last_time = time()
+    display_size = (608, 400)
 
-    def __init__(self):
+    def __init__(self, screen):
+        pg.display.set_caption("Liero Clone")
+        self.screen = screen
+        self.display = pg.Surface(self.display_size)
+
         load_animation_data(ROOT_DIR / "assets/images/entities")
 
         self.game_map = DestroyableMap(ROOT_DIR / "assets/images/map.png")
         self.player = Entity("player", x=90, y=50, width=16, height=16)
         self.map_boundary_rects = (
-            pg.Rect(0, 0, DISPLAY_SIZE[0], 1),
-            pg.Rect(0, 0, 1, DISPLAY_SIZE[1]),
-            pg.Rect(DISPLAY_SIZE[0] - 1, 0, 1, DISPLAY_SIZE[1]),
-            pg.Rect(0, DISPLAY_SIZE[1] - 1, DISPLAY_SIZE[0], 1),
+            pg.Rect(0, 0, self.display_size[0], 1),
+            pg.Rect(0, 0, 1, self.display_size[1]),
+            pg.Rect(self.display_size[0] - 1, 0, 1, self.display_size[1]),
+            pg.Rect(0, self.display_size[1] - 1, self.display_size[0], 1),
         )
 
         # Spawning
@@ -33,8 +42,19 @@ class Game:
         self.machine_gun_bullets = []
         self.bullet_speed = 2
 
-    def next_frame(self, display, dt):
-        display.fill((53, 29, 15))
+    def run(self):
+        while True:
+            dt = (time() - self.last_time) * 60
+            self.last_time = time()
+            self.next_frame(dt)
+            self.process_events(pg.event.get())
+            window_size = (self.screen.get_width(), self.screen.get_height())
+            self.screen.blit(pg.transform.scale(self.display, window_size), (0, 0))
+            pg.display.update()
+            clock.tick(60)
+
+    def next_frame(self, dt):
+        self.display.fill((53, 29, 15))
 
         # Camera follow player
         player_rect = self.player.rect
@@ -48,14 +68,15 @@ class Game:
         # true_offset[0] = clamp(true_offset[0], 0, game_map.dimensions[0] - DISPLAY_SIZE[0])
         # true_offset[1] = clamp(true_offset[1], 0, game_map.dimensions[1] - DISPLAY_SIZE[1])
         offset = Vector2(int(self.true_offset[0]), int(self.true_offset[1]))
+
         # Map and player
         for map_boundary_rect in self.map_boundary_rects:
-            pg.draw.rect(display, (0, 0, 0), map_boundary_rect)
+            pg.draw.rect(self.display, (0, 0, 0), map_boundary_rect)
 
-        self.game_map.draw(display)
+        self.game_map.draw(self.display)
 
         self.player.update(self.map_boundary_rects, self.game_map.mask, dt)
-        self.player.draw(display, offset)
+        self.player.draw(self.display, offset)
 
         # Weapons
         if self.firing_at:
@@ -72,7 +93,7 @@ class Game:
                 self.machine_gun_cooldown -= 1
 
         for i, bullet in sorted(enumerate(self.machine_gun_bullets), reverse=True):
-            display.blit(self.bullet_img, bullet[0])
+            self.display.blit(self.bullet_img, bullet[0])
             movement = bullet[1] * self.bullet_speed * dt
             bullet[0] += movement
 
@@ -96,6 +117,6 @@ class Game:
                 self.firing_at = None
 
     def mouse_pos_to_display_pos(self, pos):
-        ratio_x = DISPLAY_SIZE[0] / WINDOW_SIZE[0]
-        ratio_y = DISPLAY_SIZE[1] / WINDOW_SIZE[1]
+        ratio_x = self.display_size[0] / self.screen.get_width()
+        ratio_y = self.display_size[1] / self.screen.get_height()
         return pos[0] * ratio_x, pos[1] * ratio_y
