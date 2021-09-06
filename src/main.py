@@ -1,12 +1,10 @@
 import sys
 from time import time
-from timeit import timeit
 
 import pygame as pg
 
-from src import engine as e
 from src.constants import DISPLAY_SIZE, ROOT_DIR, WINDOW_SIZE
-from src.engine import DestroyableMap
+from src.engine import DestroyableMap, Entity, load_animation_data
 from src.utils import XY
 
 clock = pg.time.Clock()
@@ -25,9 +23,11 @@ def mouse_pos_to_display_pos(pos):
     return pos[0] * ratio_x, pos[1] * ratio_y
 
 
-e.load_animation_data(ROOT_DIR / "assets/images/entities")
+load_animation_data(ROOT_DIR / "assets/images/entities")
 
-player = e.Entity("player", x=90, y=350, width=16, height=16)
+# Main game components
+game_map = DestroyableMap(ROOT_DIR / "assets/images/map-test.png")
+player = Entity("player", x=90, y=50, width=16, height=16)
 map_boundary_rects = (
     pg.Rect(0, 0, DISPLAY_SIZE[0], 1),
     pg.Rect(0, 0, 1, DISPLAY_SIZE[1]),
@@ -35,7 +35,8 @@ map_boundary_rects = (
     pg.Rect(0, DISPLAY_SIZE[1] - 1, DISPLAY_SIZE[0], 1),
 )
 
-game_map = DestroyableMap(ROOT_DIR / "assets/images/map-test.png")
+# Spawning
+game_map.destroy_terrain((player.x, player.y), player.width)
 
 true_offset = [0, 0]
 

@@ -63,14 +63,14 @@ class Entity(object):
 
     @property
     def adjusted_pos(self):
-        return int(self.x), int(self.y)
+        # return int(self.x), int(self.y)
         x = self.x - (self.width // 2)
         y = self.y - (self.height // 2)
         return int(x), int(y)
 
     @property
     def inverse_adjusted_pos(self):
-        return int(-self.x), int(-self.y)
+        # return int(-self.x), int(-self.y)
         x = self.x - (self.width // 2)
         y = self.y - (self.height // 2)
         return int(-x), int(-y)
@@ -176,10 +176,10 @@ class Entity(object):
         hit_list = self.rect.collidelistall(boundary_rects)
         for tile_i in hit_list:
             if velocity[0] > 0:
-                self.x = boundary_rects[tile_i].left - self.width  # // 2
+                self.x = boundary_rects[tile_i].left - self.width // 2
                 collision_types["right"] = True
             elif velocity[0] < 0:
-                self.x = boundary_rects[tile_i].right  # + self.width // 2
+                self.x = boundary_rects[tile_i].right + self.width // 2
                 collision_types["left"] = True
 
         if self._collided_with_mask(collision_mask):
@@ -199,10 +199,10 @@ class Entity(object):
         hit_list = self.rect.collidelistall(boundary_rects)
         for tile_i in hit_list:
             if velocity[1] > 0:
-                self.y = boundary_rects[tile_i].top - self.height  # // 2
+                self.y = boundary_rects[tile_i].top - self.height // 2
                 collision_types["bottom"] = True
             elif velocity[1] < 0:
-                self.y = boundary_rects[tile_i].bottom  # + self.height // 2
+                self.y = boundary_rects[tile_i].bottom + self.height // 2
                 collision_types["top"] = True
 
         if self._collided_with_mask(collision_mask):
