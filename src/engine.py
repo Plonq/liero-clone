@@ -29,7 +29,7 @@ def load_animation_data(entities_dir):
             frame_list = []
             for n, frame_time in enumerate(entity_cfg[action]["timings"]):
                 img_path = os.path.join(action_path, f"{action}_{n}.png")
-                img = pg.image.load(img_path)
+                img = pg.image.load(img_path).convert_alpha()
                 img_id = os.path.basename(img_path)
                 entity_imgs[img_id] = img
                 for i in range(frame_time):
@@ -212,6 +212,7 @@ class Entity(object):
 
     def _collided_with_mask(self, collision_mask):
         rect = self.rect
+        # TODO: Compare performance with reverse
         return collision_mask.overlap(self.mask, (rect.x, rect.y)) is not None
 
     def _try_sliding_slope(self, collision_mask):
@@ -227,6 +228,30 @@ class Entity(object):
                 self.y += i
                 return True
         return False
+
+
+class DestroyableMap:
+    def __init__(self, image_path, colorkey="alpha"):
+        image = pg.image.load(image_path)
+        if colorkey == "alpha":
+            image = image.convert_alpha()
+        elif colorkey is not None:
+            image = image.convert()
+            image.set_colorkey(colorkey)
+        self.colorkey = colorkey
+        self.image = image
+        self.mask = pg.mask.from_surface(self.image)
+
+    def _update_mask(self):
+        self.mask = pg.mask.from_surface(self.image)
+
+    def destroy_terrain(self, location, radius):
+        color = (0, 0, 0, 0) if self.colorkey == "alpha" else self.colorkey
+        pg.draw.circle(self.image, color, location, radius)
+        self._update_mask()
+
+    def draw(self, surf):
+        surf.blit(self.image, (0, 0))
 
 
 class SpriteSheet(object):
