@@ -1,7 +1,9 @@
+import random
 import sys
 from time import time
 
 import pygame as pg
+from pygame.math import Vector2
 
 from src.constants import DISPLAY_SIZE, ROOT_DIR, WINDOW_SIZE
 from src.engine import DestroyableMap, Entity, load_animation_data
@@ -42,6 +44,13 @@ true_offset = [0, 0]
 
 last_time = time()
 
+# Weapons
+bullet_img = pg.Surface((1, 1))
+bullet_img.fill((255, 255, 255))
+firing_at = None
+machine_gun_cooldown = 0
+machine_gun_bullets = []
+bullet_speed = 2
 
 while True:
     dt = (time() - last_time) * 60
@@ -71,11 +80,41 @@ while True:
     player.update(map_boundary_rects, game_map.mask, dt)
     player.draw(display, offset)
 
+    # Weapons
+    if firing_at:
+        if machine_gun_cooldown == 0:
+            jitter = random.randrange(-15, 15)
+            direction = (Vector2(firing_at) - Vector2(player.x, player.y)).normalize()
+            # direction.rotate_ip(jitter)
+            start_pos = Vector2(player.x, player.y) + (direction * 14)
+            machine_gun_bullets.append([start_pos, direction])
+            machine_gun_cooldown = 1
+        else:
+            machine_gun_cooldown -= 1
+
+    for i, bullet in sorted(enumerate(machine_gun_bullets), reverse=True):
+        display.blit(bullet_img, bullet[0])
+        movement = bullet[1] * bullet_speed * dt
+        bullet[0] += movement
+
     # System
     for event in pg.event.get():
         if event.type == pg.QUIT:
             pg.quit()
             sys.exit()
+        if event.type == pg.MOUSEBUTTONDOWN:
+            if event.button == pg.BUTTON_LEFT:
+                firing_at = mouse_pos_to_display_pos(event.pos)
+            if event.button == pg.BUTTON_RIGHT:
+                pos = Vector2(player.x, player.y)
+                pos.x += 10
+                if player.flip:
+                    pos.x *= -1
+                game_map.destroy_terrain(pos, player.height / 1.2)
+        if event.type == pg.MOUSEMOTION and firing_at:
+            firing_at = mouse_pos_to_display_pos(event.pos)
+        if event.type == pg.MOUSEBUTTONUP and event.button == 1:
+            firing_at = None
 
     screen.blit(pg.transform.scale(display, WINDOW_SIZE), (0, 0))
     pg.display.update()
