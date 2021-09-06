@@ -212,7 +212,6 @@ class Entity(object):
 
     def _collided_with_mask(self, collision_mask):
         rect = self.rect
-        # TODO: Compare performance with reverse
         return collision_mask.overlap(self.mask, (rect.x, rect.y)) is not None
 
     def _try_sliding_slope(self, collision_mask):

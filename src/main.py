@@ -1,12 +1,11 @@
 import sys
-from itertools import cycle
 
 import pygame as pg
 
 from src import engine as e
 from src.constants import DISPLAY_SIZE, ROOT_DIR, WINDOW_SIZE
 from src.engine import DestroyableMap
-from src.utils import XY, clamp
+from src.utils import XY
 
 clock = pg.time.Clock()
 
