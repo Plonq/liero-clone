@@ -243,6 +243,8 @@ class DestroyableMap:
         self.colorkey = colorkey
         self.image = image
         self.mask = pg.mask.from_surface(self.image)
+        # Helper props
+        self.size = image.get_size()
 
     def _update_mask(self):
         self.mask = pg.mask.from_surface(self.image)
@@ -252,8 +254,12 @@ class DestroyableMap:
         pg.draw.circle(self.image, color, location, radius)
         self._update_mask()
 
-    def draw(self, surf):
-        surf.blit(self.image, (0, 0))
+    def draw(self, surf, offset):
+        x = 0
+        y = 0
+        x -= offset.x
+        y -= offset.y
+        surf.blit(self.image, (x, y))
 
 
 class SpriteSheet(object):

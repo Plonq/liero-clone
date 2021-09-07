@@ -6,6 +6,7 @@ from pygame.math import Vector2
 
 from src.constants import ROOT_DIR
 from src.engine import DestroyableMap, Entity, load_animation_data
+from src.utils import clamp
 
 clock = pg.time.Clock()
 
@@ -20,18 +21,19 @@ class Game:
         self.screen = screen
         self.display = pg.Surface(self.display_size)
 
-        load_animation_data(ROOT_DIR / "assets/images/entities")
-
+        # Set up map
         self.game_map = DestroyableMap(ROOT_DIR / "assets/images/map.png")
-        self.player = Entity("player", x=90, y=50, width=12, height=14)
+        map_size = self.game_map.size
         self.map_boundary_rects = (
-            pg.Rect(0, 0, self.display_size[0], 1),
-            pg.Rect(0, 0, 1, self.display_size[1]),
-            pg.Rect(self.display_size[0] - 1, 0, 1, self.display_size[1]),
-            pg.Rect(0, self.display_size[1] - 1, self.display_size[0], 1),
+            pg.Rect(0, 0, map_size[0], 1),
+            pg.Rect(0, 0, 1, map_size[1]),
+            pg.Rect(map_size[0] - 1, 0, 1, map_size[1]),
+            pg.Rect(0, map_size[1] - 1, map_size[0], 1),
         )
 
-        # Spawning
+        # Set up player
+        load_animation_data(ROOT_DIR / "assets/images/entities")
+        self.player = Entity("player", x=90, y=50, width=12, height=14)
         self.game_map.destroy_terrain(
             (self.player.x, self.player.y), radius=self.player.height * 0.8
         )
@@ -59,23 +61,26 @@ class Game:
         self.display.fill((53, 29, 15))
 
         # Camera follow player
-        player_rect = self.player.rect
-        # true_offset[0] += (
-        #     player_rect.x - true_offset[0] - 300 + player_rect.width // 2
-        # ) / 15
-        # true_offset[1] += (
-        #     player_rect.y - true_offset[1] - 200 + player_rect.height // 2
-        # ) / 15
+        self.true_offset[0] += (
+            self.player.x - self.true_offset[0] - 300 + self.player.width // 2
+        ) / 15
+        self.true_offset[1] += (
+            self.player.y - self.true_offset[1] - 200 + self.player.height // 2
+        ) / 15
         # Clamp to prevent camera going outside map
-        # true_offset[0] = clamp(true_offset[0], 0, game_map.dimensions[0] - DISPLAY_SIZE[0])
-        # true_offset[1] = clamp(true_offset[1], 0, game_map.dimensions[1] - DISPLAY_SIZE[1])
+        self.true_offset[0] = clamp(
+            self.true_offset[0], 0, self.game_map.size[0] - self.display_size[0]
+        )
+        self.true_offset[1] = clamp(
+            self.true_offset[1], 0, self.game_map.size[1] - self.display_size[1]
+        )
         offset = Vector2(int(self.true_offset[0]), int(self.true_offset[1]))
 
         # Map and player
         for map_boundary_rect in self.map_boundary_rects:
             pg.draw.rect(self.display, (0, 0, 0), map_boundary_rect)
 
-        self.game_map.draw(self.display)
+        self.game_map.draw(self.display, offset)
 
         self.player.update(self.map_boundary_rects, self.game_map.mask, dt)
         self.player.draw(self.display, offset)
