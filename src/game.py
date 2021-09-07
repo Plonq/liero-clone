@@ -15,6 +15,7 @@ class Game:
     true_offset = [0, 0]
     last_time = time()
     display_size = (608, 400)
+    offset = Vector2(0, 0)
 
     def __init__(self, screen):
         pg.display.set_caption("Liero Clone")
@@ -74,16 +75,16 @@ class Game:
         self.true_offset[1] = clamp(
             self.true_offset[1], 0, self.game_map.size[1] - self.display_size[1]
         )
-        offset = Vector2(int(self.true_offset[0]), int(self.true_offset[1]))
+        self.offset = Vector2(int(self.true_offset[0]), int(self.true_offset[1]))
 
         # Map and player
         for map_boundary_rect in self.map_boundary_rects:
             pg.draw.rect(self.display, (0, 0, 0), map_boundary_rect)
 
-        self.game_map.draw(self.display, offset)
+        self.game_map.draw(self.display, self.offset)
 
         self.player.update(self.map_boundary_rects, self.game_map.mask, dt)
-        self.player.draw(self.display, offset)
+        self.player.draw(self.display, self.offset)
 
         # Weapons
         if self.firing_at:
@@ -113,7 +114,10 @@ class Game:
                 if event.button == pg.BUTTON_LEFT:
                     self.firing_at = self.mouse_pos_to_display_pos(event.pos)
                 if event.button == pg.BUTTON_RIGHT:
-                    self.dig(toward=self.mouse_pos_to_display_pos(event.pos))
+                    target = (
+                        Vector2(self.mouse_pos_to_display_pos(event.pos)) + self.offset
+                    )
+                    self.dig(toward=target)
             if event.type == pg.MOUSEMOTION and self.firing_at:
                 self.firing_at = self.mouse_pos_to_display_pos(event.pos)
             if event.type == pg.MOUSEBUTTONUP and event.button == 1:
