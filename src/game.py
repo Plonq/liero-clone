@@ -88,7 +88,7 @@ class Game:
                 # direction.rotate_ip(jitter)
                 start_pos = Vector2(self.player.x, self.player.y) + (direction * 14)
                 self.machine_gun_bullets.append([start_pos, direction])
-                machine_gun_cooldown = 1
+                self.machine_gun_cooldown = 3
             else:
                 self.machine_gun_cooldown -= 1
 
