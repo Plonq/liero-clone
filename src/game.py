@@ -34,18 +34,12 @@ class Game:
 
         # Set up player
         load_animation_data(ROOT_DIR / "assets/images/entities")
-        self.player = Entity("player", x=90, y=50, width=12, height=14)
+        self.player = Entity("player", x=300, y=300, width=12, height=14)
         self.game_map.destroy_terrain(
             (self.player.x, self.player.y), radius=self.player.height * 0.8
         )
-
-        # Weapons
-        self.bullet_img = pg.Surface((1, 1))
-        self.bullet_img.fill((255, 255, 255))
         self.firing_at = None
-        self.machine_gun_cooldown = 0
-        self.machine_gun_bullets = []
-        self.bullet_speed = 2
+        self.current_weapon = MachineGun()
 
     def run(self):
         while True:
@@ -61,7 +55,27 @@ class Game:
     def next_frame(self, dt):
         self.display.fill((53, 29, 15))
 
-        # Camera follow player
+        self._update_offset()
+        visible_rect = pg.Rect(
+            self.offset.x, self.offset.y, self.display_size[0], self.display_size[1]
+        )
+
+        # Map and player
+        for map_boundary_rect in self.map_boundary_rects:
+            pg.draw.rect(self.display, (0, 0, 0), map_boundary_rect)
+
+        self.game_map.draw(self.display, self.offset)
+
+        self.player.update(self.map_boundary_rects, self.game_map.mask, dt)
+        self.player.draw(self.display, self.offset)
+
+        # Weapons
+        if self.firing_at:
+            self.current_weapon.fire(self.player.position, self.firing_at + self.offset)
+        self.current_weapon.update(visible_rect, dt)
+        self.current_weapon.draw(self.display, self.offset)
+
+    def _update_offset(self):
         self.true_offset[0] += (
             self.player.x - self.true_offset[0] - 300 + self.player.width // 2
         ) / 15
@@ -77,34 +91,6 @@ class Game:
         )
         self.offset = Vector2(int(self.true_offset[0]), int(self.true_offset[1]))
 
-        # Map and player
-        for map_boundary_rect in self.map_boundary_rects:
-            pg.draw.rect(self.display, (0, 0, 0), map_boundary_rect)
-
-        self.game_map.draw(self.display, self.offset)
-
-        self.player.update(self.map_boundary_rects, self.game_map.mask, dt)
-        self.player.draw(self.display, self.offset)
-
-        # Weapons
-        if self.firing_at:
-            if self.machine_gun_cooldown == 0:
-                jitter = random.randrange(-15, 15)
-                direction = (
-                    Vector2(self.firing_at) - Vector2(self.player.x, self.player.y)
-                ).normalize()
-                # direction.rotate_ip(jitter)
-                start_pos = Vector2(self.player.x, self.player.y) + (direction * 14)
-                self.machine_gun_bullets.append([start_pos, direction])
-                self.machine_gun_cooldown = 3
-            else:
-                self.machine_gun_cooldown -= 1
-
-        for i, bullet in sorted(enumerate(self.machine_gun_bullets), reverse=True):
-            self.display.blit(self.bullet_img, bullet[0])
-            movement = bullet[1] * self.bullet_speed * dt
-            bullet[0] += movement
-
     def process_events(self, events):
         for event in events:
             if event.type == pg.QUIT:
@@ -112,14 +98,12 @@ class Game:
                 exit()
             if event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == pg.BUTTON_LEFT:
-                    self.firing_at = self.mouse_pos_to_display_pos(event.pos)
+                    self.firing_at = self.correct_mouse_pos(event.pos)
                 if event.button == pg.BUTTON_RIGHT:
-                    target = (
-                        Vector2(self.mouse_pos_to_display_pos(event.pos)) + self.offset
-                    )
+                    target = self.correct_mouse_pos(event.pos)
                     self.dig(toward=target)
             if event.type == pg.MOUSEMOTION and self.firing_at:
-                self.firing_at = self.mouse_pos_to_display_pos(event.pos)
+                self.firing_at = self.correct_mouse_pos(event.pos)
             if event.type == pg.MOUSEBUTTONUP and event.button == 1:
                 self.firing_at = None
 
@@ -129,7 +113,41 @@ class Game:
         dig_pos = player_pos + (direction * 5)
         self.game_map.destroy_terrain(dig_pos, self.player.height * 0.8)
 
-    def mouse_pos_to_display_pos(self, pos):
+    def correct_mouse_pos(self, original_pos):
         ratio_x = self.display_size[0] / self.screen.get_width()
         ratio_y = self.display_size[1] / self.screen.get_height()
-        return pos[0] * ratio_x, pos[1] * ratio_y
+        display_pos = Vector2(original_pos[0] * ratio_x, original_pos[1] * ratio_y)
+        return display_pos
+
+
+class MachineGun:
+    def __init__(self):
+        self.image = pg.Surface((1, 1))
+        self.image.fill((255, 255, 255))
+        self.cooldown = 4
+        self.bullet_speed = 2
+
+        self.bullets = []
+        self.current_cooldown = self.cooldown
+
+    def fire(self, start_pos, target_pos):
+        if self.current_cooldown == 0:
+            jitter = random.randrange(-15, 15)
+            direction = (target_pos - start_pos).normalize()
+            # direction.rotate_ip(jitter)
+            start_pos = start_pos + (direction * 14)
+            self.bullets.append([start_pos, direction])
+            self.current_cooldown = self.cooldown
+        else:
+            self.current_cooldown -= 1
+
+    def update(self, visible_rect, dt):
+        for i, bullet in sorted(enumerate(self.bullets), reverse=True):
+            movement = bullet[1] * self.bullet_speed * dt
+            bullet[0] += movement
+            if not visible_rect.collidepoint(bullet[0].x, bullet[0].y):
+                self.bullets.pop(i)
+
+    def draw(self, surface, offset):
+        for i, bullet in sorted(enumerate(self.bullets), reverse=True):
+            surface.blit(self.image, bullet[0] - offset)

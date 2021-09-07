@@ -6,6 +6,7 @@ import pygame as pg
 import logging
 
 from pygame import K_SPACE, K_a, K_d
+from pygame.math import Vector2
 
 sprite_images = {}
 animation_frames = {}
@@ -68,6 +69,10 @@ class Entity(object):
         x = self.x - (self.width // 2)
         y = self.y - (self.height // 2)
         return int(x), int(y)
+
+    @property
+    def position(self):
+        return Vector2(self.x, self.y)
 
     def update(self, boundary_rects, collision_mask, dt):
         self._animate()
