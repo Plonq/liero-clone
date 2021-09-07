@@ -32,7 +32,9 @@ class Game:
         )
 
         # Spawning
-        self.game_map.destroy_terrain((self.player.x, self.player.y), self.player.width)
+        self.game_map.destroy_terrain(
+            (self.player.x, self.player.y), radius=self.player.height * 0.8
+        )
 
         # Weapons
         self.bullet_img = pg.Surface((1, 1))
@@ -106,18 +108,17 @@ class Game:
                 if event.button == pg.BUTTON_LEFT:
                     self.firing_at = self.mouse_pos_to_display_pos(event.pos)
                 if event.button == pg.BUTTON_RIGHT:
-                    self.dig()
+                    self.dig(toward=self.mouse_pos_to_display_pos(event.pos))
             if event.type == pg.MOUSEMOTION and self.firing_at:
                 self.firing_at = self.mouse_pos_to_display_pos(event.pos)
             if event.type == pg.MOUSEBUTTONUP and event.button == 1:
                 self.firing_at = None
 
-    def dig(self):
-        pos = Vector2(self.player.x, self.player.y)
-        pos.x += 10
-        if self.player.flip:
-            pos.x *= -1
-        self.game_map.destroy_terrain(pos, self.player.height / 1.2)
+    def dig(self, toward):
+        player_pos = Vector2(self.player.x, self.player.y)
+        direction = (Vector2(toward) - player_pos).normalize()
+        dig_pos = player_pos + (direction * 5)
+        self.game_map.destroy_terrain(dig_pos, self.player.height * 0.8)
 
     def mouse_pos_to_display_pos(self, pos):
         ratio_x = self.display_size[0] / self.screen.get_width()
