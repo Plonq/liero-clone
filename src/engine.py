@@ -58,22 +58,16 @@ class Entity(object):
 
     @property
     def rect(self):
-        x, y = self.adjusted_pos
-        return pg.Rect(x, y, self.width, self.height)
+        rect = pg.Rect(0, 0, self.width, self.height)
+        rect.center = (self.x, self.y)
+        return rect
 
     @property
-    def adjusted_pos(self):
+    def hit_box_top_left(self):
         # return int(self.x), int(self.y)
         x = self.x - (self.width // 2)
         y = self.y - (self.height // 2)
         return int(x), int(y)
-
-    @property
-    def inverse_adjusted_pos(self):
-        # return int(-self.x), int(-self.y)
-        x = self.x - (self.width // 2)
-        y = self.y - (self.height // 2)
-        return int(-x), int(-y)
 
     def update(self, boundary_rects, collision_mask, dt):
         self._animate()
@@ -103,12 +97,14 @@ class Entity(object):
         if collision_directions["top"]:
             self.momentum_y = 0
 
-    def draw(self, screen, offset=(0, 0)):
-        offset_rect = self.rect.copy()
+    def draw(self, surface, offset=(0, 0)):
+        offset_rect = self.rect
+        offset_rect.center = (self.x, self.y)
         offset_rect.x -= offset[0]
         offset_rect.y -= offset[1]
-        screen.blit(self.img, offset_rect)
-        # pg.draw.rect(screen, (255, 0, 0), offset_rect)
+        blit_aligned(self.img, surface, offset_rect, h_align="center", v_align="bottom")
+        # pg.draw.rect(surface, (255, 0, 0), offset_rect, 1)
+        # pg.draw.rect(surface, (0, 255, 0), (self.x, self.y, 1, 1))
 
     def _set_action(self, action):
         if action in animation_frames[self.id]:
@@ -222,7 +218,7 @@ class Entity(object):
         return collision_mask.overlap(self.mask, (rect.x, rect.y)) is not None
 
     def _try_sliding_slope(self, collision_mask):
-        nx, ny = self.adjusted_pos
+        nx, ny = self.hit_box_top_left
         for i in range(1, 4):
             temp_y = ny - i
             if collision_mask.overlap(self.mask, (nx, temp_y)) is None:
@@ -294,3 +290,26 @@ class SpriteSheet(object):
         ]
         ck = colorkey or self.colorkey
         return self.images_at(tups, ck)
+
+
+def blit_centered(from_surf, to_surf, rect):
+    to_x = rect.center[0] - from_surf.get_width() // 2
+    to_y = rect.center[1] - from_surf.get_height() // 2
+    to_surf.blit(from_surf, (to_x, to_y))
+
+
+def blit_aligned(from_surf, to_surf, rect, h_align="center", v_align="center"):
+    target_pos = [0, 0]
+    if h_align == "center":
+        target_pos[0] = rect.center[0] - from_surf.get_width() // 2
+    elif h_align == "left":
+        target_pos[0] = rect.left
+    elif h_align == "right":
+        target_pos[0] = rect.right - from_surf.get_width()
+    if v_align == "center":
+        target_pos[1] = rect.center[0] - from_surf.get_height() // 2
+    elif v_align == "top":
+        target_pos[1] = rect.top
+    elif v_align == "bottom":
+        target_pos[1] = rect.bottom - from_surf.get_height()
+    to_surf.blit(from_surf, target_pos)

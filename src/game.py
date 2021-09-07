@@ -23,7 +23,7 @@ class Game:
         load_animation_data(ROOT_DIR / "assets/images/entities")
 
         self.game_map = DestroyableMap(ROOT_DIR / "assets/images/map.png")
-        self.player = Entity("player", x=90, y=50, width=16, height=16)
+        self.player = Entity("player", x=90, y=50, width=12, height=14)
         self.map_boundary_rects = (
             pg.Rect(0, 0, self.display_size[0], 1),
             pg.Rect(0, 0, 1, self.display_size[1]),
@@ -106,15 +106,18 @@ class Game:
                 if event.button == pg.BUTTON_LEFT:
                     self.firing_at = self.mouse_pos_to_display_pos(event.pos)
                 if event.button == pg.BUTTON_RIGHT:
-                    pos = Vector2(self.player.x, self.player.y)
-                    pos.x += 10
-                    if self.player.flip:
-                        pos.x *= -1
-                    self.game_map.destroy_terrain(pos, self.player.height / 1.2)
+                    self.dig()
             if event.type == pg.MOUSEMOTION and self.firing_at:
                 self.firing_at = self.mouse_pos_to_display_pos(event.pos)
             if event.type == pg.MOUSEBUTTONUP and event.button == 1:
                 self.firing_at = None
+
+    def dig(self):
+        pos = Vector2(self.player.x, self.player.y)
+        pos.x += 10
+        if self.player.flip:
+            pos.x *= -1
+        self.game_map.destroy_terrain(pos, self.player.height / 1.2)
 
     def mouse_pos_to_display_pos(self, pos):
         ratio_x = self.display_size[0] / self.screen.get_width()
