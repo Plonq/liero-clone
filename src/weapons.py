@@ -2,13 +2,11 @@ import json
 import random
 import pygame as pg
 
-from src.constants import ROOT_DIR
-
 
 class Weapon:
     def __init__(self, name):
         self.name = name
-        data = self._load_data()
+        data = {}
         self.type = data[name]["type"]
         self.bullets_per_round = data[name]["bullets_per_round"]
         self.rounds_per_magazine = data[name]["rounds_per_magazine"]
@@ -16,10 +14,6 @@ class Weapon:
         self.round_cooldown = data[name]["round_cooldown"]
         self.bullet_speed = data[name]["bullet_speed"]
         self.damage = data[name]["damage"]
-
-    def _load_data(self):
-        with open(ROOT_DIR / "data/weapons.json") as f:
-            return json.load(f)
 
 
 class MachineGun:

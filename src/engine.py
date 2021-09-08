@@ -239,36 +239,6 @@ class Entity(object):
         return False
 
 
-class DestroyableMap:
-    def __init__(self, image_path, colorkey="alpha"):
-        image = pg.image.load(image_path)
-        if colorkey == "alpha":
-            image = image.convert_alpha()
-        elif colorkey is not None:
-            image = image.convert()
-            image.set_colorkey(colorkey)
-        self.colorkey = colorkey
-        self.image = image
-        self.mask = pg.mask.from_surface(self.image)
-        # Helper props
-        self.size = image.get_size()
-
-    def _update_mask(self):
-        self.mask = pg.mask.from_surface(self.image)
-
-    def destroy_terrain(self, location, radius):
-        color = (0, 0, 0, 0) if self.colorkey == "alpha" else self.colorkey
-        pg.draw.circle(self.image, color, location, radius)
-        self._update_mask()
-
-    def draw(self, surf, offset):
-        x = 0
-        y = 0
-        x -= offset.x
-        y -= offset.y
-        surf.blit(self.image, (x, y))
-
-
 class SpriteSheet(object):
     def __init__(self, filename, colorkey=None):
         self.colorkey = colorkey

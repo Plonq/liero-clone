@@ -1,11 +1,10 @@
-import random
 from time import time
 
 import pygame as pg
 from pygame.math import Vector2
 
-from src.constants import ROOT_DIR
-from src.engine import DestroyableMap, Entity, load_animation_data
+from src.assets import Assets
+from src.world import World
 from src.player import Player
 from src.utils import clamp
 from src.weapons import MachineGun
@@ -20,16 +19,15 @@ class Game:
     offset = Vector2(0, 0)
 
     def __init__(self, screen):
+        self.assets = Assets()
+        self.world = World(self)
+
         pg.display.set_caption("Liero Clone")
         self.screen = screen
         self.display = pg.Surface(self.display_size)
 
-        # Load animations
-        load_animation_data(ROOT_DIR / "assets/images/entities")
-
         # Set up map
-        self.game_map = DestroyableMap(ROOT_DIR / "assets/images/map.png")
-        map_size = self.game_map.size
+        map_size = self.world.size
         self.map_boundary_rects = (
             pg.Rect(0, 0, map_size[0], 1),
             pg.Rect(0, 0, 1, map_size[1]),
@@ -39,7 +37,7 @@ class Game:
 
         # Set up player
         self.player = Player(x=300, y=300)
-        self.game_map.destroy_terrain(
+        self.world.destroy_terrain(
             (self.player.x, self.player.y), radius=self.player.height * 0.8
         )
         self.firing_at = None
@@ -68,9 +66,9 @@ class Game:
         for map_boundary_rect in self.map_boundary_rects:
             pg.draw.rect(self.display, (0, 0, 0), map_boundary_rect)
 
-        self.game_map.draw(self.display, self.offset)
+        self.world.draw(self.display, self.offset)
 
-        self.player.update(self.map_boundary_rects, self.game_map.mask, dt)
+        self.player.update(self.map_boundary_rects, self.world.mask, dt)
         self.player.draw(self.display, self.offset)
 
         # Weapons
@@ -90,10 +88,10 @@ class Game:
         ) / 15
         # Clamp to prevent camera going outside map
         self.true_offset[0] = clamp(
-            self.true_offset[0], 0, self.game_map.size[0] - self.display_size[0]
+            self.true_offset[0], 0, self.world.size[0] - self.display_size[0]
         )
         self.true_offset[1] = clamp(
-            self.true_offset[1], 0, self.game_map.size[1] - self.display_size[1]
+            self.true_offset[1], 0, self.world.size[1] - self.display_size[1]
         )
         self.offset = Vector2(int(self.true_offset[0]), int(self.true_offset[1]))
 
@@ -117,7 +115,7 @@ class Game:
         player_pos = Vector2(self.player.x, self.player.y)
         direction = (toward + self.offset - player_pos).normalize()
         dig_pos = player_pos + (direction * 5)
-        self.game_map.destroy_terrain(dig_pos, self.player.height * 0.8)
+        self.world.destroy_terrain(dig_pos, self.player.height * 0.8)
 
     def correct_mouse_pos(self, original_pos):
         ratio_x = self.display_size[0] / self.screen.get_width()
