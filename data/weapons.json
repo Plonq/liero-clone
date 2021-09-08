@@ -1,0 +1,11 @@
+{
+  "machine_gun": {
+    "type": "projectile",
+    "bullets_per_round": 1,
+    "rounds_per_magazine": 100,
+    "reload_time": 2,
+    "round_cooldown": 4,
+    "bullet_speed": 2,
+    "damage": 5
+  }
+}
