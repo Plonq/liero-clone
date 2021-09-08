@@ -4,6 +4,7 @@ import pygame as pg
 from pygame.math import Vector2
 
 from src.assets import Assets
+from src.window import Window
 from src.world import World
 from src.player import Player
 from src.utils import clamp
@@ -18,13 +19,12 @@ class Game:
     display_size = (608, 400)
     offset = Vector2(0, 0)
 
-    def __init__(self, screen):
+    def __init__(self):
+        self.window = Window(self)
         self.assets = Assets()
         self.world = World(self)
 
-        pg.display.set_caption("Liero Clone")
-        self.screen = screen
-        self.display = pg.Surface(self.display_size)
+        self.display = self.window.display
 
         # Set up map
         map_size = self.world.size
@@ -43,16 +43,14 @@ class Game:
         self.firing_at = None
         self.player.current_weapon = MachineGun()
 
+    def update(self):
+        self.next_frame(self.window.dt)
+        self.process_events(pg.event.get())
+        self.window.render_frame()
+
     def run(self):
         while True:
-            dt = (time() - self.last_time) * 60
-            self.last_time = time()
-            self.next_frame(dt)
-            self.process_events(pg.event.get())
-            window_size = (self.screen.get_width(), self.screen.get_height())
-            self.screen.blit(pg.transform.scale(self.display, window_size), (0, 0))
-            pg.display.update()
-            clock.tick(60)
+            self.update()
 
     def next_frame(self, dt):
         self.display.fill((53, 29, 15))
@@ -118,7 +116,10 @@ class Game:
         self.world.destroy_terrain(dig_pos, self.player.height * 0.8)
 
     def correct_mouse_pos(self, original_pos):
-        ratio_x = self.display_size[0] / self.screen.get_width()
-        ratio_y = self.display_size[1] / self.screen.get_height()
+        ratio_x = self.display_size[0] / self.window.screen.get_width()
+        ratio_y = self.display_size[1] / self.window.screen.get_height()
         display_pos = Vector2(original_pos[0] * ratio_x, original_pos[1] * ratio_y)
         return display_pos
+
+
+Game().run()
