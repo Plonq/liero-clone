@@ -109,7 +109,7 @@ class Game:
 
     def dig(self, toward):
         player_pos = Vector2(self.player.x, self.player.y)
-        direction = (Vector2(toward) - player_pos).normalize()
+        direction = (toward + self.offset - player_pos).normalize()
         dig_pos = player_pos + (direction * 5)
         self.game_map.destroy_terrain(dig_pos, self.player.height * 0.8)
 
