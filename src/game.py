@@ -6,6 +6,7 @@ from pygame.math import Vector2
 
 from src.constants import ROOT_DIR
 from src.engine import DestroyableMap, Entity, load_animation_data
+from src.player import Player
 from src.utils import clamp
 
 clock = pg.time.Clock()
@@ -22,6 +23,9 @@ class Game:
         self.screen = screen
         self.display = pg.Surface(self.display_size)
 
+        # Load animations
+        load_animation_data(ROOT_DIR / "assets/images/entities")
+
         # Set up map
         self.game_map = DestroyableMap(ROOT_DIR / "assets/images/map.png")
         map_size = self.game_map.size
@@ -33,8 +37,7 @@ class Game:
         )
 
         # Set up player
-        load_animation_data(ROOT_DIR / "assets/images/entities")
-        self.player = Entity("player", x=300, y=300, width=12, height=14)
+        self.player = Player(x=300, y=300)
         self.game_map.destroy_terrain(
             (self.player.x, self.player.y), radius=self.player.height * 0.8
         )

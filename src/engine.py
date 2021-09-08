@@ -168,19 +168,19 @@ class Entity(object):
             direction -= 1
         return direction
 
-    def _move_and_collide(self, velocity, boundary_rects, collision_mask):
+    def _move_and_collide(self, velocity, collision_rects, collision_mask=None):
         collision_types = {"top": False, "bottom": False, "right": False, "left": False}
 
         # Horizontal (+ slopes)
         self.x += velocity[0]
 
-        hit_list = self.rect.collidelistall(boundary_rects)
+        hit_list = self.rect.collidelistall(collision_rects)
         for tile_i in hit_list:
             if velocity[0] > 0:
-                self.x = boundary_rects[tile_i].left - self.width // 2
+                self.x = collision_rects[tile_i].left - self.width // 2
                 collision_types["right"] = True
             elif velocity[0] < 0:
-                self.x = boundary_rects[tile_i].right + self.width // 2
+                self.x = collision_rects[tile_i].right + self.width // 2
                 collision_types["left"] = True
 
         if self._collided_with_mask(collision_mask):
@@ -197,13 +197,13 @@ class Entity(object):
         # Vertical
         self.y += velocity[1]
 
-        hit_list = self.rect.collidelistall(boundary_rects)
+        hit_list = self.rect.collidelistall(collision_rects)
         for tile_i in hit_list:
             if velocity[1] > 0:
-                self.y = boundary_rects[tile_i].top - self.height // 2
+                self.y = collision_rects[tile_i].top - self.height // 2
                 collision_types["bottom"] = True
             elif velocity[1] < 0:
-                self.y = boundary_rects[tile_i].bottom + self.height // 2
+                self.y = collision_rects[tile_i].bottom + self.height // 2
                 collision_types["top"] = True
 
         if self._collided_with_mask(collision_mask):
@@ -219,6 +219,8 @@ class Entity(object):
         return collision_types
 
     def _collided_with_mask(self, collision_mask):
+        if collision_mask is None:
+            return False
         rect = self.rect
         return collision_mask.overlap(self.mask, (rect.x, rect.y)) is not None
 
