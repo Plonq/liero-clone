@@ -1,7 +1,4 @@
-from time import time
-
 import pygame as pg
-from pygame.math import Vector2
 
 from src.assets import Assets
 from src.input import Input
@@ -13,11 +10,6 @@ clock = pg.time.Clock()
 
 
 class Game:
-    true_offset = [0, 0]
-    last_time = time()
-    display_size = (608, 400)
-    offset = Vector2(0, 0)
-
     def __init__(self):
         self.window = Window(self)
         self.assets = Assets()
