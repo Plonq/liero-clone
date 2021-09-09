@@ -13,8 +13,6 @@ class Game:
         self.world = World(self)
         self.player = Player(self)
 
-        self.display = self.window.display
-
     def update(self):
         self.input.update()
         self.world.update()
