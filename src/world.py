@@ -8,7 +8,6 @@ class World:
     def __init__(self, game):
         self.game = game
         image = self.game.assets.world_map
-        image = image.convert_alpha()
         self.image = image
         self.mask = self.generate_mask()
         self.size = image.get_size()
