@@ -10,7 +10,6 @@ class Player(Entity):
     def __init__(self, game, x=0, y=0):
         super().__init__(game, "player", x, y, 12, 14)
         self.alive = False
-        self.has_dug = False
         self.current_weapon = MachineGun()
 
     def update(self, boundary_rects, collision_mask, dt):
@@ -55,11 +54,8 @@ class Player(Entity):
 
         # Actions
         if self.game.input.states["dig"]:
-            if not self.has_dug:
-                self.dig()
-                self.has_dug = True
-        else:
-            self.has_dug = False
+            self.dig()
+            self.game.input.states["dig"] = False
 
         if self.game.input.states["fire"]:
             target_pos = self.game.window.get_mouse_pos() + self.game.world.offset
