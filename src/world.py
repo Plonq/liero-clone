@@ -1,4 +1,5 @@
 import pygame as pg
+from pygame.math import Vector2
 
 
 class World:
@@ -11,13 +12,16 @@ class World:
         # Helper props
         self.size = image.get_size()
 
-    def _update_mask(self):
+    def update(self):
+        pass
+
+    def update_mask(self):
         self.mask = pg.mask.from_surface(self.image)
 
     def destroy_terrain(self, location, radius):
         color = (0, 0, 0, 0)
         pg.draw.circle(self.image, color, location, radius)
-        self._update_mask()
+        self.update_mask()
 
     def draw(self, surf, offset):
         x = 0

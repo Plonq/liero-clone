@@ -39,14 +39,15 @@ def load_animation_data(entities_dir):
 
 
 class Entity(object):
-    def __init__(self, id, x=0, y=0, width=1, height=1):
+    def __init__(self, game, id, x=0, y=0, width=1, height=1):
+        self.game = game
         self.id = id
         self.x = x
         self.y = y
         self.width = width
         self.height = height
         self.run_speed = 1
-        self.momentum_y = 0
+        self.speed_y = 0
         self.air_timer = 0
         self.jump_buffer = 6
         self.direction_x = 0
@@ -74,34 +75,6 @@ class Entity(object):
     def position(self):
         return Vector2(self.x, self.y)
 
-    def update(self, boundary_rects, collision_mask, dt):
-        self._animate()
-        self.direction_x = self._get_direction()
-
-        # Movement
-        velocity = [0, 0]
-        velocity[0] += self.direction_x * self.run_speed * dt
-        velocity[1] += self.momentum_y * dt
-
-        # Gravity
-        self.momentum_y += 0.3 * dt
-        if self.momentum_y > 4:
-            self.momentum_y = 4
-
-        # Move and hit stuff
-        collision_directions = self._move_and_collide(
-            velocity, boundary_rects, collision_mask
-        )
-
-        # What do if hit stuff?
-        if collision_directions["bottom"]:
-            self.momentum_y = 0
-            self.air_timer = 0
-        else:
-            self.air_timer += 1
-        if collision_directions["top"]:
-            self.momentum_y = 0
-
     def draw(self, surface, offset=(0, 0)):
         offset_rect = self.rect
         offset_rect.center = (self.x, self.y)
@@ -128,9 +101,9 @@ class Entity(object):
 
         # In the air?
         if self.air_timer > self.jump_buffer:
-            if self.momentum_y < 0:
+            if self.speed_y < 0:
                 self._set_action("jump")
-            elif self.momentum_y > 0:
+            elif self.speed_y > 0:
                 self._set_action("fall")
         else:
             # Must be on ground
@@ -152,21 +125,6 @@ class Entity(object):
         img_id = animation_frames[self.id][self.action][self.animation_frame]
         # TODO: Make more efficient
         self.img = pg.transform.flip(sprite_images[self.id][img_id], self.flip, False)
-
-    def _get_direction(self):
-        direction = 0
-        key = pg.key.get_pressed()
-        # Jumping
-        if key[K_SPACE]:
-            if self.air_timer < self.jump_buffer:
-                self.momentum_y = -5
-        # Move right
-        if key[K_d]:
-            direction += 1
-        # Move left
-        if key[K_a]:
-            direction -= 1
-        return direction
 
     def _move_and_collide(self, velocity, collision_rects, collision_mask=None):
         collision_types = {"top": False, "bottom": False, "right": False, "left": False}

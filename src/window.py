@@ -1,5 +1,6 @@
 import time
 import pygame as pg
+from pygame.math import Vector2
 
 clock = pg.time.Clock()
 
@@ -23,3 +24,9 @@ class Window:
         self.screen.blit(pg.transform.scale(self.display, self.window_size), (0, 0))
         pg.display.update()
         clock.tick(60)
+
+    def get_mouse_pos(self):
+        window_pos = pg.mouse.get_pos()
+        ratio_x = self.display_size[0] / self.window_size[0]
+        ratio_y = self.display_size[1] / self.window_size[1]
+        return Vector2(window_pos[0] * ratio_x, window_pos[1] * ratio_y)
