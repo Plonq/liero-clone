@@ -33,12 +33,15 @@ class World:
 
     def _update_offset(self):
         self.true_offset[0] += (
-            self.game.player.x - self.true_offset[0] - 300 + self.game.player.width // 2
+            self.game.player.x
+            - self.true_offset[0]
+            - self.game.window.display_size[0] / 2
+            + self.game.player.width // 2
         ) / 15
         self.true_offset[1] += (
             self.game.player.y
             - self.true_offset[1]
-            - 200
+            - self.game.window.display_size[1] / 2
             + self.game.player.height // 2
         ) / 15
         # Clamp to prevent camera going outside map
