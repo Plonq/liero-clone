@@ -1,4 +1,5 @@
-import pygame as pg
+import random
+
 from pygame.math import Vector2
 
 from src.engine import Entity
@@ -6,13 +7,17 @@ from src.weapons import MachineGun
 
 
 class Player(Entity):
-    def __init__(self, game, x, y):
+    def __init__(self, game, x=0, y=0):
         super().__init__(game, "player", x, y, 12, 14)
+        self.alive = False
         self.has_dug = False
         self.current_weapon = MachineGun()
-        self.game.world.destroy_terrain(self.position, radius=self.height * 0.8)
+        self.spawn()
 
     def update(self, boundary_rects, collision_mask, dt):
+        if not self.alive:
+            return
+
         self._animate()
         if self.game.input.states["move_left"]:
             self.direction_x = -1
@@ -62,17 +67,25 @@ class Player(Entity):
             self.current_weapon.fire(self.position, target_pos)
 
         # Update items
-        visible_rect = pg.Rect(
-            self.game.offset.x,
-            self.game.offset.y,
-            self.game.window.display_size[0],
-            self.game.window.display_size[1],
-        )
-        self.current_weapon.update(visible_rect, dt)
+        self.current_weapon.update(self.game.world.get_visible_rect(), dt)
 
-    def draw(self, surface, offset=(0, 0)):
+    def draw(self, surface, offset):
+        if not self.alive:
+            return
         super().draw(surface, offset)
         self.current_weapon.draw(surface, offset)
+
+    def die(self):
+        self.alive = False
+
+    def spawn(self):
+        position = Vector2(
+            random.randint(self.width, self.game.window.display_size[0] - self.width),
+            random.randint(self.height, self.game.window.display_size[1] - self.height),
+        )
+        self.game.world.destroy_terrain(position, radius=self.height * 0.8)
+        self.x, self.y = position
+        self.alive = True
 
     def dig(self):
         player_pos = self.game.player.position

@@ -5,7 +5,6 @@ import pygame as pg
 
 import logging
 
-from pygame import K_SPACE, K_a, K_d
 from pygame.math import Vector2
 
 sprite_images = {}
@@ -75,7 +74,7 @@ class Entity(object):
     def position(self):
         return Vector2(self.x, self.y)
 
-    def draw(self, surface, offset=(0, 0)):
+    def draw(self, surface, offset):
         offset_rect = self.rect
         offset_rect.center = (self.x, self.y)
         offset_rect.x -= offset[0]
