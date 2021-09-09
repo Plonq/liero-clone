@@ -55,7 +55,6 @@ class Player(Entity):
         # Actions
         if self.game.input.states["dig"]:
             self.dig()
-            self.game.input.states["dig"] = False
 
         if self.game.input.states["fire"]:
             target_pos = self.game.window.get_mouse_pos() + self.game.world.offset

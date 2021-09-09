@@ -14,6 +14,8 @@ class Input:
         }
 
     def update(self):
+        self.reset_ephemeral_states()
+
         for event in pg.event.get():
             if event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == pg.BUTTON_LEFT:
@@ -50,3 +52,8 @@ class Input:
             if event.type == pg.QUIT:
                 pg.quit()
                 exit()
+
+    def reset_ephemeral_states(self):
+        self.states["jump"] = False
+        self.states["dig"] = False
+        self.states["spawn"] = False
