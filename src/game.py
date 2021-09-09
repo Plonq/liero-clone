@@ -1,12 +1,8 @@
-import pygame as pg
-
 from src.assets import Assets
 from src.input import Input
 from src.window import Window
 from src.world import World
 from src.player import Player
-
-clock = pg.time.Clock()
 
 
 class Game:
