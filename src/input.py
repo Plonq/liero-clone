@@ -5,6 +5,7 @@ class Input:
     def __init__(self, game):
         self.game = game
         self.states = {
+            "spawn": False,
             "jump": False,
             "move_left": False,
             "move_right": False,
@@ -27,6 +28,8 @@ class Input:
                     self.states["dig"] = False
 
             if event.type == pg.KEYDOWN:
+                if event.key == pg.K_RETURN:
+                    self.states["spawn"] = True
                 if event.key == pg.K_SPACE:
                     self.states["jump"] = True
                 if event.key == pg.K_a:
@@ -35,6 +38,8 @@ class Input:
                     self.states["move_right"] = True
 
             if event.type == pg.KEYUP:
+                if event.key == pg.K_RETURN:
+                    self.states["spawn"] = False
                 if event.key == pg.K_SPACE:
                     self.states["jump"] = False
                 if event.key == pg.K_a:

@@ -1,6 +1,7 @@
 import pygame as pg
 from pygame.math import Vector2
 
+from src.player import Player
 from src.utils import clamp
 
 
@@ -19,29 +20,34 @@ class World:
             pg.Rect(self.size[0], -1, 1, self.size[1]),
             pg.Rect(-1, self.size[1], self.size[0], 1),
         )
+        self.player = Player(game)
 
     def update(self):
         self._update_offset()
+        if self.game.input.states["spawn"]:
+            if not self.player.alive:
+                self.player.spawn()
+        self.player.update(self.map_boundary_rects, self.mask, self.game.window.dt)
 
     def draw(self, surf):
         surf.fill((53, 29, 15))
         for map_boundary_rect in self.map_boundary_rects:
             pg.draw.rect(surf, (0, 0, 0), map_boundary_rect)
         surf.blit(self.image, (-self.offset.x, -self.offset.y))
-        self.game.player.draw(self.game.display, self.offset)
+        self.player.draw(self.game.window.display, self.offset)
 
     def _update_offset(self):
         self.true_offset[0] += (
-            self.game.player.x
+            self.player.x
             - self.true_offset[0]
             - self.game.window.display_size[0] / 2
-            + self.game.player.width // 2
+            + self.player.width // 2
         ) / 15
         self.true_offset[1] += (
-            self.game.player.y
+            self.player.y
             - self.true_offset[1]
             - self.game.window.display_size[1] / 2
-            + self.game.player.height // 2
+            + self.player.height // 2
         ) / 15
         # Clamp to prevent camera going outside map
         self.true_offset[0] = clamp(
@@ -54,8 +60,8 @@ class World:
 
     def get_visible_rect(self):
         return pg.Rect(
-            self.game.offset.x,
-            self.game.offset.y,
+            self.offset.x,
+            self.offset.y,
             self.game.window.display_size[0],
             self.game.window.display_size[1],
         )

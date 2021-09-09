@@ -12,7 +12,6 @@ class Player(Entity):
         self.alive = False
         self.has_dug = False
         self.current_weapon = MachineGun()
-        self.spawn()
 
     def update(self, boundary_rects, collision_mask, dt):
         if not self.alive:
@@ -63,7 +62,7 @@ class Player(Entity):
             self.has_dug = False
 
         if self.game.input.states["fire"]:
-            target_pos = self.game.window.get_mouse_pos() + self.game.offset
+            target_pos = self.game.window.get_mouse_pos() + self.game.world.offset
             self.current_weapon.fire(self.position, target_pos)
 
         # Update items
@@ -88,8 +87,7 @@ class Player(Entity):
         self.alive = True
 
     def dig(self):
-        player_pos = self.game.player.position
         mouse_pos = self.game.window.get_mouse_pos()
-        direction = (mouse_pos + self.game.offset - player_pos).normalize()
-        dig_pos = player_pos + (direction * 5)
-        self.game.world.destroy_terrain(dig_pos, self.game.player.height * 0.8)
+        direction = (mouse_pos + self.game.world.offset - self.position).normalize()
+        dig_pos = self.position + (direction * 5)
+        self.game.world.destroy_terrain(dig_pos, self.height * 0.8)
