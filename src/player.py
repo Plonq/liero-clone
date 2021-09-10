@@ -3,14 +3,14 @@ import random
 from pygame.math import Vector2
 
 from src.engine import Entity
-from src.weapons import MachineGun
+from src.weapons import MachineGun, Weapon
 
 
 class Player(Entity):
     def __init__(self, game, x=0, y=0):
         super().__init__(game, "player", x, y, 12, 14)
         self.alive = False
-        self.current_weapon = MachineGun(game)
+        self.current_weapon = Weapon(game, "machine_gun")
 
     def update(self, boundary_rects, collision_mask, dt):
         if not self.alive:
@@ -56,9 +56,11 @@ class Player(Entity):
         if self.game.input.states["dig"]:
             self.dig()
 
-        if self.game.input.states["fire"]:
-            target_pos = self.game.window.get_mouse_pos() + self.game.world.offset
-            self.current_weapon.fire(self.position, target_pos)
+        self.current_weapon.update(dt)
+        if self.game.input.states["attack"]:
+            direction = self.game.window.get_mouse_pos() - self.position
+            direction.normalize_ip()
+            self.current_weapon.attack(self.position, direction)
 
     def draw(self, surface, offset):
         if not self.alive:

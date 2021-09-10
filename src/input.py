@@ -10,7 +10,7 @@ class Input:
             "move_left": False,
             "move_right": False,
             "dig": False,
-            "fire": False,
+            "attack": False,
         }
 
     def update(self):
@@ -19,13 +19,13 @@ class Input:
         for event in pg.event.get():
             if event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == pg.BUTTON_LEFT:
-                    self.states["fire"] = True
+                    self.states["attack"] = True
                 if event.button == pg.BUTTON_RIGHT:
                     self.states["dig"] = True
 
             if event.type == pg.MOUSEBUTTONUP:
                 if event.button == pg.BUTTON_LEFT:
-                    self.states["fire"] = False
+                    self.states["attack"] = False
                 if event.button == pg.BUTTON_RIGHT:
                     self.states["dig"] = False
 
