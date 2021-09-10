@@ -10,7 +10,7 @@ class Player(Entity):
     def __init__(self, game, x=0, y=0):
         super().__init__(game, "player", x, y, 12, 14)
         self.alive = False
-        self.current_weapon = Weapon(game, "machine_gun")
+        self.current_weapon = Weapon(game, "shotgun")
 
     def update(self, boundary_rects, collision_mask, dt):
         if not self.alive:
@@ -64,7 +64,9 @@ class Player(Entity):
                 - self.position
             )
             direction.normalize_ip()
-            self.current_weapon.attack(self.position, direction)
+            can_keep_firing = self.current_weapon.attack(self.position, direction)
+            if not can_keep_firing:
+                self.game.input.states["attack"] = False
 
     def draw(self, surface, offset):
         if not self.alive:

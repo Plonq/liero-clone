@@ -15,4 +15,4 @@ class Assets:
         ).convert_alpha()
         self.basic_projectile = pg.image.load(
             ROOT_DIR / "assets/images/weapons/basic-projectile.png"
-        )
+        ).convert_alpha()
