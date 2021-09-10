@@ -28,36 +28,36 @@ class World:
         if self.game.input.states["spawn"]:
             if not self.player.alive:
                 self.player.spawn()
-        self.player.update(self.map_boundary_rects, self.mask, self.game.window.dt)
-        self._update_projectiles(self.game.window.dt)
+        self.player.update(self.map_boundary_rects, self.mask, self.game.dt)
+        self._update_projectiles(self.game.dt)
 
     def draw(self, surface):
         surface.fill((53, 29, 15))
         for map_boundary_rect in self.map_boundary_rects:
             pg.draw.rect(surface, (0, 0, 0), map_boundary_rect)
         surface.blit(self.image, (-self.offset.x, -self.offset.y))
-        self.player.draw(self.game.window.display, self.offset)
+        self.player.draw(self.game.display, self.offset)
         self._draw_projectiles(surface, self.offset)
 
     def _update_offset(self):
         self.true_offset[0] += (
             self.player.x
             - self.true_offset[0]
-            - self.game.window.display_size[0] / 2
+            - self.game.display_size[0] / 2
             + self.player.width // 2
         ) / 15
         self.true_offset[1] += (
             self.player.y
             - self.true_offset[1]
-            - self.game.window.display_size[1] / 2
+            - self.game.display_size[1] / 2
             + self.player.height // 2
         ) / 15
         # Clamp to prevent camera going outside map
         self.true_offset[0] = clamp(
-            self.true_offset[0], 0, self.size[0] - self.game.window.display_size[0]
+            self.true_offset[0], 0, self.size[0] - self.game.display_size[0]
         )
         self.true_offset[1] = clamp(
-            self.true_offset[1], 0, self.size[1] - self.game.window.display_size[1]
+            self.true_offset[1], 0, self.size[1] - self.game.display_size[1]
         )
         self.offset = Vector2(int(self.true_offset[0]), int(self.true_offset[1]))
 
@@ -77,8 +77,8 @@ class World:
         return pg.Rect(
             self.offset.x,
             self.offset.y,
-            self.game.window.display_size[0],
-            self.game.window.display_size[1],
+            self.game.display_size[0],
+            self.game.display_size[1],
         )
 
     def generate_mask(self):

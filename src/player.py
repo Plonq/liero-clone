@@ -63,9 +63,7 @@ class Player(Entity):
         self.current_weapon.update()
         if self.game.input.states["attack"]:
             direction = (
-                self.game.window.get_mouse_pos()
-                + self.game.world.offset
-                - self.position
+                self.game.get_mouse_pos() + self.game.world.offset - self.position
             )
             direction.normalize_ip()
             can_keep_firing = self.current_weapon.attack(self.position, direction)
@@ -88,15 +86,15 @@ class Player(Entity):
 
     def spawn(self):
         position = Vector2(
-            random.randint(self.width, self.game.window.display_size[0] - self.width),
-            random.randint(self.height, self.game.window.display_size[1] - self.height),
+            random.randint(self.width, self.game.display_size[0] - self.width),
+            random.randint(self.height, self.game.display_size[1] - self.height),
         )
         self.game.world.destroy_terrain(position, radius=self.height * 0.8)
         self.x, self.y = position
         self.alive = True
 
     def dig(self):
-        mouse_pos = self.game.window.get_mouse_pos()
+        mouse_pos = self.game.get_mouse_pos()
         direction = (mouse_pos + self.game.world.offset - self.position).normalize()
         dig_pos = self.position + (direction * 5)
         self.game.world.destroy_terrain(dig_pos, self.height * 0.8)

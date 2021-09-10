@@ -37,7 +37,7 @@ def load_animation_data(entities_dir):
             entity_frames[action] = frame_list
 
 
-class Entity(object):
+class Entity:
     def __init__(self, game, id, x=0, y=0, width=1, height=1):
         self.game = game
         self.id = id
