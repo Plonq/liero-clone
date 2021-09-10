@@ -3,7 +3,7 @@ import random
 from pygame.math import Vector2
 
 from src.engine import Entity
-from src.weapons import MachineGun, Weapon
+from src.weapons import Weapon
 
 
 class Player(Entity):
@@ -56,9 +56,13 @@ class Player(Entity):
         if self.game.input.states["dig"]:
             self.dig()
 
-        self.current_weapon.update(dt)
+        self.current_weapon.update()
         if self.game.input.states["attack"]:
-            direction = self.game.window.get_mouse_pos() - self.position
+            direction = (
+                self.game.window.get_mouse_pos()
+                + self.game.world.offset
+                - self.position
+            )
             direction.normalize_ip()
             self.current_weapon.attack(self.position, direction)
 
