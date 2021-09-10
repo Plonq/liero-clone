@@ -6,6 +6,7 @@
     "reload_time": 2,
     "round_cooldown": 4,
     "bullet_speed": 2,
+    "accuracy": 0.95,
     "damage": 5
   }
 }
