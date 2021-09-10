@@ -2,6 +2,7 @@ import random
 
 from pygame.math import Vector2
 
+from src.config import config
 from src.engine import Entity
 from src.weapons import Weapon
 
@@ -10,7 +11,10 @@ class Player(Entity):
     def __init__(self, game, x=0, y=0):
         super().__init__(game, "player", x, y, 12, 14)
         self.alive = False
-        self.current_weapon = Weapon(game, "shotgun")
+        self.available_weapons = [
+            Weapon(game, name) for name in config["weapons"].keys()
+        ]
+        self.current_weapon = self.available_weapons[0]
 
     def update(self, boundary_rects, collision_mask, dt):
         if not self.alive:
@@ -67,6 +71,12 @@ class Player(Entity):
             can_keep_firing = self.current_weapon.attack(self.position, direction)
             if not can_keep_firing:
                 self.game.input.states["attack"] = False
+
+        if self.game.input.states["switch_weapon"]:
+            index = self.available_weapons.index(self.current_weapon) + 1
+            if index > len(self.available_weapons) - 1:
+                index = 0
+            self.current_weapon = self.available_weapons[index]
 
     def draw(self, surface, offset):
         if not self.alive:

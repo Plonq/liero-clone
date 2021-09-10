@@ -11,6 +11,7 @@ class Input:
             "move_right": False,
             "dig": False,
             "attack": False,
+            "switch_weapon": False,
         }
 
     def update(self):
@@ -26,8 +27,6 @@ class Input:
             if event.type == pg.MOUSEBUTTONUP:
                 if event.button == pg.BUTTON_LEFT:
                     self.states["attack"] = False
-                if event.button == pg.BUTTON_RIGHT:
-                    self.states["dig"] = False
 
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_RETURN:
@@ -38,12 +37,10 @@ class Input:
                     self.states["move_left"] = True
                 if event.key == pg.K_d:
                     self.states["move_right"] = True
+                if event.key == pg.K_e:
+                    self.states["switch_weapon"] = True
 
             if event.type == pg.KEYUP:
-                if event.key == pg.K_RETURN:
-                    self.states["spawn"] = False
-                if event.key == pg.K_SPACE:
-                    self.states["jump"] = False
                 if event.key == pg.K_a:
                     self.states["move_left"] = False
                 if event.key == pg.K_d:
@@ -57,3 +54,4 @@ class Input:
         self.states["jump"] = False
         self.states["dig"] = False
         self.states["spawn"] = False
+        self.states["switch_weapon"] = False
