@@ -10,7 +10,7 @@ class Player(Entity):
     def __init__(self, game, x=0, y=0):
         super().__init__(game, "player", x, y, 12, 14)
         self.alive = False
-        self.current_weapon = MachineGun()
+        self.current_weapon = MachineGun(game)
 
     def update(self, boundary_rects, collision_mask, dt):
         if not self.alive:
@@ -60,14 +60,10 @@ class Player(Entity):
             target_pos = self.game.window.get_mouse_pos() + self.game.world.offset
             self.current_weapon.fire(self.position, target_pos)
 
-        # Update items
-        self.current_weapon.update(self.game.world.get_visible_rect(), dt)
-
     def draw(self, surface, offset):
         if not self.alive:
             return
         super().draw(surface, offset)
-        self.current_weapon.draw(surface, offset)
 
     def die(self):
         self.alive = False

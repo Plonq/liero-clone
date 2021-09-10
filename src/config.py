@@ -5,5 +5,5 @@ ROOT_DIR = Path(__file__).parent.parent
 
 config = {}
 
-with open(ROOT_DIR / "config/weapons") as f:
+with open(ROOT_DIR / "config/weapons.json") as f:
     config["weapons"] = json.load(f)

@@ -232,9 +232,9 @@ class SpriteSheet(object):
         return self.images_at(tups, ck)
 
 
-def blit_centered(from_surf, to_surf, rect):
-    to_x = rect.center[0] - from_surf.get_width() // 2
-    to_y = rect.center[1] - from_surf.get_height() // 2
+def blit_centered(from_surf, to_surf, position):
+    to_x = position.x - from_surf.get_width() // 2
+    to_y = position.y - from_surf.get_height() // 2
     to_surf.blit(from_surf, (to_x, to_y))
 
 

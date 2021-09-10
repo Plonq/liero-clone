@@ -1,23 +1,26 @@
-import json
 import random
 import pygame as pg
+
+from src.config import config
+from src.projectiles import Projectile
 
 
 class Weapon:
     def __init__(self, name):
         self.name = name
-        data = {}
-        self.type = data[name]["type"]
-        self.bullets_per_round = data[name]["bullets_per_round"]
-        self.rounds_per_magazine = data[name]["rounds_per_magazine"]
-        self.reload_time = data[name]["reload_time"]
-        self.round_cooldown = data[name]["round_cooldown"]
-        self.bullet_speed = data[name]["bullet_speed"]
-        self.damage = data[name]["damage"]
+        self.type = config["weapons"][name]["type"]
+        self.bullets_per_round = config["weapons"][name]["bullets_per_round"]
+        self.rounds_per_magazine = config["weapons"][name]["rounds_per_magazine"]
+        self.reload_time = config["weapons"][name]["reload_time"]
+        self.round_cooldown = config["weapons"][name]["round_cooldown"]
+        self.bullet_speed = config["weapons"][name]["bullet_speed"]
+        self.damage = config["weapons"][name]["damage"]
+        # TODO: Implement this
 
 
 class MachineGun:
-    def __init__(self):
+    def __init__(self, game):
+        self.game = game
         self.image = pg.Surface((1, 1))
         self.image.fill((255, 255, 255))
         self.cooldown = 4
@@ -32,18 +35,9 @@ class MachineGun:
             direction = (target_pos - start_pos).normalize()
             # direction.rotate_ip(jitter)
             start_pos = start_pos + (direction * 14)
-            self.bullets.append([start_pos, direction])
+            self.game.world.projectiles.append(
+                Projectile(self.image, start_pos, direction)
+            )
             self.current_cooldown = self.cooldown
         else:
             self.current_cooldown -= 1
-
-    def update(self, visible_rect, dt):
-        for i, bullet in sorted(enumerate(self.bullets), reverse=True):
-            movement = bullet[1] * self.bullet_speed * dt
-            bullet[0] += movement
-            if not visible_rect.collidepoint(bullet[0].x, bullet[0].y):
-                self.bullets.pop(i)
-
-    def draw(self, surface, offset):
-        for i, bullet in sorted(enumerate(self.bullets), reverse=True):
-            surface.blit(self.image, bullet[0] - offset)

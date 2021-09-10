@@ -21,6 +21,7 @@ class World:
             pg.Rect(-1, self.size[1], self.size[0], 1),
         )
         self.player = Player(game)
+        self.projectiles = []
 
     def update(self):
         self._update_offset()
@@ -28,13 +29,15 @@ class World:
             if not self.player.alive:
                 self.player.spawn()
         self.player.update(self.map_boundary_rects, self.mask, self.game.window.dt)
+        self._update_projectiles(self.game.window.dt)
 
-    def draw(self, surf):
-        surf.fill((53, 29, 15))
+    def draw(self, surface):
+        surface.fill((53, 29, 15))
         for map_boundary_rect in self.map_boundary_rects:
-            pg.draw.rect(surf, (0, 0, 0), map_boundary_rect)
-        surf.blit(self.image, (-self.offset.x, -self.offset.y))
+            pg.draw.rect(surface, (0, 0, 0), map_boundary_rect)
+        surface.blit(self.image, (-self.offset.x, -self.offset.y))
         self.player.draw(self.game.window.display, self.offset)
+        self._draw_projectiles(surface, self.offset)
 
     def _update_offset(self):
         self.true_offset[0] += (
@@ -57,6 +60,18 @@ class World:
             self.true_offset[1], 0, self.size[1] - self.game.window.display_size[1]
         )
         self.offset = Vector2(int(self.true_offset[0]), int(self.true_offset[1]))
+
+    def _update_projectiles(self, dt):
+        for i, projectile in sorted(enumerate(self.projectiles), reverse=True):
+            projectile.update(dt)
+            if not pg.Rect(0, 0, *self.size).collidepoint(
+                projectile.position.x, projectile.position.y
+            ):
+                self.projectiles.pop(i)
+
+    def _draw_projectiles(self, surface, offset):
+        for projectile in self.projectiles:
+            projectile.draw(surface, offset)
 
     def get_visible_rect(self):
         return pg.Rect(
