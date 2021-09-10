@@ -26,11 +26,11 @@ class Weapon:
 
     def attack(self, start_pos, direction):
         if self.current_cooldown == 0:
-            angle_offset = round((1 - self.accuracy) * 90)
+            angle_offset = round((1 - self.accuracy) * 180)
             angle = random.randint(-angle_offset, angle_offset)
             direction.rotate_ip(angle)
             start_pos = start_pos + (direction * 14)
             self.game.world.projectiles.append(
-                Projectile(self.image, start_pos, direction)
+                Projectile(self.image, start_pos, direction, self.bullet_speed)
             )
             self.current_cooldown = self.round_cooldown

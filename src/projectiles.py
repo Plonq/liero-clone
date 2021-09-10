@@ -2,14 +2,14 @@ from src.engine import blit_centered
 
 
 class Projectile:
-    def __init__(self, img, start_pos, direction):
+    def __init__(self, img, start_pos, direction, speed):
         self.image = img
         self.position = start_pos
         self.direction = direction.normalize()
-        self.bullet_speed = 2
+        self.speed = speed
 
     def update(self, dt):
-        movement = self.direction * self.bullet_speed * dt
+        movement = self.direction * self.speed * dt
         self.position += movement
 
     def draw(self, surface, offset):
