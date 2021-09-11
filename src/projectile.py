@@ -17,6 +17,7 @@ class Projectile(GameObject):
         if self.test_collision(
             self.game.get_collision_rects(), self.game.get_collision_mask()
         ):
+            self.game.destroy_terrain(self.position, 7)
             self.game.remove_object(self)
             return
         if not self.game.is_within_map(self.position):

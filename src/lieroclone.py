@@ -85,6 +85,9 @@ class LieroClone(Game):
     def get_collision_mask(self):
         return self.world.mask
 
+    def destroy_terrain(self, location, radius):
+        self.world.destroy_terrain(location, radius)
+
     def _register_actions(self):
         register_mouse_action("attack", pg.BUTTON_LEFT)
         register_mouse_action("dig", pg.BUTTON_RIGHT)

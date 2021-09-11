@@ -51,7 +51,7 @@ class Player(Entity):
             if not can_keep_firing:
                 set_action_state("attack", False)
 
-        if is_action_pressed("switch_weapon"):
+        if is_action_just_pressed("switch_weapon"):
             index = self.available_weapons.index(self.current_weapon) + 1
             if index > len(self.available_weapons) - 1:
                 index = 0
