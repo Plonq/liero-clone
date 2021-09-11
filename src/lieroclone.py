@@ -3,7 +3,7 @@ import random
 import pygame as pg
 from pygame.math import Vector2
 
-from src.assets import Assets
+from src import assets
 from src.engine.game import Game
 from src.engine.input import (
     is_action_pressed,
@@ -21,7 +21,7 @@ DISPLAY_SIZE = (608, 400)
 class LieroClone(Game):
     def __init__(self):
         super().__init__(WINDOW_SIZE, DISPLAY_SIZE, "Liero Clone")
-        self.assets = Assets()
+        assets.init()
         self.world = World(self)
         self.player = Player(self)
         self.add_object(self.world)

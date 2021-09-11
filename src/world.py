@@ -1,12 +1,13 @@
 import pygame as pg
 
+from src import assets
 from src.engine.game import GameObject
 
 
 class World(GameObject):
     def __init__(self, game):
         self.game = game
-        image = self.game.assets.world_map
+        image = assets.world_map
         self.image = image
         self.mask = self.generate_mask()
         self.size = image.get_size()

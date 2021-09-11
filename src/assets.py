@@ -6,13 +6,15 @@ from src.engine.animations import load_animation_data
 
 ROOT_DIR = Path(__file__).parent.parent
 
+world_map = None
+basic_projectile = None
 
-class Assets:
-    def __init__(self):
-        load_animation_data(ROOT_DIR / "assets/images/entities")
-        self.world_map = pg.image.load(
-            ROOT_DIR / "assets/images/map.png"
-        ).convert_alpha()
-        self.basic_projectile = pg.image.load(
-            ROOT_DIR / "assets/images/weapons/basic-projectile.png"
-        ).convert_alpha()
+
+def init():
+    global world_map
+    global basic_projectile
+    load_animation_data(ROOT_DIR / "assets/images/entities")
+    world_map = pg.image.load(ROOT_DIR / "assets/images/map.png").convert_alpha()
+    basic_projectile = pg.image.load(
+        ROOT_DIR / "assets/images/weapons/basic-projectile.png"
+    ).convert_alpha()

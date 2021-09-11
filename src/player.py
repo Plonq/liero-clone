@@ -1,6 +1,6 @@
 from pygame.math import Vector2
 
-from src.config import config
+from src import config
 from src.engine.entity import Entity
 from src.engine.input import (
     is_action_just_pressed,
@@ -14,9 +14,7 @@ class Player(Entity):
     def __init__(self, world, x=0, y=0):
         super().__init__(world, "player", x, y, 12, 14)
         self.alive = False
-        self.available_weapons = [
-            Weapon(world, name) for name in config["weapons"].keys()
-        ]
+        self.available_weapons = [Weapon(world, name) for name in config.weapons.keys()]
         self.current_weapon = self.available_weapons[0]
 
     def update(self, dt, offset):
