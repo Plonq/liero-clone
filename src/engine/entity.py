@@ -29,7 +29,11 @@ class Entity(GameObject):
         self.animation_frame = 0
         self.frames_since_idle = 0
         self.flip = False
-        self.img = None
+        self.img = pg.transform.flip(
+            sprite_images[self.id][animation_frames[self.id][self.action][0]],
+            self.flip,
+            False,
+        )
         self.mask = pg.mask.Mask(self.rect.size, True)
 
     @property

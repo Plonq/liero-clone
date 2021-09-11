@@ -6,7 +6,7 @@ from pygame.math import Vector2
 from src import assets
 from src.engine.game import Game
 from src.engine.input import (
-    is_action_pressed,
+    is_action_just_pressed,
     register_key_action,
     register_mouse_action,
 )
@@ -25,15 +25,14 @@ class LieroClone(Game):
         self.world = World(self)
         self.player = Player(self)
         self.add_object(self.world)
-        self.add_object(self.player)
         self._register_actions()
         self.true_offset = [0, 0]
 
     def post_update(self, dt):
-        if is_action_pressed("spawn"):
-            if not self.player.alive:
-                self.spawn()
-        self.player.move(self.world.map_boundary_rects, self.world.mask, dt)
+        if is_action_just_pressed("spawn"):
+            self.spawn()
+        if self.player.alive:
+            self.player.move(self.get_collision_rects(), self.get_collision_mask(), dt)
 
     def spawn(self):
         position = Vector2(
@@ -45,6 +44,7 @@ class LieroClone(Game):
         self.world.destroy_terrain(position, radius=self.player.height * 0.8)
         self.player.x, self.player.y = position
         self.player.alive = True
+        self.add_object(self.player)
 
     def get_visible_rect(self):
         return pg.Rect(
@@ -78,6 +78,12 @@ class LieroClone(Game):
 
     def is_within_map(self, position):
         return pg.Rect(0, 0, *self.world.size).collidepoint(position.x, position.y)
+
+    def get_collision_rects(self):
+        return self.world.map_boundary_rects
+
+    def get_collision_mask(self):
+        return self.world.mask
 
     def _register_actions(self):
         register_mouse_action("attack", pg.BUTTON_LEFT)
