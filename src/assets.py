@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pygame as pg
 
-from src.engine.animations import load_animation_data
+from src.engine.entity import load_animation_data
 
 ROOT_DIR = Path(__file__).parent.parent
 
