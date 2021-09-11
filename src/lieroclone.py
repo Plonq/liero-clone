@@ -5,8 +5,6 @@ from src.engine.game import Game
 from src.engine.input import register_key_action, register_mouse_action
 from src.world import World
 
-clock = pg.time.Clock()
-
 WINDOW_SIZE = (1216, 800)
 DISPLAY_SIZE = (608, 400)
 
