@@ -47,7 +47,6 @@ class Game:
     def _update(self):
         for game_object in self.game_objects:
             game_object.update(self.dt)
-        self._render_frame()
 
     def _draw(self):
         for game_object in self.game_objects:
