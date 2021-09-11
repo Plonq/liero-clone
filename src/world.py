@@ -3,7 +3,8 @@ import random
 import pygame as pg
 from pygame.math import Vector2
 
-from src.engine.game_object import GameObject
+from src.engine.game import GameObject
+from src.engine.input import is_action_pressed
 from src.player import Player
 from src.engine.utils import clamp
 
@@ -28,7 +29,7 @@ class World(GameObject):
 
     def update(self, dt):
         self._update_offset()
-        if self.game.states["spawn"]:
+        if is_action_pressed("spawn"):
             if not self.player.alive:
                 self.spawn()
         self.player.update(self.map_boundary_rects, self.mask, dt)

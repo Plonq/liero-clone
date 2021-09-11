@@ -1,9 +1,8 @@
-import random
-
 from pygame.math import Vector2
 
 from src.config import config
 from src.engine.entity import Entity
+from src.engine.input import is_action_pressed, set_action_state
 from src.weapons import Weapon
 
 
@@ -21,14 +20,14 @@ class Player(Entity):
             return
 
         self._animate()
-        if self.game.states["move_left"]:
+        if is_action_pressed("move_left"):
             self.direction_x = -1
-        elif self.game.states["move_right"]:
+        elif is_action_pressed("move_right"):
             self.direction_x = 1
         else:
             self.direction_x = 0
 
-        if self.game.states["jump"]:
+        if is_action_pressed("jump"):
             if self.air_timer < self.jump_buffer:
                 self.speed_y = -5
 
@@ -57,20 +56,20 @@ class Player(Entity):
             self.speed_y = 0
 
         # Actions
-        if self.game.states["dig"]:
+        if is_action_pressed("dig"):
             self.dig()
 
         self.current_weapon.update()
-        if self.game.states["attack"]:
+        if is_action_pressed("attack"):
             direction = (
                 self.game.get_mouse_pos() + self.game.world.offset - self.position
             )
             direction.normalize_ip()
             can_keep_firing = self.current_weapon.attack(self.position, direction)
             if not can_keep_firing:
-                self.game.states["attack"] = False
+                set_action_state("attack", False)
 
-        if self.game.states["switch_weapon"]:
+        if is_action_pressed("switch_weapon"):
             index = self.available_weapons.index(self.current_weapon) + 1
             if index > len(self.available_weapons) - 1:
                 index = 0
