@@ -7,7 +7,7 @@ from src.engine.input import (
     is_action_pressed,
     set_action_state,
 )
-from src.weapons import Weapon
+from src.weapon import Weapon
 
 
 class Player(Entity):

@@ -29,9 +29,6 @@ class LieroClone(Game):
         self._register_actions()
         self.true_offset = [0, 0]
 
-    def pre_update(self, dt):
-        pass
-
     def post_update(self, dt):
         if is_action_pressed("spawn"):
             if not self.player.alive:
@@ -78,6 +75,9 @@ class LieroClone(Game):
             self.true_offset[1], 0, self.world.size[1] - self.display_size[1]
         )
         self.offset = Vector2(int(self.true_offset[0]), int(self.true_offset[1]))
+
+    def is_within_map(self, position):
+        return pg.Rect(0, 0, *self.world.size).collidepoint(position.x, position.y)
 
     def _register_actions(self):
         register_mouse_action("attack", pg.BUTTON_LEFT)

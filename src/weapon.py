@@ -2,7 +2,7 @@ import math
 import random
 
 from src.config import config
-from src.projectiles import Projectile
+from src.projectile import Projectile
 
 
 class Weapon:
@@ -36,8 +36,9 @@ class Weapon:
                     random.randint(-self.bullet_speed_jitter, self.bullet_speed_jitter)
                     / 100
                 )
-                self.game.world.projectiles.append(
+                self.game.add_object(
                     Projectile(
+                        self.game,
                         self.image,
                         cur_pos,
                         cur_direction,

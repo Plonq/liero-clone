@@ -51,7 +51,7 @@ class Game:
         pass
 
     def _update(self, dt, offset):
-        for game_object in self.game_objects:
+        for _, game_object in sorted(enumerate(self.game_objects), reverse=True):
             game_object.update(dt, offset)
 
     def post_update(self, dt):
