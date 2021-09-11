@@ -1,11 +1,12 @@
 import pygame as pg
 from pygame.math import Vector2
 
+from .game import GameObject
 from .utils import blit_aligned
 from .animations import animation_frames, sprite_images
 
 
-class Entity:
+class Entity(GameObject):
     def __init__(self, game, id, x=0, y=0, width=1, height=1):
         self.game = game
         self.id = id
@@ -41,6 +42,9 @@ class Entity:
     @property
     def position(self):
         return Vector2(self.x, self.y)
+
+    def update(self, dt, offset):
+        self._animate()
 
     def draw(self, surface, offset):
         offset_rect = self.rect

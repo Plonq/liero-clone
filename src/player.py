@@ -19,11 +19,12 @@ class Player(Entity):
         ]
         self.current_weapon = self.available_weapons[0]
 
-    def update(self, boundary_rects, collision_mask, dt):
+    def update(self, dt, offset):
+        super().update(dt, offset)
+
         if not self.alive:
             return
 
-        self._animate()
         if is_action_pressed("move_left"):
             self.direction_x = -1
         elif is_action_pressed("move_right"):
@@ -35,39 +36,18 @@ class Player(Entity):
             if self.air_timer < self.jump_buffer:
                 self.speed_y = -5
 
-        # Movement
-        velocity = Vector2(0)
-        velocity.x += self.direction_x * self.run_speed * dt
-        velocity.y += self.speed_y * dt
-
         # Gravity
         self.speed_y += 0.3 * dt
         if self.speed_y > 4:
             self.speed_y = 4
 
-        # Move and hit stuff
-        collision_directions = self._move_and_collide(
-            velocity, boundary_rects, collision_mask
-        )
-
-        # What do if hit stuff?
-        if collision_directions["bottom"]:
-            self.speed_y = 0
-            self.air_timer = 0
-        else:
-            self.air_timer += 1
-        if collision_directions["top"]:
-            self.speed_y = 0
-
         # Actions
         if is_action_just_pressed("dig"):
-            self.dig()
+            self.dig(offset)
 
         self.current_weapon.update()
         if is_action_pressed("attack"):
-            direction = (
-                self.game.get_mouse_pos() + self.game.world.offset - self.position
-            )
+            direction = self.game.get_mouse_pos() + offset - self.position
             direction.normalize_ip()
             can_keep_firing = self.current_weapon.attack(self.position, direction)
             if not can_keep_firing:
@@ -84,11 +64,28 @@ class Player(Entity):
             return
         super().draw(surface, offset)
 
+    def move(self, collision_rects, collision_mask, dt):
+        velocity = Vector2(0)
+        velocity.x += self.direction_x * self.run_speed * dt
+        velocity.y += self.speed_y * dt
+
+        collision_directions = self._move_and_collide(
+            velocity, collision_rects, collision_mask
+        )
+
+        if collision_directions["bottom"]:
+            self.speed_y = 0
+            self.air_timer = 0
+        else:
+            self.air_timer += 1
+        if collision_directions["top"]:
+            self.speed_y = 0
+
     def die(self):
         self.alive = False
 
-    def dig(self):
+    def dig(self, offset):
         mouse_pos = self.game.get_mouse_pos()
-        direction = (mouse_pos + self.game.world.offset - self.position).normalize()
+        direction = (mouse_pos + offset - self.position).normalize()
         dig_pos = self.position + (direction * 5)
         self.game.world.destroy_terrain(dig_pos, self.height * 0.8)

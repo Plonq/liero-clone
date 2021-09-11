@@ -23,7 +23,7 @@ class Game:
         self.screen = pg.display.set_mode(self.window_size, 0, 32)
         self.display = pg.Surface(self.display_size)
         self.game_objects = []
-        self.iterations = 0
+        self.offset = Vector2(0, 0)
 
     def add_object(self, game_object):
         self.game_objects.append(game_object)
@@ -36,20 +36,35 @@ class Game:
             self.dt = (time.time() - self.last_time) * 60
             self.last_time = time.time()
             self._process_events()
-            self._update()
-            self._draw()
+            self.update_offset()
+            self.pre_update(self.dt)
+            self._update(self.dt, self.offset)
+            self.post_update(self.dt)
+            self._draw(self.display, self.offset)
             self._render_frame()
 
     def _process_events(self):
         process_input_events()
 
-    def _update(self):
-        for game_object in self.game_objects:
-            game_object.update(self.dt)
+    def pre_update(self, dt):
+        """Called prior to update and draw of game objects."""
+        pass
 
-    def _draw(self):
+    def _update(self, dt, offset):
         for game_object in self.game_objects:
-            game_object.draw(self.display)
+            game_object.update(dt, offset)
+
+    def post_update(self, dt):
+        """Called after update and before draw."""
+        pass
+
+    def _draw(self, surface, offset):
+        for game_object in self.game_objects:
+            game_object.draw(surface, offset)
+
+    def update_offset(self):
+        """Sub-classes should override this and set self.offset to a Vector2, if required."""
+        pass
 
     def _render_frame(self):
         self.screen.blit(pg.transform.scale(self.display, self.window_size), (0, 0))
@@ -68,8 +83,8 @@ class Game:
 
 
 class GameObject:
-    def update(self, dt):
+    def update(self, dt, offset):
         pass
 
-    def draw(self, surface):
+    def draw(self, surface, offset):
         pass
