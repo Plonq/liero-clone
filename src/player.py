@@ -2,7 +2,11 @@ from pygame.math import Vector2
 
 from src.config import config
 from src.engine.entity import Entity
-from src.engine.input import is_action_pressed, set_action_state
+from src.engine.input import (
+    is_action_just_pressed,
+    is_action_pressed,
+    set_action_state,
+)
 from src.weapons import Weapon
 
 
@@ -56,7 +60,7 @@ class Player(Entity):
             self.speed_y = 0
 
         # Actions
-        if is_action_pressed("dig"):
+        if is_action_just_pressed("dig"):
             self.dig()
 
         self.current_weapon.update()

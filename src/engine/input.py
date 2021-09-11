@@ -1,70 +1,108 @@
+import logging
+
 import pygame as pg
 
 
-_actions = {}
-
-_states = {
-    "spawn": False,
-    "jump": False,
-    "move_left": False,
-    "move_right": False,
-    "dig": False,
-    "attack": False,
-    "switch_weapon": False,
-}
+logger = logging.getLogger(__name__)
 
 
-def register_action(name, input, type):
-    _actions["name"] = input, type
+_actions = {"mouse": {}, "key": {}}
+_actions_by_name = {}
+
+
+def register_action(name, input_type, input_value):
+    action = Action(name)
+    if input_value not in _actions[input_type]:
+        _actions[input_type][input_value] = []
+    _actions[input_type][input_value].append(action)
+    _actions_by_name[name] = action
+
+
+def register_mouse_action(name, button):
+    register_action(name, "mouse", button)
+
+
+def register_key_action(name, key):
+    register_action(name, "key", key)
 
 
 def is_action_pressed(name):
-    return _states[name]
+    action = _get_action(name)
+    if not action:
+        return False
+    return action.is_pressed
+
+
+def is_action_just_pressed(name):
+    action = _get_action(name)
+    if not action:
+        return False
+    return action.is_just_pressed
+
+
+def _get_action(name):
+    try:
+        return _actions_by_name[name]
+    except KeyError:
+        logger.warning(
+            f"Tried to access state of '{name}' but that action hasn't been registered."
+        )
 
 
 def set_action_state(name, state):
-    _states[name] = state
+    action = _actions_by_name[name]
+    action.activate() if state else action.deactivate()
 
 
 def process_input_events():
     """This should be called at the beginning of every frame."""
-    _reset_transient_states()
+    for input_type in _actions.values():
+        for actions in input_type.values():
+            for action in actions:
+                action.update_is_just_pressed()
+
     for event in pg.event.get():
         if event.type == pg.MOUSEBUTTONDOWN:
-            if event.button == pg.BUTTON_LEFT:
-                _states["attack"] = True
-            if event.button == pg.BUTTON_RIGHT:
-                _states["dig"] = True
+            for button, actions in _actions["mouse"].items():
+                if button == event.button:
+                    for action in actions:
+                        action.activate()
 
         if event.type == pg.MOUSEBUTTONUP:
-            if event.button == pg.BUTTON_LEFT:
-                _states["attack"] = False
+            for button, actions in _actions["mouse"].items():
+                if button == event.button:
+                    for action in actions:
+                        action.deactivate()
 
         if event.type == pg.KEYDOWN:
-            if event.key == pg.K_RETURN:
-                _states["spawn"] = True
-            if event.key == pg.K_SPACE:
-                _states["jump"] = True
-            if event.key == pg.K_a:
-                _states["move_left"] = True
-            if event.key == pg.K_d:
-                _states["move_right"] = True
-            if event.key == pg.K_e:
-                _states["switch_weapon"] = True
-
+            for key, actions in _actions["key"].items():
+                if key == event.key:
+                    for action in actions:
+                        action.activate()
         if event.type == pg.KEYUP:
-            if event.key == pg.K_a:
-                _states["move_left"] = False
-            if event.key == pg.K_d:
-                _states["move_right"] = False
+            for key, actions in _actions["key"].items():
+                if key == event.key:
+                    for action in actions:
+                        action.deactivate()
 
         if event.type == pg.QUIT:
             pg.quit()
             exit()
 
 
-def _reset_transient_states():
-    _states["jump"] = False
-    _states["dig"] = False
-    _states["spawn"] = False
-    _states["switch_weapon"] = False
+class Action:
+    def __init__(self, name):
+        self.name = name
+        self.is_pressed = False
+        self.is_just_pressed = False
+
+    def activate(self):
+        self.is_pressed = True
+        self.is_just_pressed = True
+
+    def update_is_just_pressed(self):
+        self.is_just_pressed = False
+
+    def deactivate(self):
+        self.is_pressed = False
+        self.is_just_pressed = False
