@@ -1,8 +1,8 @@
 import pygame as pg
 from pygame.math import Vector2
 
-from src.engine.utils import blit_aligned
-from src.engine.animations import animation_frames, sprite_images
+from .utils import blit_aligned
+from .animations import animation_frames, sprite_images
 
 
 class Entity:

@@ -1,10 +1,9 @@
 import time
-from timeit import timeit
 
 import pygame as pg
 from pygame.math import Vector2
 
-from src.engine.input import process_input_events
+from .input import process_input_events
 
 clock = pg.time.Clock()
 
