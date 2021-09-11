@@ -3,16 +3,16 @@ import random
 from pygame.math import Vector2
 
 from src.config import config
-from src.engine import Entity
+from src.engine.entity import Entity
 from src.weapons import Weapon
 
 
 class Player(Entity):
-    def __init__(self, game, x=0, y=0):
-        super().__init__(game, "player", x, y, 12, 14)
+    def __init__(self, world, x=0, y=0):
+        super().__init__(world, "player", x, y, 12, 14)
         self.alive = False
         self.available_weapons = [
-            Weapon(game, name) for name in config["weapons"].keys()
+            Weapon(world, name) for name in config["weapons"].keys()
         ]
         self.current_weapon = self.available_weapons[0]
 
@@ -21,14 +21,14 @@ class Player(Entity):
             return
 
         self._animate()
-        if self.game.input.states["move_left"]:
+        if self.game.states["move_left"]:
             self.direction_x = -1
-        elif self.game.input.states["move_right"]:
+        elif self.game.states["move_right"]:
             self.direction_x = 1
         else:
             self.direction_x = 0
 
-        if self.game.input.states["jump"]:
+        if self.game.states["jump"]:
             if self.air_timer < self.jump_buffer:
                 self.speed_y = -5
 
@@ -57,20 +57,20 @@ class Player(Entity):
             self.speed_y = 0
 
         # Actions
-        if self.game.input.states["dig"]:
+        if self.game.states["dig"]:
             self.dig()
 
         self.current_weapon.update()
-        if self.game.input.states["attack"]:
+        if self.game.states["attack"]:
             direction = (
                 self.game.get_mouse_pos() + self.game.world.offset - self.position
             )
             direction.normalize_ip()
             can_keep_firing = self.current_weapon.attack(self.position, direction)
             if not can_keep_firing:
-                self.game.input.states["attack"] = False
+                self.game.states["attack"] = False
 
-        if self.game.input.states["switch_weapon"]:
+        if self.game.states["switch_weapon"]:
             index = self.available_weapons.index(self.current_weapon) + 1
             if index > len(self.available_weapons) - 1:
                 index = 0
@@ -83,15 +83,6 @@ class Player(Entity):
 
     def die(self):
         self.alive = False
-
-    def spawn(self):
-        position = Vector2(
-            random.randint(self.width, self.game.display_size[0] - self.width),
-            random.randint(self.height, self.game.display_size[1] - self.height),
-        )
-        self.game.world.destroy_terrain(position, radius=self.height * 0.8)
-        self.x, self.y = position
-        self.alive = True
 
     def dig(self):
         mouse_pos = self.game.get_mouse_pos()

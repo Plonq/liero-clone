@@ -1,4 +1,4 @@
-from src.engine import blit_centered
+from src.engine.utils import blit_centered
 
 
 class Projectile:

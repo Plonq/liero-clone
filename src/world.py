@@ -1,11 +1,14 @@
+import random
+
 import pygame as pg
 from pygame.math import Vector2
 
+from src.engine.game_object import GameObject
 from src.player import Player
-from src.utils import clamp
+from src.engine.utils import clamp
 
 
-class World:
+class World(GameObject):
     def __init__(self, game):
         self.game = game
         image = self.game.assets.world_map
@@ -23,13 +26,13 @@ class World:
         self.player = Player(game)
         self.projectiles = []
 
-    def update(self):
+    def update(self, dt):
         self._update_offset()
-        if self.game.input.states["spawn"]:
+        if self.game.states["spawn"]:
             if not self.player.alive:
-                self.player.spawn()
-        self.player.update(self.map_boundary_rects, self.mask, self.game.dt)
-        self._update_projectiles(self.game.dt)
+                self.spawn()
+        self.player.update(self.map_boundary_rects, self.mask, dt)
+        self._update_projectiles(dt)
 
     def draw(self, surface):
         surface.fill((53, 29, 15))
@@ -88,3 +91,16 @@ class World:
         color = (0, 0, 0, 0)
         pg.draw.circle(self.image, color, location, radius)
         self.mask = self.generate_mask()
+
+    def spawn(self):
+        position = Vector2(
+            random.randint(
+                self.player.width, self.game.display_size[0] - self.player.width
+            ),
+            random.randint(
+                self.player.height, self.game.display_size[1] - self.player.height
+            ),
+        )
+        self.destroy_terrain(position, radius=self.player.height * 0.8)
+        self.player.x, self.player.y = position
+        self.player.alive = True
