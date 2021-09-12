@@ -1,9 +1,8 @@
 import pygame as pg
 
-from src.assets import get_image
 from src.engine.game import GameObject
-from src.engine.gfx import Effect
 from src.engine.utils import blit_centered
+from src.gfx import Explosion
 
 
 class Projectile(GameObject):
@@ -42,16 +41,7 @@ class Projectile(GameObject):
     def explode(self):
         self.game.destroy_terrain(self.position, 7)
         self.game.remove_object(self)
-        self.game.add_object(
-            Effect(
-                self.game,
-                spritesheet_img=get_image("gfx", "explosions", "small"),
-                image_count=7,
-                frame_size=14,
-                position=self.position,
-                lifespan=0.2,
-            )
-        )
+        self.game.add_object(Explosion(self.game, self.position, size="small"))
 
     def draw(self, surface, offset):
         blit_centered(self.image, surface, self.position - offset)
