@@ -29,4 +29,4 @@ class Effect(GameObject):
                 self.game.remove_object(self)
 
     def draw(self, surface, offset):
-        blit_centered(self.images[self.current_image], surface, self.position)
+        blit_centered(self.images[self.current_image], surface, self.position - offset)
