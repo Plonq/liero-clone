@@ -15,6 +15,7 @@ class Effect(GameObject):
         self.images = ss.load_strip(
             (0, 0, frame_size, frame_size), image_count=image_count
         )
+        self.image = self.images[0]
         self.position = position
         self.current_image = 0
         self.frame_time = 0
@@ -22,11 +23,11 @@ class Effect(GameObject):
 
     def update(self, dt, offset):
         self.frame_time += dt
-        if self.frame_time > self.frame_lifespan:
-            self.frame_time = 0
-            self.current_image += 1
-            if self.current_image >= self.image_count:
-                self.game.remove_object(self)
+        frame = int(self.frame_time / self.frame_lifespan)
+        if frame >= len(self.images):
+            self.game.remove_object(self)
+        else:
+            self.image = self.images[frame]
 
     def draw(self, surface, offset):
-        blit_centered(self.images[self.current_image], surface, self.position - offset)
+        blit_centered(self.image, surface, self.position - offset)

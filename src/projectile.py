@@ -22,6 +22,7 @@ class Projectile(GameObject):
             for i in range(10):
                 pos = self.position.lerp(new_position, i / 10)
                 if self.test_collision(pos):
+                    self.position = pos
                     self.explode()
                     return
         if not self.game.is_within_map(self.position):
