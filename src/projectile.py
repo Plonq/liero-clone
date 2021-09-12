@@ -16,22 +16,26 @@ class Projectile(GameObject):
 
     def update(self, dt, offset):
         movement = self.direction * self.speed * dt
-        self.position += movement
-        if self.test_collision(
-            self.game.get_collision_rects(), self.game.get_collision_mask()
-        ):
-            self.explode()
-            return
+        new_position = self.position + movement
+        if self.test_collision(new_position):
+            # Find exact point of collision (edge of object)
+            for i in range(10):
+                pos = self.position.lerp(new_position, i)
+                if self.test_collision(pos):
+                    self.explode()
+                    return
         if not self.game.is_within_map(self.position):
             self.game.remove_object(self)
+            return
+        self.position = new_position
 
-    def test_collision(self, collision_rects, collision_mask):
-        for rect in collision_rects:
-            if rect.collidepoint(self.position.x, self.position.y):
+    def test_collision(self, position):
+        for rect in self.game.get_collision_rects():
+            if rect.collidepoint(position.x, position.y):
                 return True
         self_mask = pg.Mask((1, 1), True)
-        int_pos = (int(-self.position.x), int(-self.position.y))
-        mask_collided = self_mask.overlap(collision_mask, int_pos)
+        int_pos = (int(-position.x), int(-position.y))
+        mask_collided = self_mask.overlap(self.game.get_collision_mask(), int_pos)
         return mask_collided is not None
 
     def explode(self):
