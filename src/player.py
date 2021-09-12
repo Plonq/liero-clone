@@ -32,12 +32,12 @@ class Player(Entity):
 
         if is_action_pressed("jump"):
             if self.air_timer < self.jump_buffer:
-                self.speed_y = -5
+                self.speed_y = -300
 
         # Gravity
-        self.speed_y += 0.3 * dt
-        if self.speed_y > 4:
-            self.speed_y = 4
+        self.speed_y += 18
+        if self.speed_y > 240:
+            self.speed_y = 240
 
         # Actions
         if is_action_just_pressed("dig"):

@@ -33,7 +33,7 @@ class Game:
 
     def run(self):
         while True:
-            self.dt = (time.time() - self.last_time) * 60
+            self.dt = time.time() - self.last_time
             self.last_time = time.time()
             self._process_events()
             self.update_offset()

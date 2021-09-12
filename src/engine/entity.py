@@ -14,7 +14,7 @@ class Entity(GameObject):
         self.y = y
         self.width = width
         self.height = height
-        self.run_speed = 1
+        self.run_speed = 60
         self.speed_y = 0
         self.air_timer = 0
         self.jump_buffer = 6

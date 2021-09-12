@@ -6,7 +6,7 @@
     "rounds_per_magazine": 100,
     "reload_time": 400,
     "round_cooldown": 4,
-    "bullet_speed": 3,
+    "bullet_speed": 180,
     "bullet_speed_jitter": 0,
     "accuracy": 0.99,
     "damage": 5
@@ -18,7 +18,7 @@
     "rounds_per_magazine": 2,
     "reload_time": 300,
     "round_cooldown": 10,
-    "bullet_speed": 5,
+    "bullet_speed": 300,
     "bullet_speed_jitter": 100,
     "accuracy": 0.93,
     "damage": 5

@@ -32,9 +32,8 @@ class Weapon:
                 angle = random.randint(-angle_offset, angle_offset)
                 cur_direction = direction.rotate(angle)
                 cur_pos = start_pos + (cur_direction * 14)
-                speed_adjustment = (
-                    random.randint(-self.bullet_speed_jitter, self.bullet_speed_jitter)
-                    / 100
+                speed_adjustment = random.randint(
+                    -self.bullet_speed_jitter, self.bullet_speed_jitter
                 )
                 self.game.add_object(
                     Projectile(
