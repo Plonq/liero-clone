@@ -1,11 +1,10 @@
 import random
-from timeit import timeit
 
 import pygame as pg
 from pygame.math import Vector2
 
 from src import assets
-from src.engine.game import Game, GameObject
+from src.engine.game import Game
 from src.engine.input import (
     is_action_just_pressed,
     register_key_action,
@@ -19,18 +18,6 @@ WINDOW_SIZE = (1216, 800)
 DISPLAY_SIZE = (608, 400)
 
 
-class MaskTest(GameObject):
-    def __init__(self, mask, pos):
-        self.mask = mask
-        self.pos = pos
-
-    def update(self, dt, offset):
-        pass
-
-    def draw(self, surface, offset):
-        surface.blit(self.mask.to_surface(), self.pos)
-
-
 class LieroClone(Game):
     def __init__(self):
         super().__init__(WINDOW_SIZE, DISPLAY_SIZE, "Liero Clone")
@@ -42,11 +29,6 @@ class LieroClone(Game):
         self.true_offset = [0, 0]
 
     def post_update(self, dt):
-        # if is_action_just_pressed("test"):
-        #     print(
-        #         timeit(lambda: self.map.destroy_terrain(Vector2(50, 50), 7), number=50)
-        #     )
-
         if is_action_just_pressed("spawn"):
             self.spawn()
         if self.player.alive:
@@ -114,7 +96,7 @@ class LieroClone(Game):
         register_key_action("move_left", pg.K_a)
         register_key_action("move_right", pg.K_d)
         register_key_action("switch_weapon", pg.K_e)
-        register_key_action("test", pg.K_g)
+        register_key_action("test", pg.K_t)
 
 
 if __name__ == "__main__":
