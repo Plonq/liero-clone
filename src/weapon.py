@@ -37,7 +37,7 @@ class Weapon:
                 self.game.add_object(
                     Projectile(
                         self.game,
-                        get_image("projectiles", "basic"),
+                        get_image("weapons/basic-projectile.png"),
                         cur_pos,
                         cur_direction,
                         self.bullet_speed + speed_adjustment,

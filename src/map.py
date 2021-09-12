@@ -8,7 +8,8 @@ from src.engine.input import is_action_pressed
 class Map(GameObject):
     def __init__(self, game):
         self.game = game
-        destructible, indestructible = get_image("maps", "default")
+        destructible = get_image("maps/default/main.png")
+        indestructible = get_image("maps/default/obstacles.png")
         self.destructible = destructible
         self.indestructible = indestructible
         self.destructible_mask = pg.mask.from_surface(destructible)
