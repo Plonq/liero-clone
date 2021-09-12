@@ -2,6 +2,7 @@ import pygame as pg
 
 from src import assets
 from src.engine.game import GameObject
+from src.engine.input import is_action_pressed
 
 
 class Map(GameObject):
@@ -28,12 +29,14 @@ class Map(GameObject):
         surface.fill((53, 29, 15))
         for map_boundary_rect in self.map_boundary_rects:
             pg.draw.rect(surface, (0, 0, 0), map_boundary_rect)
-        surface.blit(self.image, (-offset.x, -offset.y))
-        surface.blit(self.obstacles, (-offset.x, -offset.y))
+        adjusted_offset = (-offset.x, -offset.y)
+        surface.blit(self.image, adjusted_offset)
+        surface.blit(self.obstacles, adjusted_offset)
 
     def destroy_terrain(self, location, radius):
         # Destroy part of image
         color = (0, 0, 0, 0)
+        radius = int(round(radius))
         pg.draw.circle(self.image, color, location, radius)
         # Destroy part of mask (instead of just doing pg.mask.from_surface again
         # on the whole image which is very slow)
