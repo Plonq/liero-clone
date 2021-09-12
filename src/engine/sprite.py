@@ -16,15 +16,8 @@ class SpriteSheet:
     def image_at(self, rectangle, colorkey=None):
         """Load a specific image from a specific rect."""
         rect = pg.Rect(rectangle)
-        image = pg.Surface(rect.size).convert()
+        image = pg.Surface(rect.size).convert_alpha()
         image.blit(self.sheet, (0, 0), rect)
-        ck = colorkey or self.colorkey
-        if ck is None:
-            image = image.convert_alpha()
-        else:
-            if ck == -1:
-                ck = image.get_at((0, 0))
-            image.set_colorkey(ck, pg.RLEACCEL)
         return image
 
     def images_at(self, rects, colorkey=None):

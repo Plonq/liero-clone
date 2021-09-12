@@ -1,7 +1,7 @@
 import random
 
-from src import assets
 from src import config
+from src.assets import get_asset
 from src.projectile import Projectile
 
 
@@ -19,7 +19,6 @@ class Weapon:
         self.accuracy = config.weapons[name]["accuracy"]
         self.damage = config.weapons[name]["damage"]
         self.current_cooldown = 0
-        self.image = assets.basic_projectile
 
     def update(self):
         if self.current_cooldown > 0:
@@ -38,7 +37,7 @@ class Weapon:
                 self.game.add_object(
                     Projectile(
                         self.game,
-                        self.image,
+                        get_asset("projectiles", "basic"),
                         cur_pos,
                         cur_direction,
                         self.bullet_speed + speed_adjustment,

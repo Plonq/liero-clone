@@ -1,6 +1,6 @@
 import pygame as pg
 
-from src import assets
+from src.assets import get_asset
 from src.engine.game import GameObject
 from src.engine.input import is_action_pressed
 
@@ -8,13 +8,12 @@ from src.engine.input import is_action_pressed
 class Map(GameObject):
     def __init__(self, game):
         self.game = game
-        image = assets.world_map
-        obstacles = assets.world_obstacles
-        self.image = image
-        self.obstacles = obstacles
-        self.destructible_mask = pg.mask.from_surface(image)
-        self.indestructible_mask = pg.mask.from_surface(obstacles)
-        self.size = image.get_size()
+        destructible, indestructible = get_asset("maps", "default")
+        self.destructible = destructible
+        self.indestructible = indestructible
+        self.destructible_mask = pg.mask.from_surface(destructible)
+        self.indestructible_mask = pg.mask.from_surface(indestructible)
+        self.size = destructible.get_size()
         self.map_boundary_rects = (
             pg.Rect(-1, -1, self.size[0], 1),
             pg.Rect(-1, -1, 1, self.size[1]),
@@ -30,14 +29,17 @@ class Map(GameObject):
         for map_boundary_rect in self.map_boundary_rects:
             pg.draw.rect(surface, (0, 0, 0), map_boundary_rect)
         adjusted_offset = (-offset.x, -offset.y)
-        surface.blit(self.image, adjusted_offset)
-        surface.blit(self.obstacles, adjusted_offset)
+        surface.blit(self.destructible, adjusted_offset)
+        surface.blit(self.indestructible, adjusted_offset)
+
+        if is_action_pressed("test"):
+            surface.blit(self.destructible_mask.to_surface(), adjusted_offset)
 
     def destroy_terrain(self, location, radius):
         # Destroy part of image
         color = (0, 0, 0, 0)
         radius = int(round(radius))
-        pg.draw.circle(self.image, color, location, radius)
+        pg.draw.circle(self.destructible, color, location, radius)
         # Destroy part of mask (instead of just doing pg.mask.from_surface again
         # on the whole image which is very slow)
         circle_img = pg.Surface((radius * 2, radius * 2))

@@ -6,25 +6,40 @@ from src.engine.sprite import load_sprites
 
 ROOT_DIR = Path(__file__).parent.parent
 
-world_map = None
-world_obstacles = None
-basic_projectile = None
-explosion_small = None
+_asset_cache = {"images": {}, "maps": {}, "gfx": {}, "weapons": {}}
+_assets = {}
 
 
 def init():
-    global world_map
-    global world_obstacles
-    global basic_projectile
-    global explosion_small
+    global _assets
     load_sprites(ROOT_DIR / "assets/images/entities")
-    world_map = pg.image.load(
-        ROOT_DIR / "assets/images/maps/default/main.png"
-    ).convert_alpha()
-    world_obstacles = pg.image.load(
-        ROOT_DIR / "assets/images/maps/default/obstacles.png"
-    ).convert_alpha()
-    basic_projectile = pg.image.load(
-        ROOT_DIR / "assets/images/weapons/basic-projectile.png"
-    ).convert_alpha()
-    explosion_small = pg.image.load(ROOT_DIR / "assets/images/gfx/explosion-small.png")
+    _assets = {
+        "maps": {
+            "default": (
+                _get_image("maps/default/main.png"),
+                _get_image("maps/default/obstacles.png"),
+            )
+        },
+        "gfx": {"explosions": {"small": _get_image("gfx/explosion-small.png")}},
+        "projectiles": {"basic": _get_image("weapons/basic-projectile.png")},
+    }
+
+
+def _get_image(relative_path, alpha=True):
+    if relative_path not in _asset_cache["images"]:
+        img = _asset_cache["images"][relative_path] = pg.image.load(
+            ROOT_DIR / "assets/images/" / relative_path
+        )
+        if alpha:
+            img = img.convert_alpha()
+        else:
+            img = img.convert()
+        _asset_cache["images"][relative_path] = img
+    return _asset_cache["images"][relative_path]
+
+
+def get_asset(*args):
+    cur = _assets
+    for arg in args:
+        cur = cur[arg]
+    return cur
