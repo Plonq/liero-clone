@@ -10,19 +10,16 @@ _assets = {}
 
 
 def init():
-    global _assets
     load_sprites(ROOT_DIR / "assets/images/entities")
-    _assets = {
-        "images": {
-            "maps": {
-                "default": (
-                    _get_image("maps/default/main.png"),
-                    _get_image("maps/default/obstacles.png"),
-                )
-            },
-            "gfx": {"explosions": {"small": _get_image("gfx/explosion-small.png")}},
-            "projectiles": {"basic": _get_image("weapons/basic-projectile.png")},
-        }
+    _assets["images"] = {
+        "maps": {
+            "default": (
+                _get_image("maps/default/main.png"),
+                _get_image("maps/default/obstacles.png"),
+            )
+        },
+        "gfx": {"explosions": {"small": _get_image("gfx/explosion-small.png")}},
+        "projectiles": {"basic": _get_image("weapons/basic-projectile.png")},
     }
 
 
