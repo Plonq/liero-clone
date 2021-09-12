@@ -5,8 +5,8 @@
     "bullets_per_round": 1,
     "rounds_per_magazine": 100,
     "reload_time": 400,
-    "round_cooldown": 4,
-    "bullet_speed": 180,
+    "round_cooldown": 2,
+    "bullet_speed": 200,
     "bullet_speed_jitter": 0,
     "accuracy": 0.99,
     "damage": 5
