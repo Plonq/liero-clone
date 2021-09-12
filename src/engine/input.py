@@ -59,7 +59,7 @@ def process_input_events():
     for input_type in _actions.values():
         for actions in input_type.values():
             for action in actions:
-                action.update_is_just_pressed()
+                action.update_state()
 
     for event in pg.event.get():
         if event.type == pg.MOUSEBUTTONDOWN:
@@ -95,14 +95,17 @@ class Action:
         self.name = name
         self.is_pressed = False
         self.is_just_pressed = False
+        self.should_deactivate = False
 
     def activate(self):
         self.is_pressed = True
         self.is_just_pressed = True
 
-    def update_is_just_pressed(self):
+    def update_state(self):
         self.is_just_pressed = False
+        if self.should_deactivate:
+            self.is_pressed = False
+            self.should_deactivate = False
 
     def deactivate(self):
-        self.is_pressed = False
-        self.is_just_pressed = False
+        self.should_deactivate = True
