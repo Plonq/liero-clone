@@ -1,6 +1,6 @@
 import pygame as pg
 
-from src.assets import get_asset
+from src.assets import get_image
 from src.engine.game import GameObject
 from src.engine.gfx import Effect
 from src.engine.utils import blit_centered
@@ -44,7 +44,7 @@ class Projectile(GameObject):
         self.game.add_object(
             Effect(
                 self.game,
-                spritesheet_img=get_asset("gfx", "explosions", "small"),
+                spritesheet_img=get_image("gfx", "explosions", "small"),
                 image_count=7,
                 frame_size=14,
                 position=self.position,

@@ -1,6 +1,6 @@
 import pygame as pg
 
-from src.assets import get_asset
+from src.assets import get_image
 from src.engine.game import GameObject
 from src.engine.input import is_action_pressed
 
@@ -8,7 +8,7 @@ from src.engine.input import is_action_pressed
 class Map(GameObject):
     def __init__(self, game):
         self.game = game
-        destructible, indestructible = get_asset("maps", "default")
+        destructible, indestructible = get_image("maps", "default")
         self.destructible = destructible
         self.indestructible = indestructible
         self.destructible_mask = pg.mask.from_surface(destructible)

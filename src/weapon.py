@@ -1,7 +1,7 @@
 import random
 
 from src import config
-from src.assets import get_asset
+from src.assets import get_image
 from src.projectile import Projectile
 
 
@@ -37,7 +37,7 @@ class Weapon:
                 self.game.add_object(
                     Projectile(
                         self.game,
-                        get_asset("projectiles", "basic"),
+                        get_image("projectiles", "basic"),
                         cur_pos,
                         cur_direction,
                         self.bullet_speed + speed_adjustment,
