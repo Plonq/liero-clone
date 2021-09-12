@@ -62,13 +62,13 @@ class Player(Entity):
             return
         super().draw(surface, offset)
 
-    def move(self, collision_rects, collision_mask, dt):
+    def move(self, collision_rects, collision_masks, dt):
         velocity = Vector2(0)
         velocity.x += self.direction_x * self.run_speed * dt
         velocity.y += self.speed_y * dt
 
         collision_directions = self._move_and_collide(
-            velocity, collision_rects, collision_mask
+            velocity, collision_rects, collision_masks
         )
 
         if collision_directions["bottom"]:
@@ -86,4 +86,4 @@ class Player(Entity):
         mouse_pos = self.game.get_mouse_pos()
         direction = (mouse_pos + offset - self.position).normalize()
         dig_pos = self.position + (direction * 5)
-        self.game.world.destroy_terrain(dig_pos, self.height * 0.8)
+        self.game.map.destroy_terrain(dig_pos, self.height * 0.8)
