@@ -36,7 +36,7 @@ class Game:
             self.dt = time.time() - self.last_time
             self.last_time = time.time()
             self._process_events()
-            self.update_offset()
+            self.update_offset(self.dt)
             self.pre_update(self.dt)
             self._update(self.dt, self.offset)
             self.post_update(self.dt)
@@ -62,7 +62,7 @@ class Game:
         for game_object in self.game_objects:
             game_object.draw(surface, offset)
 
-    def update_offset(self):
+    def update_offset(self, dt):
         """Sub-classes should override this and set self.offset to a Vector2, if required."""
         pass
 

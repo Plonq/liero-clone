@@ -54,19 +54,19 @@ class LieroClone(Game):
             self.display_size[1],
         )
 
-    def update_offset(self):
+    def update_offset(self, dt):
         self.true_offset[0] += (
             self.player.x
             - self.true_offset[0]
             - self.display_size[0] / 2
             + self.player.width // 2
-        ) / 15
+        ) / (0.15 / dt)
         self.true_offset[1] += (
             self.player.y
             - self.true_offset[1]
             - self.display_size[1] / 2
             + self.player.height // 2
-        ) / 15
+        ) / (0.15 / dt)
         # Clamp to prevent camera going outside map
         self.true_offset[0] = clamp(
             self.true_offset[0], 0, self.map.size[0] - self.display_size[0]
