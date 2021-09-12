@@ -1,4 +1,5 @@
 import random
+from timeit import timeit
 
 import pygame as pg
 from pygame.math import Vector2
@@ -41,6 +42,11 @@ class LieroClone(Game):
         self.true_offset = [0, 0]
 
     def post_update(self, dt):
+        # if is_action_just_pressed("test"):
+        #     print(
+        #         timeit(lambda: self.map.destroy_terrain(Vector2(50, 50), 7), number=50)
+        #     )
+
         if is_action_just_pressed("spawn"):
             self.spawn()
         if self.player.alive:
@@ -108,6 +114,7 @@ class LieroClone(Game):
         register_key_action("move_left", pg.K_a)
         register_key_action("move_right", pg.K_d)
         register_key_action("switch_weapon", pg.K_e)
+        register_key_action("test", pg.K_g)
 
 
 if __name__ == "__main__":
