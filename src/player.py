@@ -11,10 +11,10 @@ from src.weapon import Weapon
 
 
 class Player(Entity):
-    def __init__(self, world, x=0, y=0):
-        super().__init__(world, "player", x, y, 12, 14)
+    def __init__(self, game, x=0, y=0):
+        super().__init__(game, "player", x, y, 12, 14)
         self.alive = False
-        self.available_weapons = [Weapon(world, name) for name in config.weapons.keys()]
+        self.available_weapons = [Weapon(game, name) for name in config.weapons.keys()]
         self.current_weapon = self.available_weapons[0]
 
     def update(self, dt, offset):
