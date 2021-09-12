@@ -20,7 +20,7 @@ class Projectile(GameObject):
         if self.test_collision(new_position):
             # Find exact point of collision (edge of object)
             for i in range(10):
-                pos = self.position.lerp(new_position, i)
+                pos = self.position.lerp(new_position, i / 10)
                 if self.test_collision(pos):
                     self.explode()
                     return
