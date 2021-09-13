@@ -8,6 +8,6 @@ class SmallExplosion(Effect):
         super().__init__(
             game,
             position=position,
-            ss=SpriteStrip(img=get_image("gfx/explosion-small.png")),
+            sprite_strip=SpriteStrip(img=get_image("gfx/explosion-small.png")),
             lifespan=0.2,
         )

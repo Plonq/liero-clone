@@ -6,29 +6,27 @@ from .utils import blit_centered
 class Effect(GameObject):
     """Generic class for a once-off graphical effect, like an explosion."""
 
-    def __init__(self, game, ss, position, lifespan):
+    def __init__(self, game, sprite_strip, position, lifespan):
         self.game = game
-        self.ss = ss
-        self.lifespan = lifespan
-        # self.image_count = image_count
-        # self.images = SpriteSheet(spritesheet_img).load_strip(
-        #     (0, 0, frame_size, frame_size), image_count=image_count
-        # )
-        self.image = ss.get_frame(0)
+        self.sprite_strip = sprite_strip
         self.position = position
-        self.current_image = 0
+        self.lifespan = lifespan
+        self.frame_index = 0
         self.time_since_first_frame = 0
-        # self.frame_lifespan = lifespan / image_count
 
     def update(self, dt, offset):
         self.time_since_first_frame += dt
-        next_img = self.ss.get_frame_by_lifespan(
-            self.time_since_first_frame, self.lifespan
+        frame_index = int(
+            self.time_since_first_frame / (self.lifespan / self.sprite_strip.frames)
         )
-        if next_img is None:
+        if frame_index >= self.sprite_strip.frames:
             self.game.remove_object(self)
         else:
-            self.image = next_img
+            self.frame_index = frame_index
 
     def draw(self, surface, offset):
-        blit_centered(self.image, surface, self.position - offset)
+        blit_centered(
+            self.sprite_strip.get_frame(self.frame_index),
+            surface,
+            self.position - offset,
+        )

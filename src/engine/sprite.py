@@ -29,6 +29,8 @@ class SpriteSheetExtractor:
 
 
 class SpriteStrip:
+    """Splits a spritesheet strip into separate images."""
+
     def __init__(self, img, frames=None):
         self.img = img
         if frames is None:
@@ -42,12 +44,3 @@ class SpriteStrip:
 
     def get_frame(self, index=0):
         return self.images[index]
-
-    def get_frame_by_lifespan(self, time_passed, lifespan, loop=False):
-        frame = int(time_passed / (lifespan / self.frames))
-        if frame >= self.frames:
-            if loop:
-                return self.images[frame % self.frames]
-            else:
-                return None
-        return self.images[frame]
