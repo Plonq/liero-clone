@@ -53,7 +53,7 @@ class Player(Entity):
 
         if is_action_just_pressed("switch_weapon"):
             index = self.available_weapons.index(self.current_weapon) + 1
-            if index > len(self.available_weapons) - 1:
+            if index >= len(self.available_weapons):
                 index = 0
             self.current_weapon = self.available_weapons[index]
 

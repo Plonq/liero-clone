@@ -2,7 +2,6 @@ import pygame as pg
 
 from src.assets import get_image
 from src.engine.game import GameObject
-from src.engine.input import is_action_pressed
 
 
 class Map(GameObject):
@@ -21,28 +20,40 @@ class Map(GameObject):
             pg.Rect(self.size[0], -1, 1, self.size[1]),
             pg.Rect(-1, self.size[1], self.size[0], 1),
         )
+        self.needs_cleanup = False
+        self.time_since_cleanup = 0
 
     def update(self, dt, offset):
-        pass
+        # Throttle cleanup for performance
+        self.time_since_cleanup += dt
+        if self.time_since_cleanup > 0.1:
+            if self.needs_cleanup:
+                self.clean_up()
+            self.time_since_cleanup = 0
 
     def draw(self, surface, offset):
+        adjusted_offset = (-offset.x, -offset.y)
+
+        # Background
         surface.fill((53, 29, 15))
+
+        # Boundary
         for map_boundary_rect in self.map_boundary_rects:
             pg.draw.rect(surface, (0, 0, 0), map_boundary_rect)
-        adjusted_offset = (-offset.x, -offset.y)
-        surface.blit(self.destructible, adjusted_offset)
+
+        # Destructible map - clipped to undestroyed parts
+        clipping_mask = self.destructible_mask.to_surface(
+            unsetcolor=(0, 0, 0, 0)
+        ).convert_alpha()
+        destructible_copy = self.destructible.copy()
+        destructible_copy.blit(clipping_mask, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
+        surface.blit(destructible_copy, adjusted_offset)
+
+        # Indestructible map (rocks and such)
         surface.blit(self.indestructible, adjusted_offset)
 
-        if is_action_pressed("test"):
-            surface.blit(self.destructible_mask.to_surface(), adjusted_offset)
-
     def destroy_terrain(self, location, radius):
-        # Destroy part of image
-        color = (0, 0, 0, 0)
-        radius = int(round(radius))
-        pg.draw.circle(self.destructible, color, location, radius)
-        # Destroy part of mask (instead of just doing pg.mask.from_surface again
-        # on the whole image which is very slow)
+        # Erase circular area in the destructible mask
         circle_img = pg.Surface((radius * 2, radius * 2))
         circle_img.fill((0, 0, 0))
         circle_img.set_colorkey((0, 0, 0))
@@ -51,6 +62,14 @@ class Map(GameObject):
         self.destructible_mask.erase(
             circle_mask, (int(location.x - radius), int(location.y - radius))
         )
+        self.needs_cleanup = True
+
+    def clean_up(self):
+        new_mask = pg.Mask(self.size)
+        for mask in self.destructible_mask.connected_components(10):
+            new_mask.draw(mask, (0, 0))
+        self.destructible_mask = new_mask
+        self.needs_cleanup = False
 
     @property
     def collision_mask(self):
