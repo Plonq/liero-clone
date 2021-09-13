@@ -5,7 +5,7 @@ import pygame as pg
 from pygame.math import Vector2
 
 from .game import GameObject
-from .sprite import SpriteSheet
+from .sprite import SpriteSheetExtractor
 from .utils import blit_aligned
 
 
@@ -199,7 +199,7 @@ def load_sprites(entities_dir):
             spritesheet = pg.image.load(
                 os.path.join(entities_dir, entity, f"{entity}_{action}.png")
             ).convert_alpha()
-            images = SpriteSheet(spritesheet).load_strip(
+            images = SpriteSheetExtractor(spritesheet).load_strip(
                 (0, 0, spritesheet.get_width() / num_frames, spritesheet.get_height()),
                 image_count=num_frames,
             )

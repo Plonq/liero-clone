@@ -1,33 +1,34 @@
 from .game import GameObject
-from .sprite import SpriteSheet
+from .sprite import SpriteSheetExtractor
 from .utils import blit_centered
 
 
 class Effect(GameObject):
     """Generic class for a once-off graphical effect, like an explosion."""
 
-    def __init__(
-        self, game, spritesheet_img, image_count, frame_size, position, lifespan
-    ):
+    def __init__(self, game, ss, position, lifespan):
         self.game = game
-        ss = SpriteSheet(spritesheet_img)
-        self.image_count = image_count
-        self.images = ss.load_strip(
-            (0, 0, frame_size, frame_size), image_count=image_count
-        )
-        self.image = self.images[0]
+        self.ss = ss
+        self.lifespan = lifespan
+        # self.image_count = image_count
+        # self.images = SpriteSheet(spritesheet_img).load_strip(
+        #     (0, 0, frame_size, frame_size), image_count=image_count
+        # )
+        self.image = ss.get_frame(0)
         self.position = position
         self.current_image = 0
-        self.frame_time = 0
-        self.frame_lifespan = lifespan / image_count
+        self.time_since_first_frame = 0
+        # self.frame_lifespan = lifespan / image_count
 
     def update(self, dt, offset):
-        self.frame_time += dt
-        frame = int(self.frame_time / self.frame_lifespan)
-        if frame >= len(self.images):
+        self.time_since_first_frame += dt
+        next_img = self.ss.get_frame_by_lifespan(
+            self.time_since_first_frame, self.lifespan
+        )
+        if next_img is None:
             self.game.remove_object(self)
         else:
-            self.image = self.images[frame]
+            self.image = next_img
 
     def draw(self, surface, offset):
         blit_centered(self.image, surface, self.position - offset)

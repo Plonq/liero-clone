@@ -1,7 +1,7 @@
 import pygame as pg
 
 
-class SpriteSheet:
+class SpriteSheetExtractor:
     def __init__(self, image, colorkey=None):
         self.colorkey = colorkey
         self.sheet = image
@@ -26,3 +26,28 @@ class SpriteSheet:
         ]
         ck = colorkey or self.colorkey
         return self.images_at(tups, ck)
+
+
+class SpriteStrip:
+    def __init__(self, img, frames=None):
+        self.img = img
+        if frames is None:
+            self.frames = int(img.get_width() / img.get_height())
+        else:
+            self.frames = frames
+        self.images = SpriteSheetExtractor(img).load_strip(
+            (0, 0, img.get_width() / self.frames, img.get_height()),
+            image_count=self.frames,
+        )
+
+    def get_frame(self, index=0):
+        return self.images[index]
+
+    def get_frame_by_lifespan(self, time_passed, lifespan, loop=False):
+        frame = int(time_passed / (lifespan / self.frames))
+        if frame >= self.frames:
+            if loop:
+                return self.images[frame % self.frames]
+            else:
+                return None
+        return self.images[frame]
