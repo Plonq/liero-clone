@@ -53,18 +53,20 @@ class Map(GameObject):
         surface.blit(self.indestructible, adjusted_offset)
 
     def destroy_terrain(self, location, radius):
-        # Erase circular area in the destructible mask
+        # Create a mask of a circle
         circle_img = pg.Surface((radius * 2, radius * 2))
         circle_img.fill((0, 0, 0))
         circle_img.set_colorkey((0, 0, 0))
         pg.draw.circle(circle_img, (255, 255, 255), (radius, radius), radius)
         circle_mask = pg.mask.from_surface(circle_img)
+        # Erase circular area of destructible mask
         self.destructible_mask.erase(
             circle_mask, (int(location.x - radius), int(location.y - radius))
         )
         self.needs_cleanup = True
 
     def clean_up(self):
+        """Remove areas of destructible that are smaller than 10 pixels."""
         new_mask = pg.Mask(self.size)
         for mask in self.destructible_mask.connected_components(10):
             new_mask.draw(mask, (0, 0))
@@ -73,7 +75,7 @@ class Map(GameObject):
 
     @property
     def collision_mask(self):
-        # Combine both masks for easy collision detection
+        """Return combination of destructible and indestructible masks."""
         combined_mask = pg.Mask(self.size)
         combined_mask.draw(self.destructible_mask, (0, 0))
         combined_mask.draw(self.indestructible_mask, (0, 0))
