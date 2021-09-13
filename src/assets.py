@@ -3,14 +3,19 @@ from pathlib import Path
 import pygame as pg
 
 from src.engine.entity import load_sprites
+from src.engine.sprite import SpriteStrip
 
 ROOT_DIR = Path(__file__).parent.parent
 
 _asset_cache = {"images": {}}
+assets = {"img": {}}
 
 
 def init():
     load_sprites(ROOT_DIR / "assets/images/entities")
+    assets["img"]["explosions"] = {
+        "small": SpriteStrip(get_image("gfx/explosion-small.png"))
+    }
 
 
 def get_image(relative_path, alpha=True):

@@ -1,6 +1,5 @@
-from src.assets import get_image
+from src.assets import assets
 from src.engine.gfx import Effect
-from src.engine.sprite import SpriteStrip
 
 
 class SmallExplosion(Effect):
@@ -8,6 +7,6 @@ class SmallExplosion(Effect):
         super().__init__(
             game,
             position=position,
-            sprite_strip=SpriteStrip(img=get_image("gfx/explosion-small.png")),
+            sprite_strip=assets["img"]["explosions"]["small"],
             lifespan=0.2,
         )
