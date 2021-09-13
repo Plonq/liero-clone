@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pygame as pg
 
-from src.engine.sprite import load_sprites
+from src.engine.entity import load_sprites
 
 ROOT_DIR = Path(__file__).parent.parent
 

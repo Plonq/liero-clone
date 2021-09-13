@@ -1,9 +1,8 @@
 {
- "player": {
-  "idle": {
-    "timings": [1],
-    "loop": true
+  "player": {
+     "idle": {
+        "timings": [5, 0.1, 5, 3],
+        "loop": true
+     }
   }
-}
-
 }

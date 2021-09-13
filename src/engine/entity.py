@@ -1,9 +1,15 @@
+import json
+import os
+
 import pygame as pg
 from pygame.math import Vector2
 
 from .game import GameObject
-from .sprite import animation_frames, sprite_images
+from .sprite import SpriteSheet
 from .utils import blit_aligned
+
+
+animations = {}
 
 
 class Entity(GameObject):
@@ -20,11 +26,12 @@ class Entity(GameObject):
         self.jump_buffer = 6
         self.direction_x = 0
         self.action = "idle"
-        self.animation_frame = 0
+        self.frame = 0
+        self.time_since_last_frame = 0
         self.frames_since_idle = 0
         self.flip = False
         self.img = pg.transform.flip(
-            sprite_images[self.id][animation_frames[self.id][self.action][0]],
+            animations[self.id][self.action][self.frame]["img"],
             self.flip,
             False,
         )
@@ -48,7 +55,7 @@ class Entity(GameObject):
         return Vector2(self.x, self.y)
 
     def update(self, dt, offset):
-        self._animate()
+        self._animate(dt)
 
     def draw(self, surface, offset):
         offset_rect = self.rect
@@ -60,12 +67,15 @@ class Entity(GameObject):
         # pg.draw.rect(surface, (0, 255, 0), (self.x, self.y, 1, 1))
 
     def _set_action(self, action):
-        if action in animation_frames[self.id]:
+        if action in animations[self.id]:
             if self.action != action:
                 self.action = action
-                self.animation_frame = 0
+                self.frame = 0
+                self.time_since_last_frame = 0
 
-    def _animate(self):
+    def _animate(self, dt):
+        self.time_since_last_frame += dt
+
         # Facing left or right?
         if self.direction_x < 0:
             self.frames_since_idle = 0
@@ -93,13 +103,15 @@ class Entity(GameObject):
                 else:
                     self._set_action("afk")
 
-        # Set image based on action and current animation timer
-        self.animation_frame += 1
-        if self.animation_frame > len(animation_frames[self.id][self.action]) - 1:
-            self.animation_frame = 0
-        img_id = animation_frames[self.id][self.action][self.animation_frame]
-        # TODO: Make more efficient
-        self.img = pg.transform.flip(sprite_images[self.id][img_id], self.flip, False)
+        #
+        cur_anim = animations[self.id][self.action]
+        if self.time_since_last_frame > cur_anim[self.frame]["time"]:
+            self.frame += 1
+            if self.frame >= len(cur_anim):
+                self.frame = 0
+            self.time_since_last_frame = 0
+        img = cur_anim[self.frame]["img"]
+        self.img = pg.transform.flip(img, self.flip, False)
 
     def _move_and_collide(self, velocity, collision_rects, collision_mask=None):
         collision_types = {"top": False, "bottom": False, "right": False, "left": False}
@@ -170,3 +182,27 @@ class Entity(GameObject):
                 self.y += i
                 return True
         return False
+
+
+def load_sprites(entities_dir):
+    with open(os.path.join(entities_dir, "config.json")) as f:
+        config = json.load(f)
+
+    for entity in config.keys():
+        entity_cfg = config[entity]
+        entity_sprites = animations[entity] = {}
+
+        for action in entity_cfg:
+            entity_sprites[action] = []
+            num_frames = len(entity_cfg[action]["timings"])
+
+            spritesheet = pg.image.load(
+                os.path.join(entities_dir, entity, f"{entity}_{action}.png")
+            ).convert_alpha()
+            images = SpriteSheet(spritesheet).load_strip(
+                (0, 0, spritesheet.get_width() / num_frames, spritesheet.get_height()),
+                image_count=num_frames,
+            )
+
+            for n, frame_time in enumerate(entity_cfg[action]["timings"]):
+                entity_sprites[action].append({"img": images[n], "time": frame_time})
