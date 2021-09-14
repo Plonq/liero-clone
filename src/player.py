@@ -86,4 +86,4 @@ class Player(Entity):
         mouse_pos = self.game.get_mouse_pos()
         direction = (mouse_pos + offset - self.position).normalize()
         dig_pos = self.position + (direction * 5)
-        self.game.map.destroy_terrain(dig_pos, self.height * 0.8)
+        self.game.destroy_terrain(dig_pos, self.height * 0.8)
