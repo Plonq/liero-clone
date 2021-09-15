@@ -14,12 +14,14 @@ FPS = 60
 
 class Game:
     def __init__(self, window_size, display_size, title):
+        pg.mixer.pre_init(44100, -16, 2, 2048)
+        pg.init()
+        pg.display.set_caption(title)
+        pg.mixer.set_num_channels(50)
         self.dt = 0
         self.last_time = time.time()
         self.window_size = window_size
         self.display_size = display_size
-        pg.init()
-        pg.display.set_caption(title)
         self.screen = pg.display.set_mode(self.window_size, 0, 32)
         self.display = pg.Surface(self.display_size)
         self.game_objects = []

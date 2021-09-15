@@ -8,7 +8,7 @@ from src.engine.sprite import SpriteStrip
 ROOT_DIR = Path(__file__).parent.parent
 
 _asset_cache = {"images": {}}
-assets = {"img": {}}
+assets = {"img": {}, "sound": {}}
 
 
 def init():
@@ -16,6 +16,9 @@ def init():
     assets["img"]["explosions"] = {
         "small": SpriteStrip(get_image("gfx/explosion-small.png"))
     }
+    ex4 = pg.mixer.Sound(ROOT_DIR / "assets/sounds/Explosion1.wav")
+    ex4.set_volume(0.1)
+    assets["sound"]["explosions"] = {"small": ex4}
 
 
 def get_image(relative_path, alpha=True):
