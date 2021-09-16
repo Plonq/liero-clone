@@ -43,7 +43,7 @@ class Player(Entity):
 
         # Gravity
         if not self.grapple.stuck:
-            self._apply_gravity()
+            self._apply_gravity(18)
             self._apply_x_resistance(3)
 
         # Actions
@@ -83,6 +83,7 @@ class Player(Entity):
             direction_to_grapple.normalize_ip()
             self.momentum += direction_to_grapple * 10
             # Normal gravity is disabled, but we want a little bit to make things feel right
+            self._apply_gravity(3)
             self.momentum.y += 3
             if self.momentum.y > 40:
                 self.momentum.y = 40
@@ -108,10 +109,10 @@ class Player(Entity):
         if collision_directions["right"]:
             self.momentum.x = 0
 
-    def _apply_gravity(self):
-        self.momentum.y += 18
-        if self.momentum.y > 240:
-            self.momentum.y = 240
+    def _apply_gravity(self, amount):
+        self.momentum.y += amount
+        if self.momentum.y > amount * 13:
+            self.momentum.y = amount * 13
 
     def _apply_x_resistance(self, amount):
         if self.momentum.x > 0:
