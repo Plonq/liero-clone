@@ -15,10 +15,10 @@ class Map(GameObject):
         self.indestructible_mask = pg.mask.from_surface(indestructible)
         self.size = destructible.get_size()
         self.map_boundary_rects = (
-            pg.Rect(-1, -1, self.size[0], 1),
-            pg.Rect(-1, -1, 1, self.size[1]),
-            pg.Rect(self.size[0], -1, 1, self.size[1]),
-            pg.Rect(-1, self.size[1], self.size[0], 1),
+            pg.Rect(-50, -50, self.size[0] + 50, 50),
+            pg.Rect(-50, 0, 50, self.size[1]),
+            pg.Rect(self.size[0], 0, 50, self.size[1]),
+            pg.Rect(-50, self.size[1], self.size[0] + 50, 50),
         )
         self.needs_cleanup = False
         self.time_since_cleanup = 0
