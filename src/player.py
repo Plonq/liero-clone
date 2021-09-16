@@ -139,7 +139,7 @@ class Grapple(GameObject):
         self.image = get_image("weapons/grapple.png")
         self.position = Vector2(0, 0)
         self.direction = Vector2(0, 0)
-        self.speed = 250
+        self.speed = 300
         self.launched = False
         self.stuck = False
 
