@@ -43,15 +43,8 @@ class Player(Entity):
 
         # Gravity
         if not self.grapple.stuck:
-            self.momentum.y += 18
-            if self.momentum.y > 240:
-                self.momentum.y = 240
-            if self.momentum.x > 0:
-                self.momentum.x -= 3
-            if self.momentum.x < 0:
-                self.momentum.x += 3
-            if -3 < self.momentum.x < 3:
-                self.momentum.x = 0
+            self._apply_gravity()
+            self._apply_x_resistance(3)
 
         # Actions
         if is_action_just_pressed("dig"):
@@ -105,12 +98,7 @@ class Player(Entity):
         if collision_directions["bottom"]:
             self.momentum.y = 0
             self.air_timer = 0
-            if self.momentum.x > 0:
-                self.momentum.x -= 50
-            if self.momentum.x < 0:
-                self.momentum.x += 50
-            if -50 < self.momentum.x < 50:
-                self.momentum.x = 0
+            self._apply_x_resistance(50)
         else:
             self.air_timer += 1
         if collision_directions["top"]:
@@ -118,6 +106,19 @@ class Player(Entity):
         if collision_directions["left"]:
             self.momentum.x = 0
         if collision_directions["right"]:
+            self.momentum.x = 0
+
+    def _apply_gravity(self):
+        self.momentum.y += 18
+        if self.momentum.y > 240:
+            self.momentum.y = 240
+
+    def _apply_x_resistance(self, amount):
+        if self.momentum.x > 0:
+            self.momentum.x -= amount
+        if self.momentum.x < 0:
+            self.momentum.x += amount
+        if -amount < self.momentum.x < amount:
             self.momentum.x = 0
 
     def die(self):
