@@ -21,6 +21,7 @@ class Player(Entity):
         self.available_weapons = [Weapon(game, name) for name in config.weapons.keys()]
         self.current_weapon = self.available_weapons[0]
         self.grapple = Grapple(game, self)
+        self.terminal_velocity = 300
 
     def update(self, dt, offset):
         super().update(dt, offset)
@@ -37,14 +38,13 @@ class Player(Entity):
 
         if is_action_pressed("jump"):
             if self.air_timer < self.jump_buffer:
-                self.momentum.y = -300
+                self.momentum.y = -200
             if self.grapple.launched:
                 self.grapple.retract()
 
         # Gravity
         if not self.grapple.stuck:
-            self._apply_gravity(18)
-            self._apply_x_resistance(3)
+            self._apply_gravity(6)
 
         # Actions
         if is_action_just_pressed("dig"):
@@ -83,7 +83,7 @@ class Player(Entity):
             direction_to_grapple.normalize_ip()
             self.momentum += direction_to_grapple * 10
             # Normal gravity is disabled, but we want a little bit to make things feel right
-            self._apply_gravity(3)
+            self._apply_gravity(1)
             self.momentum.y += 3
             if self.momentum.y > 40:
                 self.momentum.y = 40
@@ -99,7 +99,7 @@ class Player(Entity):
         if collision_directions["bottom"]:
             self.momentum.y = 0
             self.air_timer = 0
-            self._apply_x_resistance(50)
+            self._apply_x_resistance(40)
         else:
             self.air_timer += 1
         if collision_directions["top"]:
@@ -111,8 +111,8 @@ class Player(Entity):
 
     def _apply_gravity(self, amount):
         self.momentum.y += amount
-        if self.momentum.y > amount * 13:
-            self.momentum.y = amount * 13
+        if self.momentum.y > 350:
+            self.momentum.y = 350
 
     def _apply_x_resistance(self, amount):
         if self.momentum.x > 0:
