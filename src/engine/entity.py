@@ -21,10 +21,10 @@ class Entity(GameObject):
         self.width = width
         self.height = height
         self.run_speed = 60
-        self.speed_y = 0
         self.air_timer = 0
         self.jump_buffer = 6
         self.direction_x = 0
+        self.momentum = Vector2(0, 0)
         self.action = "idle"
         self.frame = 0
         self.time_since_last_frame = 0
@@ -86,9 +86,9 @@ class Entity(GameObject):
 
         # In the air?
         if self.air_timer > self.jump_buffer:
-            if self.speed_y < 0:
+            if self.momentum.y < 0:
                 self._set_action("jump")
-            elif self.speed_y > 0:
+            elif self.momentum.y > 0:
                 self._set_action("fall")
         else:
             # Must be on ground

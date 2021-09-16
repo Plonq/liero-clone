@@ -83,6 +83,10 @@ class Game:
         ratio_y = self.display_size[1] / self.window_size[1]
         return Vector2(window_pos[0] * ratio_x, window_pos[1] * ratio_y)
 
+    def get_direction_to_mouse(self, position):
+        mouse_pos = self.get_mouse_pos()
+        return (mouse_pos + self.offset - position).normalize()
+
 
 class GameObject:
     def update(self, dt, offset):

@@ -95,7 +95,8 @@ class LieroClone(Game):
         register_key_action("jump", pg.K_SPACE)
         register_key_action("move_left", pg.K_a)
         register_key_action("move_right", pg.K_d)
-        register_key_action("switch_weapon", pg.K_e)
+        register_key_action("switch_weapon", pg.K_f)
+        register_key_action("grapple", pg.K_e)
         register_key_action("test", pg.K_t)
 
 
