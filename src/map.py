@@ -66,9 +66,9 @@ class Map(GameObject):
         self.needs_cleanup = True
 
     def clean_up(self):
-        """Remove areas of destructible that are smaller than 10 pixels."""
+        """Remove areas of destructible that are smaller than 20 pixels."""
         new_mask = pg.Mask(self.size)
-        for mask in self.destructible_mask.connected_components(10):
+        for mask in self.destructible_mask.connected_components(20):
             new_mask.draw(mask, (0, 0))
         self.destructible_mask = new_mask
         self.needs_cleanup = False
