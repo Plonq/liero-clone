@@ -47,10 +47,10 @@ class Player(Entity):
             if self.momentum.y > 240:
                 self.momentum.y = 240
             if self.momentum.x > 0:
-                self.momentum.x -= 7
+                self.momentum.x -= 3
             if self.momentum.x < 0:
-                self.momentum.x += 7
-            if -7 < self.momentum.x < 7:
+                self.momentum.x += 3
+            if -3 < self.momentum.x < 3:
                 self.momentum.x = 0
 
         # Actions
@@ -105,6 +105,12 @@ class Player(Entity):
         if collision_directions["bottom"]:
             self.momentum.y = 0
             self.air_timer = 0
+            if self.momentum.x > 0:
+                self.momentum.x -= 50
+            if self.momentum.x < 0:
+                self.momentum.x += 50
+            if -50 < self.momentum.x < 50:
+                self.momentum.x = 0
         else:
             self.air_timer += 1
         if collision_directions["top"]:
