@@ -43,8 +43,8 @@ class Player(Entity):
                 self.grapple.retract()
 
         # Gravity
-        if not self.grapple.stuck:
-            self._apply_gravity(6)
+        # if not self.grapple.stuck:
+        self._apply_gravity(6)
 
         # Actions
         if is_action_just_pressed("dig"):
@@ -81,12 +81,7 @@ class Player(Entity):
         if self.grapple.stuck:
             direction_to_grapple = self.grapple.position - self.position
             direction_to_grapple.normalize_ip()
-            self.momentum += direction_to_grapple * 10
-            # Normal gravity is disabled, but we want a little bit to make things feel right
-            self._apply_gravity(1)
-            self.momentum.y += 3
-            if self.momentum.y > 40:
-                self.momentum.y = 40
+            self.momentum += direction_to_grapple * 17
         else:
             velocity.x += self.direction_x * self.run_speed * dt
 
