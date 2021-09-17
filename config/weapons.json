@@ -1,0 +1,26 @@
+{
+  "minigun": {
+    "type": "projectile",
+    "automatic": true,
+    "bullets_per_round": 1,
+    "rounds_per_magazine": 100,
+    "reload_time": 400,
+    "round_cooldown": 2,
+    "bullet_speed": 200,
+    "bullet_speed_jitter": 0,
+    "accuracy": 0.99,
+    "damage": 5
+  },
+  "shotgun": {
+    "type": "projectile",
+    "automatic": false,
+    "bullets_per_round": 20,
+    "rounds_per_magazine": 2,
+    "reload_time": 300,
+    "round_cooldown": 10,
+    "bullet_speed": 300,
+    "bullet_speed_jitter": 100,
+    "accuracy": 0.93,
+    "damage": 5
+  }
+}

@@ -10,14 +10,14 @@ from src.engine.input import (
     was_action_just_released,
 )
 from src.engine.utils import blit_centered
-from src.weapon import Minigun, Shotgun
+from src.weapon import Weapon
 
 
 class Player(Entity):
     def __init__(self, game, x=0, y=0):
         super().__init__(game, "player", x, y, 12, 14)
         self.alive = False
-        self.available_weapons = [Minigun(game), Shotgun(game)]
+        self.available_weapons = [Weapon(game, "minigun"), Weapon(game, "shotgun")]
         self.current_weapon = self.available_weapons[0]
         self.grapple = Grapple(game, self)
         self.terminal_velocity = 300

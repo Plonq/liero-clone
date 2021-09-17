@@ -1,28 +1,23 @@
 import random
 
+from src import config
 from src.assets import get_image
 from src.projectile import Projectile
 
 
 class Weapon:
-    def __init__(self, game):
+    def __init__(self, game, name):
         self.game = game
-        self.reload_time = 1
-
-
-class ProjectileWeapon(Weapon):
-    """Basic weapon like minigun or machine gun."""
-
-    def __init__(self, game):
-        super().__init__(game)
-        self.bullets_per_round = 1
-        self.rounds_per_magazine = 1
-        self.round_cooldown = 5
-        self.bullet_speed = 200
-        self.bullet_speed_jitter = 0
-        self.accuracy = 0.99
-        self.damage_per_bullet = 1
-        self.automatic = False
+        self.type = config.weapons[name]["type"]
+        self.automatic = config.weapons[name]["automatic"]
+        self.bullets_per_round = config.weapons[name]["bullets_per_round"]
+        self.rounds_per_magazine = config.weapons[name]["rounds_per_magazine"]
+        self.reload_time = config.weapons[name]["reload_time"]
+        self.round_cooldown = config.weapons[name]["round_cooldown"]
+        self.bullet_speed = config.weapons[name]["bullet_speed"]
+        self.bullet_speed_jitter = config.weapons[name]["bullet_speed_jitter"]
+        self.accuracy = config.weapons[name]["accuracy"]
+        self.damage = config.weapons[name]["damage"]
         self.current_cooldown = 0
         self.is_firing = False
 
@@ -53,34 +48,7 @@ class ProjectileWeapon(Weapon):
                     )
                 )
             self.current_cooldown = self.round_cooldown
+        return self.automatic
 
     def release_trigger(self):
         self.is_firing = False
-
-
-class Minigun(ProjectileWeapon):
-    def __init__(self, game):
-        super().__init__(game)
-        self.reload_time = 2
-        self.bullets_per_round = 1
-        self.rounds_per_magazine = 100
-        self.round_cooldown = 2
-        self.bullet_speed = 200
-        self.bullet_speed_jitter = 0
-        self.accuracy = 0.99
-        self.damage_per_bullet = 1
-        self.automatic = True
-
-
-class Shotgun(ProjectileWeapon):
-    def __init__(self, game):
-        super().__init__(game)
-        self.reload_time = 0.8
-        self.bullets_per_round = 20
-        self.rounds_per_magazine = 2
-        self.round_cooldown = 10
-        self.bullet_speed = 300
-        self.bullet_speed_jitter = 100
-        self.accuracy = 0.93
-        self.damage_per_bullet = 3
-        self.automatic = False
