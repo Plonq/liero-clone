@@ -20,12 +20,23 @@ class Weapon:
         self.damage = config.weapons[name]["damage"]
         self.current_cooldown = 0
         self.is_firing = False
+        self.is_reloading = False
+        self.reload_time_elapsed = 0
+        self.rounds_left = self.rounds_per_magazine
 
-    def update(self):
+    def update(self, dt):
         if self.current_cooldown > 0:
             self.current_cooldown -= 1
+        if self.is_reloading:
+            self.reload_time_elapsed += dt
+            if self.reload_time_elapsed >= self.reload_time:
+                self.is_reloading = False
+                self.reload_time_elapsed = 0
+                self.rounds_left = self.rounds_per_magazine
 
     def pull_trigger(self, start_pos, direction):
+        if self.is_reloading:
+            return
         if not self.automatic and self.is_firing:
             return
         if self.current_cooldown == 0:
@@ -48,7 +59,9 @@ class Weapon:
                     )
                 )
             self.current_cooldown = self.round_cooldown
-        return self.automatic
+            self.rounds_left -= 1
+            if self.rounds_left <= 0:
+                self.is_reloading = True
 
     def release_trigger(self):
         self.is_firing = False

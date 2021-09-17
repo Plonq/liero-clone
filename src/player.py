@@ -56,7 +56,7 @@ class Player(Entity):
                 direction = self.game.get_direction_to_mouse(self.position)
                 self.grapple.launch(direction)
 
-        self.current_weapon.update()
+        self.current_weapon.update(dt)
         if is_action_pressed("attack"):
             direction = self.game.get_direction_to_mouse(self.position)
             self.current_weapon.pull_trigger(self.position, direction)
