@@ -40,6 +40,13 @@ def is_action_just_pressed(name):
     return action.is_just_pressed
 
 
+def was_action_just_released(name):
+    action = _get_action(name)
+    if not action:
+        return False
+    return action.was_just_released
+
+
 def _get_action(name):
     try:
         return _actions_by_name[name]
@@ -95,6 +102,7 @@ class Action:
         self.name = name
         self.is_pressed = False
         self.is_just_pressed = False
+        self.was_just_released = False
         self.should_deactivate = False
 
     def activate(self):
@@ -103,9 +111,11 @@ class Action:
 
     def update_state(self):
         self.is_just_pressed = False
+        self.was_just_released = False
         if self.should_deactivate:
-            self.is_pressed = False
             self.should_deactivate = False
 
     def deactivate(self):
+        self.is_pressed = False
         self.should_deactivate = True
+        self.was_just_released = True

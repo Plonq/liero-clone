@@ -1,24 +1,23 @@
 import pygame as pg
 from pygame.math import Vector2
 
-from src import config
 from src.assets import get_image
 from src.engine.entity import Entity
 from src.engine.game import GameObject
 from src.engine.input import (
     is_action_just_pressed,
     is_action_pressed,
-    set_action_state,
+    was_action_just_released,
 )
 from src.engine.utils import blit_centered
-from src.weapon import Weapon
+from src.weapon import Minigun, Shotgun
 
 
 class Player(Entity):
     def __init__(self, game, x=0, y=0):
         super().__init__(game, "player", x, y, 12, 14)
         self.alive = False
-        self.available_weapons = [Weapon(game, name) for name in config.weapons.keys()]
+        self.available_weapons = [Minigun(game), Shotgun(game)]
         self.current_weapon = self.available_weapons[0]
         self.grapple = Grapple(game, self)
         self.terminal_velocity = 300
@@ -59,11 +58,10 @@ class Player(Entity):
 
         self.current_weapon.update()
         if is_action_pressed("attack"):
-            direction = self.game.get_mouse_pos() + offset - self.position
-            direction.normalize_ip()
-            can_keep_firing = self.current_weapon.attack(self.position, direction)
-            if not can_keep_firing:
-                set_action_state("attack", False)
+            direction = self.game.get_direction_to_mouse(self.position)
+            self.current_weapon.pull_trigger(self.position, direction)
+        if was_action_just_released("attack"):
+            self.current_weapon.release_trigger()
 
         if is_action_just_pressed("switch_weapon"):
             index = self.available_weapons.index(self.current_weapon) + 1
