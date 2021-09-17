@@ -8,5 +8,5 @@ class SmallExplosion(Effect):
             game,
             position=position,
             sprite_strip=assets["img"]["explosions"]["small"],
-            lifespan=0.2,
+            lifespan=0.3,
         )
