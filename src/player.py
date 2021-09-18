@@ -38,7 +38,7 @@ class Player(Entity):
         if is_action_pressed("jump"):
             if self.air_timer < self.jump_buffer:
                 self.momentum.y = -200
-            if self.grapple.launched:
+            if self.grapple.stuck:
                 self.grapple.retract()
 
         # Gravity
