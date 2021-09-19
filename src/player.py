@@ -83,11 +83,9 @@ class Player(Entity):
             direction_to_grapple.normalize_ip()
             self.velocity += direction_to_grapple * 17
         elif self.direction_x != 0:
-            # Only add momentum if current mom less than max speed or trying to move is opposite direction
-            if (
-                not is_same_sign(self.direction_x, self.velocity.x)
-                or abs(self.velocity.x) < self.run_speed
-            ):
+            not_at_max_speed = abs(self.velocity.x) < self.run_speed
+            moving_in_same_dir = is_same_sign(self.direction_x, self.velocity.x)
+            if not_at_max_speed or not moving_in_same_dir:
                 self.velocity.x += 4 * self.direction_x
 
         # Fixed movement on ground
