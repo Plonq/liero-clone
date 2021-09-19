@@ -61,14 +61,17 @@ def set_action_state(name, state):
     action.activate() if state else action.deactivate()
 
 
-def process_input_events():
-    """This should be called at the beginning of every frame."""
+def update_input_states():
+    """Called every frame, before process_input_events."""
     for input_type in _actions.values():
         for actions in input_type.values():
             for action in actions:
                 action.update_state()
 
-    for event in pg.event.get():
+
+def process_input_events(input_events):
+    """Called every frame with any input events (mouse down, etc)."""
+    for event in input_events:
         if event.type == pg.MOUSEBUTTONDOWN:
             for button, actions in _actions["mouse"].items():
                 if button == event.button:
@@ -91,10 +94,6 @@ def process_input_events():
                 if key == event.key:
                     for action in actions:
                         action.deactivate()
-
-        if event.type == pg.QUIT:
-            pg.quit()
-            exit()
 
 
 class Action:

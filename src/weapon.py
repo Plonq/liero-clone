@@ -2,6 +2,7 @@ import random
 
 from src import config
 from src.assets import get_image
+from src.engine.signals import emit_event
 from src.projectile import Projectile
 
 
@@ -33,6 +34,7 @@ class Weapon:
                 self.is_reloading = False
                 self.reload_time_elapsed = 0
                 self.rounds_left = self.rounds_per_magazine
+        emit_event("reload_perc", self.reload_time_elapsed / self.reload_time)
 
     def pull_trigger(self, start_pos, direction):
         if self.is_reloading:

@@ -11,6 +11,7 @@ from src.engine.input import (
     register_mouse_action,
 )
 from src.engine.utils import clamp
+from src.hud import HUD
 from src.player import Player
 from src.map import Map
 
@@ -25,6 +26,7 @@ class LieroClone(Game):
         self.map = Map(self)
         self.player = Player(self)
         self.add_object(self.map)
+        self.add_object(HUD(self))
         self._register_actions()
         self.true_offset = [0, 0]
 

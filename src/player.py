@@ -3,6 +3,7 @@ from pygame.math import Vector2
 
 from src.assets import get_image
 from src.engine.entity import Entity
+from src.engine.signals import emit_event
 from src.engine.game import GameObject
 from src.engine.input import (
     is_action_just_pressed,
@@ -71,6 +72,14 @@ class Player(Entity):
             if index >= len(self.available_weapons):
                 index = 0
             self.current_weapon = self.available_weapons[index]
+
+        self._update_ammo()
+
+    def _update_ammo(self):
+        emit_event(
+            "ammo",
+            self.current_weapon.rounds_left / self.current_weapon.rounds_per_magazine,
+        )
 
     def draw(self, surface, offset):
         if not self.alive:

@@ -3,7 +3,7 @@ import time
 import pygame as pg
 from pygame.math import Vector2
 
-from .input import process_input_events
+from .input import process_input_events, update_input_states
 
 clock = pg.time.Clock()
 
@@ -46,7 +46,20 @@ class Game:
             self._render_frame()
 
     def _process_events(self):
-        process_input_events()
+        update_input_states()
+        input_events = []
+        for event in pg.event.get():
+            if event.type in [
+                pg.MOUSEBUTTONUP,
+                pg.MOUSEBUTTONDOWN,
+                pg.KEYUP,
+                pg.KEYDOWN,
+            ]:
+                input_events.append(event)
+            elif event.type == pg.QUIT:
+                pg.quit()
+                exit()
+        process_input_events(input_events)
 
     def pre_update(self, dt):
         """Called prior to update and draw of game objects."""
