@@ -1,6 +1,7 @@
 import pygame as pg
 
 from src.engine.game import GameObject
+from src.engine.signals import emit_event
 from src.engine.utils import blit_centered
 from src.gfx import SmallExplosion
 
@@ -42,6 +43,7 @@ class Projectile(GameObject):
         self.game.destroy_terrain(self.position, 7)
         self.game.remove_object(self)
         self.game.add_object(SmallExplosion(self.game, self.position))
+        emit_event("small_explosion")
 
     def draw(self, surface, offset):
         blit_centered(self.image, surface, self.position - offset)
