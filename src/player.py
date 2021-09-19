@@ -101,7 +101,7 @@ class Player(Entity):
             if self.grapple.stuck:
                 direction_to_grapple = self.grapple.position - self.position
                 direction_to_grapple.normalize_ip()
-                self.velocity += direction_to_grapple * 17
+                self.velocity += direction_to_grapple * 12
             elif self.direction_x != 0:
                 not_at_max_speed = abs(self.velocity.x) < self.run_speed
                 moving_in_same_dir = is_same_sign(self.direction_x, self.velocity.x)
