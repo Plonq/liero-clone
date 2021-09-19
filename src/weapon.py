@@ -9,6 +9,7 @@ from src.projectile import Projectile
 class Weapon:
     def __init__(self, game, name):
         self.game = game
+        self.name = name
         self.type = config.weapons[name]["type"]
         self.automatic = config.weapons[name]["automatic"]
         self.bullets_per_round = config.weapons[name]["bullets_per_round"]

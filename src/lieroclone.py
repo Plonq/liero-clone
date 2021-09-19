@@ -25,12 +25,24 @@ class LieroClone(Game):
         super().__init__(WINDOW_SIZE, DISPLAY_SIZE, "Liero Clone")
         assets.init()
         self.map = Map(self)
-        self.player = Player(self)
         self.add_object(self.map)
+        self.player = Player(self)
+        self.add_object(self.player)
         self.add_object(HUD(self))
         self._register_actions()
         # self.sound = SoundEffects()
         self.true_offset = [0, 0]
+
+    def _register_actions(self):
+        register_mouse_action("attack", pg.BUTTON_LEFT)
+        register_mouse_action("dig", pg.BUTTON_RIGHT)
+        register_key_action("spawn", pg.K_RETURN)
+        register_key_action("jump", pg.K_SPACE)
+        register_key_action("move_left", pg.K_a)
+        register_key_action("move_right", pg.K_d)
+        register_key_action("switch_weapon", pg.K_f)
+        register_key_action("grapple", pg.K_e)
+        register_key_action("test", pg.K_t)
 
     def post_update(self, dt):
         if is_action_just_pressed("spawn"):
@@ -48,7 +60,6 @@ class LieroClone(Game):
         self.map.destroy_terrain(position, radius=self.player.height * 0.8)
         self.player.x, self.player.y = position
         self.player.alive = True
-        self.add_object(self.player)
 
     def get_visible_rect(self):
         return pg.Rect(
@@ -92,16 +103,8 @@ class LieroClone(Game):
     def destroy_terrain(self, location, radius):
         self.map.destroy_terrain(location, radius)
 
-    def _register_actions(self):
-        register_mouse_action("attack", pg.BUTTON_LEFT)
-        register_mouse_action("dig", pg.BUTTON_RIGHT)
-        register_key_action("spawn", pg.K_RETURN)
-        register_key_action("jump", pg.K_SPACE)
-        register_key_action("move_left", pg.K_a)
-        register_key_action("move_right", pg.K_d)
-        register_key_action("switch_weapon", pg.K_f)
-        register_key_action("grapple", pg.K_e)
-        register_key_action("test", pg.K_t)
+    def get_player_position(self):
+        return self.player.position
 
 
 if __name__ == "__main__":

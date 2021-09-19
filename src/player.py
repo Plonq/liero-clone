@@ -68,10 +68,16 @@ class Player(Entity):
             self.current_weapon.release_trigger()
 
         if is_action_just_pressed("switch_weapon"):
-            index = self.available_weapons.index(self.current_weapon) + 1
+            curr_index = self.available_weapons.index(self.current_weapon)
+            index = curr_index + 1
             if index >= len(self.available_weapons):
                 index = 0
             self.current_weapon = self.available_weapons[index]
+            emit_event(
+                "switched_weapon",
+                previous=self.available_weapons[curr_index],
+                current=self.current_weapon,
+            )
 
         self._update_ammo()
 
