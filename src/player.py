@@ -78,19 +78,20 @@ class Player(Entity):
         super().draw(surface, offset)
 
     def move(self, collision_rects, collision_masks, dt):
-        if self.grapple.stuck:
-            direction_to_grapple = self.grapple.position - self.position
-            direction_to_grapple.normalize_ip()
-            self.velocity += direction_to_grapple * 17
-        elif self.direction_x != 0:
-            not_at_max_speed = abs(self.velocity.x) < self.run_speed
-            moving_in_same_dir = is_same_sign(self.direction_x, self.velocity.x)
-            if not_at_max_speed or not moving_in_same_dir:
-                self.velocity.x += 4 * self.direction_x
-
-        # Fixed movement on ground
         if self.is_on_ground() and not self.grapple.stuck:
-            self.velocity.x = self.run_speed * self.direction_x
+            # Fixed movement on ground
+            if self.direction_x != 0:
+                self.velocity.x = self.run_speed * self.direction_x
+        else:
+            if self.grapple.stuck:
+                direction_to_grapple = self.grapple.position - self.position
+                direction_to_grapple.normalize_ip()
+                self.velocity += direction_to_grapple * 17
+            elif self.direction_x != 0:
+                not_at_max_speed = abs(self.velocity.x) < self.run_speed
+                moving_in_same_dir = is_same_sign(self.direction_x, self.velocity.x)
+                if not_at_max_speed or not moving_in_same_dir:
+                    self.velocity.x += 4 * self.direction_x
 
         velocity = self.velocity * dt
 
