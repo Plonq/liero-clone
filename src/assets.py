@@ -18,9 +18,9 @@ def init():
         "small": SpriteStrip(get_image("gfx/explosion-small.png"))
     }
     # Sounds
-    ex4 = pg.mixer.Sound(ROOT_DIR / "assets/sounds/Explosion1.wav")
-    ex4.set_volume(0.1)
-    assets["sound"]["explosions"] = {"small": ex4}
+    assets["sound"]["explosions"] = {
+        "small": pg.mixer.Sound(ROOT_DIR / "assets/sounds/Explosion2.wav")
+    }
     # Fonts
     assets["font"]["small"] = pg.image.load(
         ROOT_DIR / "assets/fonts/small_font.png"

@@ -17,7 +17,7 @@ class Game:
         pg.mixer.pre_init(44100, -16, 2, 2048)
         pg.init()
         pg.display.set_caption(title)
-        pg.mixer.set_num_channels(50)
+        pg.mixer.set_num_channels(512)
         self.dt = 0
         self.last_time = time.time()
         self.window_size = window_size

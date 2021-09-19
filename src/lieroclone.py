@@ -14,6 +14,7 @@ from src.engine.utils import clamp
 from src.hud import HUD
 from src.player import Player
 from src.map import Map
+from src.sound import SoundEffects
 
 WINDOW_SIZE = (1216, 800)
 DISPLAY_SIZE = (608, 400)
@@ -28,6 +29,7 @@ class LieroClone(Game):
         self.add_object(self.map)
         self.add_object(HUD(self))
         self._register_actions()
+        # self.sound = SoundEffects()
         self.true_offset = [0, 0]
 
     def post_update(self, dt):
