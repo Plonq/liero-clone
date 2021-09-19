@@ -60,6 +60,7 @@ class Weapon:
                         self.bullet_speed + speed_adjustment,
                     )
                 )
+                emit_event("gunshot")
             self.current_cooldown = self.round_cooldown
             self.rounds_left -= 1
             if self.rounds_left <= 0:

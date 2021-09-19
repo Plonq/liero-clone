@@ -9,6 +9,7 @@ class SoundEffects:
     def __init__(self):
         self.time_of_last_explosion = 0
         observe("small_explosion", self._small_explosion)
+        observe("gunshot", self._gunshot)
 
     def _small_explosion(self):
         if (
@@ -19,3 +20,8 @@ class SoundEffects:
             snd.set_volume(0.03)
             snd.play()
             self.time_of_last_explosion = time.time()
+
+    def _gunshot(self):
+        snd = assets["sound"]["gunshot"]
+        snd.set_volume(0.03)
+        snd.play()

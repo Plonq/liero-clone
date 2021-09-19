@@ -21,6 +21,7 @@ def init():
     assets["sound"]["explosions"] = {
         "small": pg.mixer.Sound(ROOT_DIR / "assets/sounds/Explosion2.wav")
     }
+    assets["sound"]["gunshot"] = pg.mixer.Sound(ROOT_DIR / "assets/sounds/Gunshot7.wav")
     # Fonts
     assets["font"]["small"] = pg.image.load(
         ROOT_DIR / "assets/fonts/small_font.png"
