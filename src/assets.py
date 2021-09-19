@@ -8,17 +8,26 @@ from src.engine.sprite import SpriteStrip
 ROOT_DIR = Path(__file__).parent.parent
 
 _asset_cache = {"images": {}}
-assets = {"img": {}, "sound": {}}
+assets = {"img": {}, "sound": {}, "font": {}}
 
 
 def init():
     load_sprites(ROOT_DIR / "assets/images/entities")
+    # Images
     assets["img"]["explosions"] = {
         "small": SpriteStrip(get_image("gfx/explosion-small.png"))
     }
+    # Sounds
     ex4 = pg.mixer.Sound(ROOT_DIR / "assets/sounds/Explosion1.wav")
     ex4.set_volume(0.1)
     assets["sound"]["explosions"] = {"small": ex4}
+    # Fonts
+    assets["font"]["small"] = pg.image.load(
+        ROOT_DIR / "assets/fonts/small_font.png"
+    ).convert_alpha()
+    assets["font"]["large"] = pg.image.load(
+        ROOT_DIR / "assets/fonts/large_font.png"
+    ).convert()
 
 
 def get_image(relative_path, alpha=True):
