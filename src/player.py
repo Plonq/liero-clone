@@ -110,6 +110,8 @@ class Player(Entity):
                 moving_in_same_dir = is_same_sign(self.direction_x, self.velocity.x)
                 if not_at_max_speed or not moving_in_same_dir:
                     self.velocity.x += 4 * self.direction_x
+            self._apply_x_resistance(0.5)
+            self._apply_y_resistance(0.5)
 
         velocity = self.velocity * dt
 
@@ -142,6 +144,14 @@ class Player(Entity):
             self.velocity.x += amount
         if -amount < self.velocity.x < amount:
             self.velocity.x = 0
+
+    def _apply_y_resistance(self, amount):
+        if self.velocity.y > 0:
+            self.velocity.y -= amount
+        if self.velocity.y < 0:
+            self.velocity.y += amount
+        if -amount < self.velocity.y < amount:
+            self.velocity.y = 0
 
     def spawn(self, position):
         self.health = self.max_health
