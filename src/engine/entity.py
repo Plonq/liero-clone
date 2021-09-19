@@ -57,6 +57,9 @@ class Entity(GameObject):
     def update(self, dt, offset):
         self._animate(dt)
 
+    def is_in_air(self):
+        return self.air_timer >= self.jump_buffer
+
     def draw(self, surface, offset):
         offset_rect = self.rect
         offset_rect.center = (self.x, self.y)

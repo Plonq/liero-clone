@@ -17,7 +17,11 @@ class Player(Entity):
     def __init__(self, game, x=0, y=0):
         super().__init__(game, "player", x, y, 12, 14)
         self.alive = False
-        self.available_weapons = [Weapon(game, "minigun"), Weapon(game, "shotgun")]
+        self.available_weapons = [
+            Weapon(game, "super_shotgun"),
+            Weapon(game, "minigun"),
+            Weapon(game, "shotgun"),
+        ]
         self.current_weapon = self.available_weapons[0]
         self.grapple = Grapple(game, self)
         self.terminal_velocity = 300
@@ -30,13 +34,15 @@ class Player(Entity):
 
         if is_action_pressed("move_left"):
             self.direction_x = -1
+            self.momentum.x = 0
         elif is_action_pressed("move_right"):
             self.direction_x = 1
+            self.momentum.x = 0
         else:
             self.direction_x = 0
 
         if is_action_pressed("jump"):
-            if self.air_timer < self.jump_buffer:
+            if not self.is_in_air():
                 self.momentum.y = -200
             if self.grapple.stuck:
                 self.grapple.retract()
@@ -50,6 +56,7 @@ class Player(Entity):
             self.dig(offset)
 
         if is_action_just_pressed("grapple"):
+            print("launched", self.grapple.launched)
             if self.grapple.launched:
                 self.grapple.retract()
             else:
@@ -80,6 +87,10 @@ class Player(Entity):
             direction_to_grapple = self.grapple.position - self.position
             direction_to_grapple.normalize_ip()
             self.momentum += direction_to_grapple * 17
+
+        # else:
+        if self.is_in_air():
+            velocity.x += self.direction_x * self.run_speed / 2 * dt
         else:
             velocity.x += self.direction_x * self.run_speed * dt
 
