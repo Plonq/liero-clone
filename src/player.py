@@ -42,7 +42,7 @@ class Player(Entity):
         else:
             self.direction_x = 0
 
-        if is_action_pressed("jump"):
+        if is_action_just_pressed("jump"):
             if self.is_on_ground():
                 self.velocity.y = -200
             if self.grapple.stuck:
