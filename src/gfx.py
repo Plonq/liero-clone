@@ -11,5 +11,4 @@ class SmallExplosion(Effect):
             sprite_strip=assets["img"]["explosions"]["small"],
             lifespan=0.3,
         )
-        print("emitt")
         emit_event("small_explosion")
