@@ -18,6 +18,8 @@ class Player(Entity):
     def __init__(self, game, x=0, y=0):
         super().__init__(game, "player", x, y, 12, 14)
         self.alive = False
+        self.max_health = 500
+        self.health = self.max_health
         self.available_weapons = [
             Weapon(game, "super_shotgun"),
             Weapon(game, "minigun"),
@@ -80,6 +82,7 @@ class Player(Entity):
             )
 
         self._update_ammo()
+        self.move(self.game.get_collision_rects(), self.game.get_collision_mask(), dt)
 
     def _update_ammo(self):
         emit_event(
@@ -139,6 +142,19 @@ class Player(Entity):
             self.velocity.x += amount
         if -amount < self.velocity.x < amount:
             self.velocity.x = 0
+
+    def spawn(self, position):
+        self.health = self.max_health
+        emit_event("health", self.health, self.max_health)
+        self.game.destroy_terrain(position, radius=self.height * 0.8)
+        self.x, self.y = position
+        self.alive = True
+
+    def damage(self, dmg):
+        self.health -= dmg
+        emit_event("health", self.health, self.max_health)
+        if self.health <= 0:
+            self.die()
 
     def die(self):
         self.alive = False

@@ -19,7 +19,7 @@ class HUD(GameObject):
         self.bar_max_width = 200
         self.bar_height = 4
         # Health
-        self.health = 1
+        self.health_perc = 0
         self.health_bar_zero = pg.Color(201, 40, 40)
         self.health_bar_full = pg.Color(48, 201, 40)
         # Ammo/reload
@@ -36,6 +36,7 @@ class HUD(GameObject):
         # Listen to events
         observe("ammo", self._update_ammo)
         observe("reload_perc", self._update_reload_perc)
+        observe("health", self._update_health)
         observe("switched_weapon", self._on_switched_weapon)
 
     def _update_ammo(self, ammo_perc):
@@ -43,6 +44,9 @@ class HUD(GameObject):
 
     def _update_reload_perc(self, reload_perc):
         self.reload_perc = reload_perc
+
+    def _update_health(self, current, max):
+        self.health_perc = current / max
 
     def _on_switched_weapon(self, previous, current):
         if current != previous:
@@ -90,7 +94,7 @@ class HUD(GameObject):
             self.bar_max_width,
             self.bar_height,
         )
-        percentage = self.health
+        percentage = self.health_perc
         rect.width = self.bar_max_width * percentage
         color = self.health_bar_zero.lerp(self.health_bar_full, percentage)
         pg.draw.rect(surface, color, rect)

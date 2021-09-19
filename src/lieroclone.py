@@ -28,7 +28,7 @@ class LieroClone(Game):
         self.add_object(self.map)
         self.player = Player(self)
         self.add_object(self.player)
-        self.add_object(HUD(self))
+        self.hud = HUD(self)
         self._register_actions()
         # self.sound = SoundEffects()
         self.true_offset = [0, 0]
@@ -44,11 +44,16 @@ class LieroClone(Game):
         register_key_action("grapple", pg.K_e)
         register_key_action("test", pg.K_t)
 
-    def post_update(self, dt):
+    def post_update(self, dt, offset):
+        self.hud.update(dt, offset)
         if is_action_just_pressed("spawn"):
             self.spawn()
-        if self.player.alive:
-            self.player.move(self.get_collision_rects(), self.get_collision_mask(), dt)
+        if is_action_just_pressed("test"):
+            self.player.damage(20)
+
+    def _draw(self, surface, offset):
+        super()._draw(surface, offset)
+        self.hud.draw(surface, offset)
 
     def spawn(self):
         position = Vector2(
@@ -57,9 +62,7 @@ class LieroClone(Game):
                 self.player.height, self.display_size[1] - self.player.height
             ),
         )
-        self.map.destroy_terrain(position, radius=self.player.height * 0.8)
-        self.player.x, self.player.y = position
-        self.player.alive = True
+        self.player.spawn(position)
 
     def get_visible_rect(self):
         return pg.Rect(

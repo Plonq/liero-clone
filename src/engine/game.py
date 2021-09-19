@@ -39,9 +39,9 @@ class Game:
             self.last_time = time.time()
             self._process_events()
             self.update_offset(self.dt)
-            self.pre_update(self.dt)
+            self.pre_update(self.dt, self.offset)
             self._update(self.dt, self.offset)
-            self.post_update(self.dt)
+            self.post_update(self.dt, self.offset)
             self._draw(self.display, self.offset)
             self._render_frame()
 
@@ -61,7 +61,7 @@ class Game:
                 exit()
         process_input_events(input_events)
 
-    def pre_update(self, dt):
+    def pre_update(self, dt, offset):
         """Called prior to update and draw of game objects."""
         pass
 
@@ -69,7 +69,7 @@ class Game:
         for _, game_object in sorted(enumerate(self.game_objects), reverse=True):
             game_object.update(dt, offset)
 
-    def post_update(self, dt):
+    def post_update(self, dt, offset):
         """Called after update and before draw."""
         pass
 
