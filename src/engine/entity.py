@@ -24,7 +24,7 @@ class Entity(GameObject):
         self.air_timer = 0
         self.jump_buffer = 6
         self.direction_x = 0
-        self.momentum = Vector2(0, 0)
+        self.velocity = Vector2(0, 0)
         self.action = "idle"
         self.frame = 0
         self.time_since_last_frame = 0
@@ -57,8 +57,8 @@ class Entity(GameObject):
     def update(self, dt, offset):
         self._animate(dt)
 
-    def is_in_air(self):
-        return self.air_timer >= self.jump_buffer
+    def is_on_ground(self):
+        return self.air_timer < self.jump_buffer
 
     def draw(self, surface, offset):
         offset_rect = self.rect
@@ -89,9 +89,9 @@ class Entity(GameObject):
 
         # In the air?
         if self.air_timer > self.jump_buffer:
-            if self.momentum.y < 0:
+            if self.velocity.y < 0:
                 self._set_action("jump")
-            elif self.momentum.y > 0:
+            elif self.velocity.y > 0:
                 self._set_action("fall")
         else:
             # Must be on ground

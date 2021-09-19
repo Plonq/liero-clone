@@ -1,5 +1,15 @@
+# General utils
+
+
 def clamp(n, minn, maxn):
     return max(min(maxn, n), minn)
+
+
+def is_same_sign(num1, num2):
+    return num1 >= 0 and num2 >= 0 or num1 < 0 and num2 < 0
+
+
+# Pygame utils
 
 
 def blit_centered(from_surf, to_surf, position):

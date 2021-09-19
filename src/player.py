@@ -9,7 +9,7 @@ from src.engine.input import (
     is_action_pressed,
     was_action_just_released,
 )
-from src.engine.utils import blit_centered
+from src.engine.utils import blit_centered, is_same_sign
 from src.weapon import Weapon
 
 
@@ -34,16 +34,14 @@ class Player(Entity):
 
         if is_action_pressed("move_left"):
             self.direction_x = -1
-            self.momentum.x = 0
         elif is_action_pressed("move_right"):
             self.direction_x = 1
-            self.momentum.x = 0
         else:
             self.direction_x = 0
 
         if is_action_pressed("jump"):
-            if not self.is_in_air():
-                self.momentum.y = -200
+            if self.is_on_ground():
+                self.velocity.y = -200
             if self.grapple.stuck:
                 self.grapple.retract()
 
@@ -55,7 +53,6 @@ class Player(Entity):
             self.dig(offset)
 
         if is_action_just_pressed("grapple"):
-            print("launched", self.grapple.launched)
             if self.grapple.launched:
                 self.grapple.retract()
             else:
@@ -81,45 +78,53 @@ class Player(Entity):
         super().draw(surface, offset)
 
     def move(self, collision_rects, collision_masks, dt):
-        velocity = Vector2(0)
         if self.grapple.stuck:
             direction_to_grapple = self.grapple.position - self.position
             direction_to_grapple.normalize_ip()
-            self.momentum += direction_to_grapple * 17
+            self.velocity += direction_to_grapple * 17
+        elif self.direction_x != 0:
+            # Only add momentum if current mom less than max speed or trying to move is opposite direction
+            if (
+                not is_same_sign(self.direction_x, self.velocity.x)
+                or abs(self.velocity.x) < self.run_speed
+            ):
+                self.velocity.x += 4 * self.direction_x
 
-        velocity.x += self.direction_x * self.run_speed * dt
+        # Fixed movement on ground
+        if self.is_on_ground() and not self.grapple.stuck:
+            self.velocity.x = self.run_speed * self.direction_x
 
-        velocity += self.momentum * dt
+        velocity = self.velocity * dt
 
         collision_directions = self._move_and_collide(
             velocity, collision_rects, collision_masks
         )
 
         if collision_directions["bottom"]:
-            self.momentum.y = 0
+            self.velocity.y = 0
             self.air_timer = 0
             self._apply_x_resistance(40)
         else:
             self.air_timer += 1
         if collision_directions["top"]:
-            self.momentum.y = 0
+            self.velocity.y = 0
         if collision_directions["left"]:
-            self.momentum.x = 0
+            self.velocity.x = 0
         if collision_directions["right"]:
-            self.momentum.x = 0
+            self.velocity.x = 0
 
     def _apply_gravity(self, amount):
-        self.momentum.y += amount
-        if self.momentum.y > 350:
-            self.momentum.y = 350
+        self.velocity.y += amount
+        if self.velocity.y > 350:
+            self.velocity.y = 350
 
     def _apply_x_resistance(self, amount):
-        if self.momentum.x > 0:
-            self.momentum.x -= amount
-        if self.momentum.x < 0:
-            self.momentum.x += amount
-        if -amount < self.momentum.x < amount:
-            self.momentum.x = 0
+        if self.velocity.x > 0:
+            self.velocity.x -= amount
+        if self.velocity.x < 0:
+            self.velocity.x += amount
+        if -amount < self.velocity.x < amount:
+            self.velocity.x = 0
 
     def die(self):
         self.alive = False
