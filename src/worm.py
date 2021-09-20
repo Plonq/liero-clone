@@ -44,9 +44,6 @@ class Worm(Entity):
             if self.grapple.stuck:
                 self.grapple.retract()
 
-        # Gravity
-        self._apply_gravity(6)
-
         # Actions
         if self.ctrl.is_action_just_pressed("dig"):
             self.dig(offset)
@@ -108,6 +105,7 @@ class Worm(Entity):
             self._apply_x_resistance(0.5)
             self._apply_y_resistance(0.5)
 
+        self._apply_gravity(6)
         velocity = self.velocity * dt
 
         collision_directions = self._move_and_collide(
