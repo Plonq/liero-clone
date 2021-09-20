@@ -5,18 +5,14 @@ from src.assets import get_image
 from src.engine.entity import Entity
 from src.engine.signals import emit_event
 from src.engine.game import GameObject
-from src.engine.input import (
-    is_action_just_pressed,
-    is_action_pressed,
-    was_action_just_released,
-)
 from src.engine.utils import blit_centered, is_same_sign
 from src.weapon import Weapon
 
 
-class Player(Entity):
-    def __init__(self, game, x=0, y=0):
+class Worm(Entity):
+    def __init__(self, game, controller, x=0, y=0):
         super().__init__(game, "player", x, y, 12, 14)
+        self.ctrl = controller
         self.alive = False
         self.max_health = 500
         self.health = self.max_health
@@ -35,14 +31,14 @@ class Player(Entity):
         if not self.alive:
             return
 
-        if is_action_pressed("move_left"):
+        if self.ctrl.is_action_pressed("move_left"):
             self.direction_x = -1
-        elif is_action_pressed("move_right"):
+        elif self.ctrl.is_action_pressed("move_right"):
             self.direction_x = 1
         else:
             self.direction_x = 0
 
-        if is_action_just_pressed("jump"):
+        if self.ctrl.is_action_just_pressed("jump"):
             if self.is_on_ground():
                 self.velocity.y = -200
             if self.grapple.stuck:
@@ -52,10 +48,10 @@ class Player(Entity):
         self._apply_gravity(6)
 
         # Actions
-        if is_action_just_pressed("dig"):
+        if self.ctrl.is_action_just_pressed("dig"):
             self.dig(offset)
 
-        if is_action_just_pressed("grapple"):
+        if self.ctrl.is_action_just_pressed("grapple"):
             if self.grapple.launched:
                 self.grapple.retract()
             else:
@@ -63,13 +59,13 @@ class Player(Entity):
                 self.grapple.launch(direction)
 
         self.current_weapon.update(dt)
-        if is_action_pressed("attack"):
+        if self.ctrl.is_action_pressed("attack"):
             direction = self.game.get_direction_to_mouse(self.position)
             self.current_weapon.pull_trigger(self.position, direction)
-        if was_action_just_released("attack"):
+        if self.ctrl.was_action_just_released("attack"):
             self.current_weapon.release_trigger()
 
-        if is_action_just_pressed("switch_weapon"):
+        if self.ctrl.is_action_just_pressed("switch_weapon"):
             curr_index = self.available_weapons.index(self.current_weapon)
             index = curr_index + 1
             if index >= len(self.available_weapons):

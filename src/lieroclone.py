@@ -4,6 +4,7 @@ import pygame as pg
 from pygame.math import Vector2
 
 from src import assets
+from src.controllers import PlayerController
 from src.engine.game import Game
 from src.engine.input import (
     is_action_just_pressed,
@@ -12,7 +13,7 @@ from src.engine.input import (
 )
 from src.engine.utils import clamp
 from src.hud import HUD
-from src.player import Player
+from src.worm import Worm
 from src.map import Map
 from src.sound import SoundEffects
 
@@ -26,7 +27,7 @@ class LieroClone(Game):
         assets.init()
         self.map = Map(self)
         self.add_object(self.map)
-        self.player = Player(self)
+        self.player = Worm(self, PlayerController())
         self.add_object(self.player)
         self.hud = HUD(self)
         self._register_actions()
