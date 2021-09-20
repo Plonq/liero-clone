@@ -13,9 +13,9 @@ animations = {}
 
 
 class Entity(GameObject):
-    def __init__(self, game, id, x=0, y=0, width=1, height=1):
+    def __init__(self, game, name, x=0, y=0, width=1, height=1):
         self.game = game
-        self.id = id
+        self.name = name
         self.x = x
         self.y = y
         self.width = width
@@ -31,7 +31,7 @@ class Entity(GameObject):
         self.frames_since_idle = 0
         self.flip = False
         self.img = pg.transform.flip(
-            animations[self.id][self.action][self.frame]["img"],
+            animations[self.name][self.action][self.frame]["img"],
             self.flip,
             False,
         )
@@ -70,7 +70,7 @@ class Entity(GameObject):
         # pg.draw.rect(surface, (0, 255, 0), (self.x, self.y, 1, 1))
 
     def _set_action(self, action):
-        if action in animations[self.id]:
+        if action in animations[self.name]:
             if self.action != action:
                 self.action = action
                 self.frame = 0
@@ -107,7 +107,7 @@ class Entity(GameObject):
                     self._set_action("afk")
 
         #
-        cur_anim = animations[self.id][self.action]
+        cur_anim = animations[self.name][self.action]
         if self.time_since_last_frame > cur_anim[self.frame]["time"]:
             self.frame += 1
             if self.frame >= len(cur_anim):

@@ -1,5 +1,5 @@
 {
-  "player": {
+  "worm": {
      "idle": {
         "timings": [5, 0.1, 5, 3],
         "loop": true

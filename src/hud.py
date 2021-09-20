@@ -11,20 +11,18 @@ from src.engine.utils import clamp
 
 
 class HUD(GameObject):
-    def __init__(self, game):
+    def __init__(self, game, worm):
         self.game = game
+        self.worm = worm
         self.font = Font(assets["font"]["small"])
         self.margin = 3
         self.spacing = 3
         self.bar_max_width = 200
         self.bar_height = 4
         # Health
-        self.health_perc = 0
         self.health_bar_zero = pg.Color(201, 40, 40)
         self.health_bar_full = pg.Color(48, 201, 40)
         # Ammo/reload
-        self.ammo = 0
-        self.reload_perc = 0
         self.ammo_bar_zero = pg.Color(201, 40, 40)
         self.ammo_bar_full = pg.Color(40, 72, 201)
         # Weapon Name
@@ -34,19 +32,7 @@ class HUD(GameObject):
         self.time_of_last_weapon_switch = 0
         self.weapon_name_fade_time = 5
         # Listen to events
-        observe("ammo", self._update_ammo)
-        observe("reload_perc", self._update_reload_perc)
-        observe("health", self._update_health)
-        observe("switched_weapon", self._on_switched_weapon)
-
-    def _update_ammo(self, ammo_perc):
-        self.ammo = ammo_perc
-
-    def _update_reload_perc(self, reload_perc):
-        self.reload_perc = reload_perc
-
-    def _update_health(self, current, max):
-        self.health_perc = current / max
+        observe("switched_weapon", self._on_switched_weapon, source=self.worm)
 
     def _on_switched_weapon(self, previous, current):
         if current != previous:
@@ -94,9 +80,9 @@ class HUD(GameObject):
             self.bar_max_width,
             self.bar_height,
         )
-        percentage = self.health_perc
-        rect.width = self.bar_max_width * percentage
-        color = self.health_bar_zero.lerp(self.health_bar_full, percentage)
+        health_perc = self.worm.health / self.worm.max_health
+        rect.width = self.bar_max_width * health_perc
+        color = self.health_bar_zero.lerp(self.health_bar_full, health_perc)
         pg.draw.rect(surface, color, rect)
         # Ammo bar
         self.font.draw(
@@ -115,18 +101,28 @@ class HUD(GameObject):
             self.bar_max_width,
             self.bar_height,
         )
-        percentage = self.reload_perc if self.reload_perc > 0 else self.ammo
-        rect.width = self.bar_max_width * percentage
-        color = self.ammo_bar_zero.lerp(self.ammo_bar_full, percentage)
+        ammo_perc = (
+            self.worm.current_weapon.reload_time_elapsed
+            / self.worm.current_weapon.reload_time
+        )
+        if ammo_perc == 0:
+            ammo_perc = (
+                self.worm.current_weapon.rounds_left
+                / self.worm.current_weapon.rounds_per_magazine
+            )
+        rect.width = self.bar_max_width * ammo_perc
+        color = self.ammo_bar_zero.lerp(self.ammo_bar_full, ammo_perc)
         pg.draw.rect(surface, color, rect)
 
         # Weapon name
         if self.weapon_name_current_color != pg.Color(0, 0, 0, 0):
-            player_pos = self.game.get_player_position() - offset
-            offset = Vector2(self.font.calculate_width(self.weapon_name) // 2 * -1, -20)
+            worm_pos = self.worm.position
+            worm_offset = Vector2(
+                self.font.calculate_width(self.weapon_name) // 2 * -1, -20
+            )
             self.font.draw(
                 surface,
                 self.weapon_name,
                 self.weapon_name_current_color,
-                player_pos + offset,
+                worm_pos + worm_offset - offset,
             )

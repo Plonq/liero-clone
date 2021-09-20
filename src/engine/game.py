@@ -31,7 +31,11 @@ class Game:
         self.game_objects.append(game_object)
 
     def remove_object(self, game_object):
-        self.game_objects.remove(game_object)
+        try:
+            self.game_objects.remove(game_object)
+        except ValueError:
+            # Don't care if it doesn't exist
+            pass
 
     def run(self):
         while True:
@@ -52,6 +56,7 @@ class Game:
             if event.type in [
                 pg.MOUSEBUTTONUP,
                 pg.MOUSEBUTTONDOWN,
+                pg.MOUSEMOTION,
                 pg.KEYUP,
                 pg.KEYDOWN,
             ]:
@@ -59,7 +64,7 @@ class Game:
             elif event.type == pg.QUIT:
                 pg.quit()
                 exit()
-        process_input_events(input_events)
+        process_input_events(self, input_events)
 
     def pre_update(self, dt, offset):
         """Called prior to update and draw of game objects."""
@@ -92,6 +97,11 @@ class Game:
 
     def get_mouse_pos(self):
         window_pos = pg.mouse.get_pos()
+        ratio_x = self.display_size[0] / self.window_size[0]
+        ratio_y = self.display_size[1] / self.window_size[1]
+        return Vector2(window_pos[0] * ratio_x, window_pos[1] * ratio_y)
+
+    def get_display_mouse_pos(self, window_pos):
         ratio_x = self.display_size[0] / self.window_size[0]
         ratio_y = self.display_size[1] / self.window_size[1]
         return Vector2(window_pos[0] * ratio_x, window_pos[1] * ratio_y)

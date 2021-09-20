@@ -1,13 +1,14 @@
 import logging
 
 import pygame as pg
-
+from pygame.math import Vector2
 
 logger = logging.getLogger(__name__)
 
 
 _actions = {"mouse": {}, "key": {}}
 _actions_by_name = {}
+_mouse_pos = Vector2(0, 0)
 
 
 def register_action(name, input_type, input_value):
@@ -47,6 +48,10 @@ def was_action_just_released(name):
     return action.was_just_released
 
 
+def get_mouse_pos():
+    return _mouse_pos
+
+
 def _get_action(name):
     try:
         return _actions_by_name[name]
@@ -54,11 +59,6 @@ def _get_action(name):
         logger.warning(
             f"Tried to access state of '{name}' but that action hasn't been registered."
         )
-
-
-def set_action_state(name, state):
-    action = _actions_by_name[name]
-    action.activate() if state else action.deactivate()
 
 
 def update_input_states():
@@ -69,7 +69,7 @@ def update_input_states():
                 action.update_state()
 
 
-def process_input_events(input_events):
+def process_input_events(game, input_events):
     """Called every frame with any input events (mouse down, etc)."""
     for event in input_events:
         if event.type == pg.MOUSEBUTTONDOWN:
@@ -84,11 +84,15 @@ def process_input_events(input_events):
                     for action in actions:
                         action.deactivate()
 
+        if event.type == pg.MOUSEMOTION:
+            _mouse_pos.xy = game.get_display_mouse_pos(event.pos)
+
         if event.type == pg.KEYDOWN:
             for key, actions in _actions["key"].items():
                 if key == event.key:
                     for action in actions:
                         action.activate()
+
         if event.type == pg.KEYUP:
             for key, actions in _actions["key"].items():
                 if key == event.key:

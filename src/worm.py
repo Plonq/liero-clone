@@ -3,6 +3,7 @@ from pygame.math import Vector2
 
 from src.assets import get_image
 from src.engine.entity import Entity
+from src.engine.input import get_mouse_pos
 from src.engine.signals import emit_event
 from src.engine.game import GameObject
 from src.engine.utils import blit_centered, is_same_sign
@@ -11,15 +12,17 @@ from src.weapon import Weapon
 
 class Worm(Entity):
     def __init__(self, game, controller, x=0, y=0):
-        super().__init__(game, "player", x, y, 12, 14)
+        super().__init__(game, "worm", x, y, 12, 14)
         self.ctrl = controller
+        self.ctrl.set_worm(self)
         self.alive = False
         self.max_health = 500
         self.health = self.max_health
+        self.aim_direction = Vector2(0, 0)
         self.available_weapons = [
-            Weapon(game, "super_shotgun"),
-            Weapon(game, "minigun"),
-            Weapon(game, "shotgun"),
+            Weapon(game, self, "super_shotgun"),
+            Weapon(game, self, "minigun"),
+            Weapon(game, self, "shotgun"),
         ]
         self.current_weapon = self.available_weapons[0]
         self.grapple = Grapple(game, self)
@@ -31,56 +34,68 @@ class Worm(Entity):
         if not self.alive:
             return
 
-        if self.ctrl.is_action_pressed("move_left"):
-            self.direction_x = -1
-        elif self.ctrl.is_action_pressed("move_right"):
-            self.direction_x = 1
-        else:
-            self.direction_x = 0
-
-        if self.ctrl.is_action_just_pressed("jump"):
-            if self.is_on_ground():
-                self.velocity.y = -200
-            if self.grapple.stuck:
-                self.grapple.retract()
-
-        # Actions
-        if self.ctrl.is_action_just_pressed("dig"):
-            self.dig(offset)
-
-        if self.ctrl.is_action_just_pressed("grapple"):
-            if self.grapple.launched:
-                self.grapple.retract()
-            else:
-                direction = self.game.get_direction_to_mouse(self.position)
-                self.grapple.launch(direction)
-
         self.current_weapon.update(dt)
-        if self.ctrl.is_action_pressed("attack"):
-            direction = self.game.get_direction_to_mouse(self.position)
-            self.current_weapon.pull_trigger(self.position, direction)
-        if self.ctrl.was_action_just_released("attack"):
-            self.current_weapon.release_trigger()
-
-        if self.ctrl.is_action_just_pressed("switch_weapon"):
-            curr_index = self.available_weapons.index(self.current_weapon)
-            index = curr_index + 1
-            if index >= len(self.available_weapons):
-                index = 0
-            self.current_weapon = self.available_weapons[index]
-            emit_event(
-                "switched_weapon",
-                previous=self.available_weapons[curr_index],
-                current=self.current_weapon,
-            )
+        self.ctrl.update(dt, offset)
 
         self._update_ammo()
         self.move(self.game.get_collision_rects(), self.game.get_collision_mask(), dt)
 
+    def set_aim_direction(self, direction):
+        self.aim_direction = direction.normalize()
+
+    def move_right(self):
+        self.direction_x = 1
+
+    def move_left(self):
+        self.direction_x = -1
+
+    def stop(self):
+        self.direction_x = 0
+
+    def jump(self):
+        if self.is_on_ground():
+            self.velocity.y = -200
+        if self.grapple.stuck:
+            self.grapple.retract()
+
+    def launch_grapple(self):
+        self.grapple.retract()
+        self.grapple.launch(self.aim_direction)
+
+    def retract_grapple(self):
+        self.grapple.retract()
+
+    def pull_trigger(self):
+        self.current_weapon.pull_trigger(self.position, self.aim_direction)
+
+    def release_trigger(self):
+        self.current_weapon.release_trigger()
+
+    def next_weapon(self):
+        curr_index = self.available_weapons.index(self.current_weapon)
+        index = curr_index + 1
+        if index >= len(self.available_weapons):
+            index = 0
+        self.current_weapon = self.available_weapons[index]
+        emit_event(
+            "switched_weapon",
+            previous=self.available_weapons[curr_index],
+            current=self.current_weapon,
+            source=self,
+        )
+
+    def dig(self, offset):
+        mouse_pos = self.game.get_mouse_pos()
+        direction = (mouse_pos + offset - self.position).normalize()
+        dig_pos = self.position + (direction * 5)
+        self.game.destroy_terrain(dig_pos, self.height * 0.8)
+
     def _update_ammo(self):
         emit_event(
             "ammo",
-            self.current_weapon.rounds_left / self.current_weapon.rounds_per_magazine,
+            source=self,
+            ammo_perc=self.current_weapon.rounds_left
+            / self.current_weapon.rounds_per_magazine,
         )
 
     def draw(self, surface, offset):
@@ -148,25 +163,17 @@ class Worm(Entity):
 
     def spawn(self, position):
         self.health = self.max_health
-        emit_event("health", self.health, self.max_health)
         self.game.destroy_terrain(position, radius=self.height * 0.8)
         self.x, self.y = position
         self.alive = True
 
     def damage(self, dmg):
         self.health -= dmg
-        emit_event("health", self.health, self.max_health)
         if self.health <= 0:
             self.die()
 
     def die(self):
         self.alive = False
-
-    def dig(self, offset):
-        mouse_pos = self.game.get_mouse_pos()
-        direction = (mouse_pos + offset - self.position).normalize()
-        dig_pos = self.position + (direction * 5)
-        self.game.destroy_terrain(dig_pos, self.height * 0.8)
 
 
 class Grapple(GameObject):

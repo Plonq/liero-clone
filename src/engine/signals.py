@@ -1,13 +1,14 @@
 observers = {}
 
 
-def observe(name, callback):
+def observe(name, callback, source="any"):
     if name not in observers:
         observers[name] = []
-    observers[name].append(callback)
+    observers[name].append({"source": source, "callback": callback})
 
 
-def emit_event(name, *args, **kwargs):
+def emit_event(name, source="global", *args, **kwargs):
     if name in observers:
-        for callback in observers[name]:
-            callback(*args, **kwargs)
+        for observer in observers[name]:
+            if observer["source"] == "any" or observer["source"] == source:
+                observer["callback"](*args, **kwargs)

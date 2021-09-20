@@ -7,8 +7,9 @@ from src.projectile import Projectile
 
 
 class Weapon:
-    def __init__(self, game, name):
+    def __init__(self, game, owner, name):
         self.game = game
+        self.owner = owner
         self.name = name
         self.type = config.weapons[name]["type"]
         self.automatic = config.weapons[name]["automatic"]
@@ -35,7 +36,6 @@ class Weapon:
                 self.is_reloading = False
                 self.reload_time_elapsed = 0
                 self.rounds_left = self.rounds_per_magazine
-        emit_event("reload_perc", self.reload_time_elapsed / self.reload_time)
 
     def pull_trigger(self, start_pos, direction):
         if self.is_reloading:
@@ -61,7 +61,7 @@ class Weapon:
                         self.bullet_speed + speed_adjustment,
                     )
                 )
-                emit_event("gunshot")
+                emit_event("gunshot", source=self.owner)
             self.current_cooldown = self.round_cooldown
             self.rounds_left -= 1
             if self.rounds_left <= 0:
