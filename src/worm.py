@@ -84,9 +84,9 @@ class Worm(Entity):
             source=self,
         )
 
-    def dig(self, offset):
+    def dig(self):
         mouse_pos = self.game.get_mouse_pos()
-        direction = (mouse_pos + offset - self.position).normalize()
+        direction = (mouse_pos + self.game.offset - self.position).normalize()
         dig_pos = self.position + (direction * 5)
         self.game.destroy_terrain(dig_pos, self.height * 0.8)
 
@@ -97,11 +97,6 @@ class Worm(Entity):
             ammo_perc=self.current_weapon.rounds_left
             / self.current_weapon.rounds_per_magazine,
         )
-
-    def draw(self, surface, offset):
-        if not self.alive:
-            return
-        super().draw(surface, offset)
 
     def move(self, collision_rects, collision_masks, dt):
         if self.is_on_ground() and not self.grapple.stuck:
@@ -174,6 +169,13 @@ class Worm(Entity):
 
     def die(self):
         self.alive = False
+
+    def draw(self, surface, offset):
+        if not self.alive:
+            return
+        super().draw(surface, offset)
+        reticule_pos = self.position - offset + (self.aim_direction * 15)
+        pg.draw.rect(surface, pg.Color("red"), (reticule_pos.x, reticule_pos.y, 4, 4))
 
 
 class Grapple(GameObject):

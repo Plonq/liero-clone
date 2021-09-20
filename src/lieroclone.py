@@ -28,9 +28,9 @@ class LieroClone(Game):
         self.map = Map(self)
         self.add_object(self.map)
         self.player = Worm(self, PlayerController(self))
-        # self.opponent = Worm(self, AiController(), 100, 100)
+        self.opponent = Worm(self, AiController(self), 100, 100)
         self.add_object(self.player)
-        # self.add_object(self.opponent)
+        self.add_object(self.opponent)
         self.hud = HUD(self, self.player)
         self._register_actions()
         # self.sound = SoundEffects()
@@ -66,7 +66,7 @@ class LieroClone(Game):
             ),
         )
         self.player.spawn(position)
-        # self.opponent.spawn(Vector2(100, 100))
+        self.opponent.spawn(Vector2(100, 100))
 
     def get_visible_rect(self):
         return pg.Rect(

@@ -1,4 +1,4 @@
-import random
+from pygame.math import Vector2
 
 from src.engine.input import (
     is_action_just_pressed,
@@ -7,8 +7,8 @@ from src.engine.input import (
 )
 
 
-class PlayerController:
-    """A controller based on input events (i.e. human player)."""
+class Controller:
+    """Something that can control a worm."""
 
     def __init__(self, game):
         self.game = game
@@ -16,6 +16,13 @@ class PlayerController:
 
     def set_worm(self, worm):
         self.worm = worm
+
+    def update(self, dt, offset):
+        pass
+
+
+class PlayerController(Controller):
+    """A controller based on input events (i.e. human player)."""
 
     def update(self, dt, offset):
         if self.worm is None:
@@ -36,7 +43,7 @@ class PlayerController:
             self.worm.jump()
 
         if is_action_just_pressed("dig"):
-            self.worm.dig(offset)
+            self.worm.dig()
 
         if is_action_just_pressed("grapple"):
             if self.worm.grapple.launched:
@@ -53,15 +60,29 @@ class PlayerController:
             self.worm.next_weapon()
 
 
-class AiController:
-    """A controller based on input events (i.e. human player)."""
+class AiController(Controller):
+    """An AI controller."""
 
-    def is_action_pressed(self, action):
-        return bool(random.randint(0, 1))
+    def __init__(self, game):
+        super().__init__(game)
+        self.last_pos = Vector2(0, 0)
+        self.time_at_current_pos = 0
 
-    def is_action_just_pressed(self, action):
-        return bool(random.randint(0, 1))
+    def update(self, dt, offset):
+        if (self.worm.position - self.last_pos).magnitude() < 1:
+            self.time_at_current_pos += dt
+        else:
+            self.time_at_current_pos = 0
+        self.last_pos = self.worm.position
 
-    def was_action_just_released(self, action):
+        direction_to_player = self.game.player.position - self.worm.position
+        direction_to_player.normalize_ip()
+        self.worm.set_aim_direction(direction_to_player)
 
-        return bool(random.randint(0, 1))
+        if direction_to_player.x > 0.2:
+            self.worm.move_right()
+        elif direction_to_player.x < -0.2:
+            self.worm.move_left()
+
+        if self.time_at_current_pos > 1:
+            self.worm.dig()
