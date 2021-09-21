@@ -20,9 +20,9 @@ class Worm(Entity):
         self.health = self.max_health
         self.aim_direction = Vector2(0, 0)
         self.available_weapons = [
-            Weapon(game, self, "super_shotgun"),
             Weapon(game, self, "minigun"),
             Weapon(game, self, "shotgun"),
+            Weapon(game, self, "super_shotgun"),
         ]
         self.current_weapon = self.available_weapons[0]
         self.grapple = Grapple(game, self)
@@ -67,6 +67,10 @@ class Worm(Entity):
 
     def pull_trigger(self):
         self.current_weapon.pull_trigger(self.position, self.aim_direction)
+
+    def pull_and_release_trigger(self):
+        self.current_weapon.pull_trigger(self.position, self.aim_direction)
+        self.current_weapon.release_trigger()
 
     def release_trigger(self):
         self.current_weapon.release_trigger()
@@ -174,8 +178,8 @@ class Worm(Entity):
         if not self.alive:
             return
         super().draw(surface, offset)
-        reticule_pos = self.position - offset + (self.aim_direction * 15)
-        pg.draw.rect(surface, pg.Color("red"), (reticule_pos.x, reticule_pos.y, 4, 4))
+        # reticule_pos = self.position - offset + (self.aim_direction * 15)
+        # pg.draw.rect(surface, pg.Color("red"), (reticule_pos.x, reticule_pos.y, 4, 4))
 
 
 class Grapple(GameObject):

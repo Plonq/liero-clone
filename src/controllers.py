@@ -79,10 +79,18 @@ class AiController(Controller):
         direction_to_player.normalize_ip()
         self.worm.set_aim_direction(direction_to_player)
 
-        if direction_to_player.x > 0.2:
-            self.worm.move_right()
-        elif direction_to_player.x < -0.2:
-            self.worm.move_left()
+        distance_to_player = self.worm.position.distance_to(self.game.player.position)
 
-        if self.time_at_current_pos > 1:
+        if distance_to_player > 50:
+            if direction_to_player.x > 0.2:
+                self.worm.move_right()
+            elif direction_to_player.x < -0.2:
+                self.worm.move_left()
+        else:
+            self.worm.stop()
+
+        if distance_to_player < 100:
+            self.worm.pull_and_release_trigger()
+
+        if self.time_at_current_pos > 0.2:
             self.worm.dig()
