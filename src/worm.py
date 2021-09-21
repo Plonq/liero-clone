@@ -3,7 +3,6 @@ from pygame.math import Vector2
 
 from src.assets import get_image
 from src.engine.entity import Entity
-from src.engine.input import get_mouse_pos
 from src.engine.signals import emit_event
 from src.engine.game import GameObject
 from src.engine.utils import blit_centered, is_same_sign
