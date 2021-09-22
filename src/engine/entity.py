@@ -186,6 +186,10 @@ class Entity(GameObject):
                 return True
         return False
 
+    def get_current_mask(self):
+        key = "img_mask_flip" if self.flip else "img_mask"
+        return animations[self.name][self.action][self.frame][key]
+
 
 def load_sprites(entities_dir):
     with open(os.path.join(entities_dir, "config.json")) as f:
@@ -208,4 +212,13 @@ def load_sprites(entities_dir):
             )
 
             for n, frame_time in enumerate(entity_cfg[action]["timings"]):
-                entity_sprites[action].append({"img": images[n], "time": frame_time})
+                entity_sprites[action].append(
+                    {
+                        "img": images[n],
+                        "time": frame_time,
+                        "img_mask": pg.mask.from_surface(images[n]),
+                        "img_mask_flip": pg.mask.from_surface(
+                            pg.transform.flip(images[n], True, False)
+                        ),
+                    }
+                )

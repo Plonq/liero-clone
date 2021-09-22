@@ -27,8 +27,8 @@ class LieroClone(Game):
         assets.init()
         self.map = Map(self)
         self.add_object(self.map)
-        self.player = Worm(self, PlayerController(self))
-        self.opponent = Worm(self, AiController(self), 100, 100)
+        self.player = Worm(self, "player", PlayerController(self))
+        self.opponent = Worm(self, "opponent", AiController(self), 100, 100)
         self.add_object(self.player)
         self.add_object(self.opponent)
         self.hud = HUD(self, self.player)
@@ -106,6 +106,9 @@ class LieroClone(Game):
 
     def get_collision_mask(self):
         return self.map.collision_mask
+
+    def get_worms(self):
+        return [self.player, self.opponent]
 
     def destroy_terrain(self, location, radius):
         self.map.destroy_terrain(location, radius)

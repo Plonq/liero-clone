@@ -1,8 +1,14 @@
 {
-  "worm": {
+  "player": {
      "idle": {
         "timings": [5, 0.1, 5, 3],
         "loop": true
      }
+  },
+  "opponent": {
+    "idle": {
+      "timings": [5, 0.1, 5, 3],
+      "loop": true
+    }
   }
 }

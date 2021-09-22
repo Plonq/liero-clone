@@ -10,8 +10,8 @@ from src.weapon import Weapon
 
 
 class Worm(Entity):
-    def __init__(self, game, controller, x=0, y=0):
-        super().__init__(game, "worm", x, y, 12, 14)
+    def __init__(self, game, name, controller, x=0, y=0):
+        super().__init__(game, name, x, y, 12, 14)
         self.ctrl = controller
         self.ctrl.set_worm(self)
         self.alive = False
@@ -176,6 +176,11 @@ class Worm(Entity):
         super().draw(surface, offset)
         # reticule_pos = self.position - offset + (self.aim_direction * 15)
         # pg.draw.rect(surface, pg.Color("red"), (reticule_pos.x, reticule_pos.y, 4, 4))
+        # worm_mask = self.get_current_mask()
+        # topleft = int(self.position.x - worm_mask.get_size()[0] / 2), int(
+        #     self.position.y - worm_mask.get_size()[1] / 2
+        # )
+        # surface.blit(worm_mask.to_surface(), Vector2(topleft) - offset)
 
 
 class Grapple(GameObject):
@@ -183,6 +188,7 @@ class Grapple(GameObject):
         self.game = game
         self.player = player
         self.image = get_image("weapons/grapple.png")
+        self.mask = pg.Mask((1, 1), True)
         self.position = Vector2(0, 0)
         self.direction = Vector2(0, 0)
         self.speed = 300
@@ -208,9 +214,8 @@ class Grapple(GameObject):
         for rect in self.game.get_collision_rects():
             if rect.collidepoint(position.x, position.y):
                 return True
-        self_mask = pg.Mask((1, 1), True)
         int_pos = (int(-position.x), int(-position.y))
-        mask_collided = self_mask.overlap(self.game.get_collision_mask(), int_pos)
+        mask_collided = self.mask.overlap(self.game.get_collision_mask(), int_pos)
         return mask_collided is not None
 
     def draw(self, surface, offset):
