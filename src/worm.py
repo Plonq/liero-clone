@@ -88,9 +88,7 @@ class Worm(Entity):
         )
 
     def dig(self):
-        mouse_pos = self.game.get_mouse_pos()
-        direction = (mouse_pos + self.game.offset - self.position).normalize()
-        dig_pos = self.position + (direction * 5)
+        dig_pos = self.position + (self.aim_direction * 5)
         self.game.destroy_terrain(dig_pos, self.height * 0.8)
 
     def _update_ammo(self):
