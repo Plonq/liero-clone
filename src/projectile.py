@@ -25,9 +25,6 @@ class Projectile(GameObject):
                     self.position = pos
                     self.explode()
                     return
-        if not self.game.is_within_map(self.position):
-            self.game.remove_object(self)
-            return
         self.position = new_position
 
     def test_collision(self, position):
