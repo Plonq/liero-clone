@@ -178,11 +178,6 @@ class Worm(Entity):
         super().draw(surface, offset)
         # reticule_pos = self.position - offset + (self.aim_direction * 15)
         # pg.draw.rect(surface, pg.Color("red"), (reticule_pos.x, reticule_pos.y, 4, 4))
-        # worm_mask = self.get_current_mask()
-        # topleft = int(self.position.x - worm_mask.get_size()[0] / 2), int(
-        #     self.position.y - worm_mask.get_size()[1] / 2
-        # )
-        # surface.blit(worm_mask.to_surface(), Vector2(topleft) - offset)
 
 
 class Grapple(GameObject):
