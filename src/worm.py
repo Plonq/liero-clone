@@ -170,6 +170,7 @@ class Worm(Entity):
 
     def die(self):
         self.alive = False
+        self.grapple.retract()
 
     def draw(self, surface, offset):
         if not self.alive:
