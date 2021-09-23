@@ -99,7 +99,10 @@ class LieroClone(Game):
         self.offset = Vector2(int(self.true_offset[0]), int(self.true_offset[1]))
 
     def is_within_map(self, position):
-        return pg.Rect(0, 0, *self.map.size).collidepoint(position.x, position.y)
+        return self.get_map_rect().collidepoint(position.x, position.y)
+
+    def get_map_rect(self):
+        return pg.Rect(0, 0, *self.map.size)
 
     def get_collision_rects(self):
         return self.map.map_boundary_rects
