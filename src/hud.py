@@ -74,16 +74,17 @@ class HUD(GameObject):
             pg.Color("white"),
             Vector2(self.margin * 2, self.margin * 2),
         )
-        rect = pg.Rect(
-            self.font.calculate_width("health") + self.margin * 3,
-            self.margin * 2 + self.font.height // 2 - self.bar_height // 2,
-            self.bar_max_width,
-            self.bar_height,
-        )
-        health_perc = self.worm.health / self.worm.max_health
-        rect.width = self.bar_max_width * health_perc
-        color = self.health_bar_zero.lerp(self.health_bar_full, health_perc)
-        pg.draw.rect(surface, color, rect)
+        if self.worm.alive:
+            rect = pg.Rect(
+                self.font.calculate_width("health") + self.margin * 3,
+                self.margin * 2 + self.font.height // 2 - self.bar_height // 2,
+                self.bar_max_width,
+                self.bar_height,
+            )
+            health_perc = self.worm.health / self.worm.max_health
+            rect.width = self.bar_max_width * health_perc
+            color = self.health_bar_zero.lerp(self.health_bar_full, health_perc)
+            pg.draw.rect(surface, color, rect)
         # Ammo bar
         self.font.draw(
             surface,

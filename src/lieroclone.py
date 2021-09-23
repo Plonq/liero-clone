@@ -107,8 +107,8 @@ class LieroClone(Game):
     def get_collision_mask(self):
         return self.map.collision_mask
 
-    def get_worms(self):
-        return [self.player, self.opponent]
+    def get_living_worms(self):
+        return [worm for worm in [self.player, self.opponent] if worm.alive]
 
     def destroy_terrain(self, location, radius):
         self.map.destroy_terrain(location, radius)

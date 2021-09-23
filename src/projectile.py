@@ -39,9 +39,8 @@ class Projectile(GameObject):
         return mask_collided is not None
 
     def has_hit_worm(self):
-        worms = self.game.get_worms()
+        worms = self.game.get_living_worms()
         for worm in worms:
-            print(worm.name)
             if worm.position.distance_to(self.position) < 20:
                 int_pos = (int(self.position.x), int(self.position.y))
                 worm_mask = worm.get_current_mask()
@@ -49,7 +48,6 @@ class Projectile(GameObject):
                     worm.position.y - worm_mask.get_size()[1] / 2
                 )
                 mask_offset = Vector2(worm_topleft) - Vector2(int_pos)
-                print(mask_offset)
                 if self.mask.overlap(
                     worm_mask, (int(mask_offset.x), int(mask_offset.y))
                 ):
