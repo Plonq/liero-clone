@@ -21,6 +21,7 @@ class Worm(Entity):
         self.available_weapons = [
             Weapon(game, self, "minigun"),
             Weapon(game, self, "shotgun"),
+            # Weapon(game, self, "super_shotgun"),
         ]
         self.current_weapon = self.available_weapons[0]
         self.grapple = Grapple(game, self)

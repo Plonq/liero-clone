@@ -73,10 +73,13 @@ class Map(GameObject):
         self.destructible_mask = new_mask
         self.needs_cleanup = False
 
-    @property
-    def collision_mask(self):
+    def get_collision_mask(self):
         """Return combination of destructible and indestructible masks."""
         combined_mask = pg.Mask(self.size)
         combined_mask.draw(self.destructible_mask, (0, 0))
         combined_mask.draw(self.indestructible_mask, (0, 0))
         return combined_mask
+
+    def get_collision_masks(self):
+        """Return masks used for collision as list."""
+        return [self.destructible_mask, self.indestructible_mask]

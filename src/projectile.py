@@ -35,8 +35,8 @@ class Projectile(GameObject):
             if rect.collidepoint(position.x, position.y):
                 return True
         int_pos = (int(-position.x), int(-position.y))
-        mask_collided = self.mask.overlap(self.game.get_collision_mask(), int_pos)
-        return mask_collided is not None
+        for mask in self.game.get_collision_masks():
+            return self.mask.overlap(mask, int_pos) is not None
 
     def has_hit_worm(self):
         worms = self.game.get_living_worms()
