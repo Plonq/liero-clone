@@ -196,21 +196,29 @@ class Grapple(GameObject):
         self.speed = 300
         self.launched = False
         self.stuck = False
+        self.retracting = False
 
     def update(self, dt, offset):
-        if self.stuck:
-            return
-        movement = self.direction * self.speed * dt
-        new_position = self.position + movement
-        if self.test_collision(new_position):
-            # Find exact point of collision (edge of object)
+        if self.stuck and not self.test_collision(self.position):
+            self.retract()
+        elif self.retracting:
+            self.direction = self.player.position - self.position
+            vector = self.direction.normalize() * self.speed * 3 * dt
+            self.position += vector
+            if self.position.distance_to(self.player.position) < 10:
+                self.game.remove_object(self)
+                self.retracting = False
+        else:
+            vector = self.direction * self.speed * dt
+            new_position = self.position + vector
+            # Find collision between current and new position (prevents going through small chunks of dirt)
             for i in range(10):
                 pos = self.position.lerp(new_position, i / 10)
                 if self.test_collision(pos):
                     self.position = pos
                     self.stuck = True
                     return
-        self.position = new_position
+            self.position = new_position
 
     def test_collision(self, position):
         for rect in self.game.get_collision_rects():
@@ -238,12 +246,16 @@ class Grapple(GameObject):
         blit_centered(self.image, surface, self.position - offset)
 
     def launch(self, direction):
+        if self.retracting:
+            self.retracting = False
+            self.game.remove_object(self)
         self.position = self.player.position
         self.direction = direction
         self.game.add_object(self)
         self.launched = True
 
     def retract(self):
-        self.game.remove_object(self)
+        if self.launched:
+            self.retracting = True
         self.launched = False
         self.stuck = False
