@@ -19,18 +19,21 @@ class Projectile(GameObject):
     def update(self, dt, offset):
         movement = self.direction * self.speed * dt
         new_position = self.position + movement
-        if self.test_collision(new_position):
+        if self.collided_with_map(new_position):
             # Find exact point of collision (edge of object)
             for i in range(10):
                 pos = self.position.lerp(new_position, i / 10)
-                if self.test_collision(pos):
+                if self.collided_with_map(pos):
                     self.position = pos
                     self.explode()
                     return
-        self.has_hit_worm()
+        for worm in self.game.get_living_worms():
+            if self.collided_with_worm(worm):
+                self.game.remove_object(self)
+                worm.damage(5)
         self.position = new_position
 
-    def test_collision(self, position):
+    def collided_with_map(self, position):
         int_pos = (int(-position.x), int(-position.y))
         has_collided = False
         for mask in self.game.get_collision_masks():
@@ -38,21 +41,18 @@ class Projectile(GameObject):
                 has_collided = True
         return has_collided
 
-    def has_hit_worm(self):
-        worms = self.game.get_living_worms()
-        for worm in worms:
-            if worm.position.distance_to(self.position) < 20:
-                int_pos = (int(self.position.x), int(self.position.y))
-                worm_mask = worm.get_current_mask()
-                worm_topleft = int(worm.position.x - worm_mask.get_size()[0] / 2), int(
-                    worm.position.y - worm_mask.get_size()[1] / 2
-                )
-                mask_offset = Vector2(worm_topleft) - Vector2(int_pos)
-                if self.mask.overlap(
-                    worm_mask, (int(mask_offset.x), int(mask_offset.y))
-                ):
-                    self.game.remove_object(self)
-                    worm.damage(5)
+    def collided_with_worm(self, worm):
+        if worm.position.distance_to(self.position) < 20:
+            int_pos = (int(self.position.x), int(self.position.y))
+            worm_mask = worm.get_current_mask()
+            worm_topleft = int(worm.position.x - worm_mask.get_size()[0] / 2), int(
+                worm.position.y - worm_mask.get_size()[1] / 2
+            )
+            mask_offset = Vector2(worm_topleft) - Vector2(int_pos)
+            return (
+                self.mask.overlap(worm_mask, (int(mask_offset.x), int(mask_offset.y)))
+                is not None
+            )
 
     def explode(self):
         self.game.destroy_terrain(self.position, 7)
