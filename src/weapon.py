@@ -59,6 +59,7 @@ class Weapon:
                         cur_pos,
                         cur_direction,
                         self.bullet_speed + speed_adjustment,
+                        self.damage,
                     )
                 )
                 emit_event("gunshot", source=self.owner)

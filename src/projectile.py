@@ -8,13 +8,14 @@ from src.gfx import SmallExplosion
 
 
 class Projectile(GameObject):
-    def __init__(self, game, img, start_pos, direction, speed):
+    def __init__(self, game, img, start_pos, direction, speed, damage):
         self.game = game
         self.image = img
         self.mask = pg.Mask((1, 1), True)
         self.position = start_pos
         self.direction = direction.normalize()
         self.speed = speed
+        self.damage = damage
 
     def update(self, dt, offset):
         movement = self.direction * self.speed * dt
@@ -29,8 +30,8 @@ class Projectile(GameObject):
                     return
         for worm in self.game.get_living_worms():
             if self.collided_with_worm(worm):
+                worm.damage(self.damage)
                 self.game.remove_object(self)
-                worm.damage(5)
         self.position = new_position
 
     def collided_with_map(self, position):
