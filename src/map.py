@@ -14,12 +14,6 @@ class Map(GameObject):
         self.destructible_mask = pg.mask.from_surface(destructible)
         self.indestructible_mask = pg.mask.from_surface(indestructible)
         self.size = destructible.get_size()
-        self.map_boundary_rects = (
-            pg.Rect(-50, -50, self.size[0] + 50, 50),
-            pg.Rect(-50, 0, 50, self.size[1]),
-            pg.Rect(self.size[0], 0, 50, self.size[1]),
-            pg.Rect(-50, self.size[1], self.size[0] + 50, 50),
-        )
         self.needs_cleanup = False
         self.time_since_cleanup = 0
 
@@ -36,10 +30,6 @@ class Map(GameObject):
 
         # Background
         surface.fill((53, 29, 15))
-
-        # Boundary
-        for map_boundary_rect in self.map_boundary_rects:
-            pg.draw.rect(surface, (0, 0, 0), map_boundary_rect)
 
         # Destructible map - clipped to undestroyed parts
         clipping_mask = self.destructible_mask.to_surface(

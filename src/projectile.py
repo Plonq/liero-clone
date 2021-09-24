@@ -31,8 +31,6 @@ class Projectile(GameObject):
         self.position = new_position
 
     def test_collision(self, position):
-        if not self.game.is_within_map(position):
-            return True
         int_pos = (int(-position.x), int(-position.y))
         has_collided = False
         for mask in self.game.get_collision_masks():

@@ -104,9 +104,6 @@ class LieroClone(Game):
     def get_map_rect(self):
         return pg.Rect(0, 0, *self.map.size)
 
-    def get_collision_rects(self):
-        return self.map.map_boundary_rects
-
     def get_collision_mask(self):
         return self.map.get_collision_mask()
 
