@@ -55,6 +55,9 @@ class Map(GameObject):
         )
         self.needs_cleanup = True
 
+    def stain_map(self, position, image):
+        self.destructible.blit(image, position)
+
     def clean_up(self):
         """Remove areas of destructible that are smaller than 20 pixels."""
         new_mask = pg.Mask(self.size)

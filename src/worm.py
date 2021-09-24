@@ -1,3 +1,5 @@
+import random
+
 import pygame as pg
 from pygame.math import Vector2
 
@@ -6,6 +8,7 @@ from src.engine.entity import Entity
 from src.engine.signals import emit_event
 from src.engine.game import GameObject
 from src.engine.utils import blit_centered, is_same_sign
+from src.gfx import BloodParticle
 from src.weapon import Weapon
 
 
@@ -163,8 +166,18 @@ class Worm(Entity):
 
     def damage(self, dmg):
         self.health -= dmg
+        self.spray_blood(dmg)
         if self.health <= 0:
             self.die()
+
+    def spray_blood(self, dmg):
+        up = Vector2(0, -1)
+        for _ in range(random.randint(dmg, dmg * 2)):
+            angle = random.randint(-120, 120)
+            direction = up.rotate(angle)
+            self.game.add_object(
+                BloodParticle(self.game, self.position, direction * 100)
+            )
 
     def die(self):
         self.alive = False

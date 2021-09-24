@@ -116,6 +116,9 @@ class LieroClone(Game):
     def destroy_terrain(self, location, radius):
         self.map.destroy_terrain(location, radius)
 
+    def stain_map(self, position, image):
+        self.map.stain_map(position, image)
+
     def get_player_position(self):
         return self.player.position
 
