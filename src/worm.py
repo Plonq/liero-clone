@@ -164,19 +164,19 @@ class Worm(Entity):
         self.x, self.y = position
         self.alive = True
 
-    def damage(self, dmg):
+    def damage(self, dmg, direction):
         self.health -= dmg
-        self.spray_blood(dmg)
+        self.spray_blood(dmg, direction)
         if self.health <= 0:
             self.die()
 
-    def spray_blood(self, dmg):
+    def spray_blood(self, dmg, source_direction):
         up = Vector2(0, -1)
         for _ in range(random.randint(dmg, dmg * 2)):
-            angle = random.randint(-120, 120)
-            direction = up.rotate(angle)
+            angle = random.randint(-45, 45)
+            direction = source_direction.rotate(angle)
             self.game.add_object(
-                BloodParticle(self.game, self.position, direction * 100)
+                BloodParticle(self.game, self.position, direction.normalize() * 100)
             )
 
     def die(self):
