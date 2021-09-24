@@ -89,7 +89,7 @@ class Worm(Entity):
 
     def dig(self):
         dig_pos = self.position + (self.aim_direction * 5)
-        self.game.destroy_terrain(dig_pos, self.height * 0.8)
+        self.game.destroy_terrain(dig_pos, self.height * 0.7)
 
     def _update_ammo(self):
         emit_event(
