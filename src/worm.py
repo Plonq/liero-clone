@@ -171,7 +171,6 @@ class Worm(Entity):
             self.die()
 
     def spray_blood(self, dmg, source_direction):
-        up = Vector2(0, -1)
         for _ in range(random.randint(dmg, dmg * 2)):
             angle = random.randint(-45, 45)
             direction = source_direction.rotate(angle)
