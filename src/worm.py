@@ -32,6 +32,7 @@ class Worm(Entity):
         self.terminal_velocity = 300
         self.spawn_cooldown = 5
         self.spawn_timer = 0
+        self.spawning = False
 
     def update(self, dt, offset):
         super().update(dt, offset)
@@ -176,6 +177,7 @@ class Worm(Entity):
         self.game.destroy_terrain(position, radius=self.height * 0.8)
         self.position = position
         self.alive = True
+        self.spawning = True
 
     def damage(self, dmg, direction):
         self.health -= dmg

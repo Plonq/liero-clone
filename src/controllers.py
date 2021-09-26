@@ -55,9 +55,10 @@ class PlayerController(Controller):
             else:
                 self.worm.launch_grapple()
 
-        if is_action_pressed("attack"):
+        if is_action_pressed("attack") and not self.worm.spawning:
             self.worm.pull_trigger()
         if was_action_just_released("attack"):
+            self.worm.spawning = False
             self.worm.release_trigger()
 
         if is_action_just_pressed("switch_weapon"):
