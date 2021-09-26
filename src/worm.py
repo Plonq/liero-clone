@@ -174,7 +174,7 @@ class Worm(Entity):
         )
         self.health = self.max_health
         self.game.destroy_terrain(position, radius=self.height * 0.8)
-        self.position.x, self.position.y = position
+        self.position = position
         self.alive = True
 
     def damage(self, dmg, direction):
@@ -189,7 +189,10 @@ class Worm(Entity):
             direction = source_direction.rotate(angle)
             self.game.add_object(
                 BloodParticle(
-                    self.game, self.position, direction.normalize() * 50, drip=True
+                    self.game,
+                    Vector2(self.position),
+                    direction.normalize() * 50,
+                    drip=True,
                 )
             )
 

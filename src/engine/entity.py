@@ -6,8 +6,7 @@ from pygame.math import Vector2
 
 from .game import GameObject
 from .sprite import SpriteSheetExtractor
-from .utils import blit_aligned
-
+from .utils import blit_aligned, blit_centered
 
 animations = {}
 
@@ -56,12 +55,10 @@ class Entity(GameObject):
         return self.air_timer < self.jump_buffer
 
     def draw(self, surface, offset):
-        offset_rect = self.rect
-        offset_rect.center = (self.position.x, self.position.y)
-        offset_rect.x -= offset[0]
-        offset_rect.y -= offset[1]
-        blit_aligned(self.img, surface, offset_rect, h_align="center", v_align="bottom")
-        # pg.draw.rect(surface, (255, 0, 0), offset_rect, 1)
+        blit_centered(self.img, surface, self.position - offset)
+        # rect = pg.Rect(0, 0, self.width, self.height)
+        # rect.center = self.position - offset
+        # pg.draw.rect(surface, (255, 0, 0), rect, 1)
         # pg.draw.rect(surface, (0, 255, 0), (self.position.x, self.position.y, 1, 1))
 
     def _set_action(self, action):
