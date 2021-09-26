@@ -28,7 +28,7 @@ class LieroClone(Game):
         self.map = Map(self)
         self.add_object(self.map)
         self.player = Worm(self, "player", PlayerController(self))
-        self.opponent = Worm(self, "opponent", AiController(self), 100, 100)
+        self.opponent = Worm(self, "opponent", AiController(self))
         self.add_object(self.player)
         self.add_object(self.opponent)
         self.hud = HUD(self, self.player)
@@ -39,20 +39,14 @@ class LieroClone(Game):
     def _register_actions(self):
         register_mouse_action("attack", pg.BUTTON_LEFT)
         register_mouse_action("dig", pg.BUTTON_RIGHT)
-        register_key_action("spawn", pg.K_RETURN)
         register_key_action("jump", pg.K_SPACE)
         register_key_action("move_left", pg.K_a)
         register_key_action("move_right", pg.K_d)
         register_key_action("switch_weapon", pg.K_f)
         register_key_action("grapple", pg.K_e)
-        register_key_action("test", pg.K_t)
 
     def post_update(self, dt, offset):
         self.hud.update(dt, offset)
-        if is_action_just_pressed("spawn"):
-            self.spawn()
-        if is_action_just_pressed("test"):
-            self.player.damage(20)
 
     def _draw(self, surface, offset):
         super()._draw(surface, offset)

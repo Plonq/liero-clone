@@ -19,6 +19,7 @@ class Worm(Entity):
         self.ctrl.set_worm(self)
         self.alive = False
         self.max_health = 500
+        self.lives = 5
         self.health = self.max_health
         self.aim_direction = Vector2(0, 0)
         self.available_weapons = [
@@ -29,15 +30,19 @@ class Worm(Entity):
         self.current_weapon = self.available_weapons[0]
         self.grapple = Grapple(game, self)
         self.terminal_velocity = 300
+        self.spawn_cooldown = 5
+        self.spawn_timer = 0
 
     def update(self, dt, offset):
         super().update(dt, offset)
 
+        self.ctrl.update(dt, offset)
+
         if not self.alive:
+            self.spawn_timer -= dt
             return
 
         self.current_weapon.update(dt)
-        self.ctrl.update(dt, offset)
 
         self._update_ammo()
         self.move(self.game.get_collision_rects(), self.game.get_collision_mask(), dt)
@@ -92,7 +97,7 @@ class Worm(Entity):
 
     def dig(self):
         dig_pos = self.position + (self.aim_direction * 5)
-        self.game.destroy_terrain(dig_pos, self.height * 0.7)
+        self.game.destroy_terrain(dig_pos, self.height * 0.8)
 
     def _update_ammo(self):
         emit_event(
@@ -160,7 +165,13 @@ class Worm(Entity):
         if -amount < self.velocity.y < amount:
             self.velocity.y = 0
 
-    def spawn(self, position):
+    def spawn(self):
+        if self.spawn_timer > 0:
+            return
+        position = Vector2(
+            random.randint(self.width, self.game.display_size[0] - self.width),
+            random.randint(self.height, self.game.display_size[1] - self.height),
+        )
         self.health = self.max_health
         self.game.destroy_terrain(position, radius=self.height * 0.8)
         self.x, self.y = position
@@ -183,8 +194,12 @@ class Worm(Entity):
             )
 
     def die(self):
+        self.grapple.remove()
         self.alive = False
-        self.grapple.retract()
+        self.lives -= 1
+        self.spawn_timer = self.spawn_cooldown
+        if self.lives <= 0:
+            print("game over")
 
     def draw(self, surface, offset):
         if not self.alive:
@@ -267,3 +282,6 @@ class Grapple(GameObject):
             self.retracting = True
         self.launched = False
         self.stuck = False
+
+    def remove(self):
+        self.game.remove_object(self)

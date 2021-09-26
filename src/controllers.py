@@ -28,6 +28,10 @@ class PlayerController(Controller):
         if self.worm is None:
             return
 
+        if not self.worm.alive and is_action_just_pressed("attack"):
+            self.worm.spawn()
+            return
+
         self.worm.set_aim_direction(
             self.game.get_direction_to_mouse(self.worm.position)
         )
@@ -69,6 +73,12 @@ class AiController(Controller):
         self.time_at_current_pos = 0
 
     def update(self, dt, offset):
+        if not self.worm.alive:
+            self.worm.spawn()
+
+        if not self.game.player.alive:
+            return
+
         if (self.worm.position - self.last_pos).magnitude() < 1:
             self.time_at_current_pos += dt
         else:
