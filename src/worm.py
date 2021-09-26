@@ -46,7 +46,6 @@ class Worm(Entity):
 
         self.current_weapon.update(dt)
 
-        self._update_ammo()
         self.move(self.game.get_collision_rects(), self.game.get_collision_mask(), dt)
 
         emit_event(
@@ -101,20 +100,12 @@ class Worm(Entity):
             "switched_weapon",
             previous=self.available_weapons[curr_index],
             current=self.current_weapon,
-            source=self,
+            worm=self,
         )
 
     def dig(self):
         dig_pos = self.position + (self.aim_direction * 5)
         self.game.destroy_terrain(dig_pos, self.height * 0.8)
-
-    def _update_ammo(self):
-        emit_event(
-            "ammo",
-            source=self,
-            ammo_perc=self.current_weapon.rounds_left
-            / self.current_weapon.rounds_per_magazine,
-        )
 
     def move(self, collision_rects, collision_masks, dt):
         if self.is_on_ground() and not self.grapple.stuck:

@@ -32,14 +32,15 @@ class HUD(GameObject):
         self.time_of_last_weapon_switch = 0
         self.weapon_name_fade_time = 5
         # Listen to events
-        observe("switched_weapon", self._on_switched_weapon, source=self.worm)
+        observe("switched_weapon", self._on_switched_weapon)
 
-    def _on_switched_weapon(self, previous, current):
-        if current != previous:
-            self.weapon_name = current.name
-            # Reset color to white to display it
-            self.weapon_name_current_color = pg.Color("white")
-            self.time_of_last_weapon_switch = time.time()
+    def _on_switched_weapon(self, previous, current, worm):
+        if worm != self.worm:
+            if current != previous:
+                self.weapon_name = current.name
+                # Reset color to white to display it
+                self.weapon_name_current_color = pg.Color("white")
+                self.time_of_last_weapon_switch = time.time()
 
     def update(self, dt, offset):
         if self.weapon_name_current_color != pg.Color(0, 0, 0, 0):
