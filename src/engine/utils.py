@@ -12,10 +12,10 @@ def is_same_sign(num1, num2):
 # Pygame utils
 
 
-def blit_centered(from_surf, to_surf, position):
+def blit_centered(from_surf, to_surf, position, **kwargs):
     to_x = position.x - from_surf.get_width() // 2
     to_y = position.y - from_surf.get_height() // 2
-    to_surf.blit(from_surf, (to_x, to_y))
+    to_surf.blit(from_surf, (to_x, to_y), **kwargs)
 
 
 def blit_aligned(from_surf, to_surf, rect, h_align="center", v_align="center"):
