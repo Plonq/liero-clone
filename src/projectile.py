@@ -31,7 +31,7 @@ class Projectile(ParticleCollisionMixin, WormCollisionMixin, GameObject):
                     return
         for worm in self.game.get_living_worms():
             if self.collided_with_worm(self.position, worm, self.mask):
-                worm.damage(self.damage, self.direction)
+                worm.damage(self.damage, self.direction, self.position)
                 self.game.remove_object(self)
         self.position = new_position
 
