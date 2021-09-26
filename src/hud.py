@@ -35,7 +35,7 @@ class HUD(GameObject):
         observe("switched_weapon", self._on_switched_weapon)
 
     def _on_switched_weapon(self, previous, current, worm):
-        if worm != self.worm:
+        if worm == self.worm:
             if current != previous:
                 self.weapon_name = current.name
                 # Reset color to white to display it
