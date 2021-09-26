@@ -7,7 +7,6 @@ from src import assets
 from src.controllers import AiController, PlayerController
 from src.engine.game import Game
 from src.engine.input import (
-    is_action_just_pressed,
     register_key_action,
     register_mouse_action,
 )
@@ -72,13 +71,13 @@ class LieroClone(Game):
 
     def update_offset(self, dt):
         self.true_offset[0] += (
-            self.player.x
+            self.player.position.x
             - self.true_offset[0]
             - self.display_size[0] / 2
             + self.player.width // 2
         ) / (0.15 / dt)
         self.true_offset[1] += (
-            self.player.y
+            self.player.position.y
             - self.true_offset[1]
             - self.display_size[1] / 2
             + self.player.height // 2

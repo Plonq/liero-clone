@@ -174,7 +174,7 @@ class Worm(Entity):
         )
         self.health = self.max_health
         self.game.destroy_terrain(position, radius=self.height * 0.8)
-        self.x, self.y = position
+        self.position.x, self.position.y = position
         self.alive = True
 
     def damage(self, dmg, direction):

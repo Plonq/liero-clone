@@ -16,8 +16,7 @@ class Entity(GameObject):
     def __init__(self, game, name, x=0, y=0, width=1, height=1):
         self.game = game
         self.name = name
-        self.x = x
-        self.y = y
+        self.position = Vector2(x, y)
         self.width = width
         self.height = height
         self.run_speed = 60
@@ -40,19 +39,15 @@ class Entity(GameObject):
     @property
     def rect(self):
         rect = pg.Rect(0, 0, self.width, self.height)
-        rect.center = (self.x, self.y)
+        rect.center = (self.position.x, self.position.y)
         return rect
 
     @property
     def hit_box_top_left(self):
-        # return int(self.x), int(self.y)
-        x = self.x - (self.width // 2)
-        y = self.y - (self.height // 2)
+        # return int(self.position.x), int(self.position.y)
+        x = self.position.x - (self.width // 2)
+        y = self.position.y - (self.height // 2)
         return int(x), int(y)
-
-    @property
-    def position(self):
-        return Vector2(self.x, self.y)
 
     def update(self, dt, offset):
         self._animate(dt)
@@ -62,12 +57,12 @@ class Entity(GameObject):
 
     def draw(self, surface, offset):
         offset_rect = self.rect
-        offset_rect.center = (self.x, self.y)
+        offset_rect.center = (self.position.x, self.position.y)
         offset_rect.x -= offset[0]
         offset_rect.y -= offset[1]
         blit_aligned(self.img, surface, offset_rect, h_align="center", v_align="bottom")
         # pg.draw.rect(surface, (255, 0, 0), offset_rect, 1)
-        # pg.draw.rect(surface, (0, 255, 0), (self.x, self.y, 1, 1))
+        # pg.draw.rect(surface, (0, 255, 0), (self.position.x, self.position.y, 1, 1))
 
     def _set_action(self, action):
         if action in animations[self.name]:
@@ -120,48 +115,48 @@ class Entity(GameObject):
         collision_types = {"top": False, "bottom": False, "right": False, "left": False}
 
         # Horizontal (+ slopes)
-        self.x += velocity[0]
+        self.position.x += velocity[0]
 
         hit_list = self.rect.collidelistall(collision_rects)
         for tile_i in hit_list:
             if velocity[0] > 0:
-                self.x = collision_rects[tile_i].left - self.width // 2
+                self.position.x = collision_rects[tile_i].left - self.width // 2
                 collision_types["right"] = True
             elif velocity[0] < 0:
-                self.x = collision_rects[tile_i].right + self.width // 2
+                self.position.x = collision_rects[tile_i].right + self.width // 2
                 collision_types["left"] = True
 
         if self._collided_with_mask(collision_mask):
             if not self._try_sliding_slope(collision_mask):
                 if velocity[0] > 0:
                     while self._collided_with_mask(collision_mask):
-                        self.x -= 1
+                        self.position.x -= 1
                     collision_types["right"] = True
                 elif velocity[0] < 0:
                     while self._collided_with_mask(collision_mask):
-                        self.x += 1
+                        self.position.x += 1
                     collision_types["left"] = True
 
         # Vertical
-        self.y += velocity[1]
+        self.position.y += velocity[1]
 
         hit_list = self.rect.collidelistall(collision_rects)
         for tile_i in hit_list:
             if velocity[1] > 0:
-                self.y = collision_rects[tile_i].top - self.height // 2
+                self.position.y = collision_rects[tile_i].top - self.height // 2
                 collision_types["bottom"] = True
             elif velocity[1] < 0:
-                self.y = collision_rects[tile_i].bottom + self.height // 2
+                self.position.y = collision_rects[tile_i].bottom + self.height // 2
                 collision_types["top"] = True
 
         if self._collided_with_mask(collision_mask):
             if velocity[1] > 0:
                 while self._collided_with_mask(collision_mask):
-                    self.y -= 1
+                    self.position.y -= 1
                 collision_types["bottom"] = True
             elif velocity[1] < 0:
                 while self._collided_with_mask(collision_mask):
-                    self.y += 1
+                    self.position.y += 1
                 collision_types["top"] = True
 
         return collision_types
@@ -177,12 +172,12 @@ class Entity(GameObject):
         for i in range(1, 4):
             temp_y = ny - i
             if collision_mask.overlap(self.mask, (nx, temp_y)) is None:
-                self.y -= i
+                self.position.y -= i
                 return True
         for i in range(1, 4):
             temp_y = ny + i
             if collision_mask.overlap(self.mask, (nx, temp_y)) is None:
-                self.y += i
+                self.position.y += i
                 return True
         return False
 
