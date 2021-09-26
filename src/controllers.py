@@ -83,7 +83,7 @@ class AiController(Controller):
             self.time_at_current_pos += dt
         else:
             self.time_at_current_pos = 0
-        self.last_pos = self.worm.position
+        self.last_pos = Vector2(self.worm.position)
 
         direction_to_player = self.game.player.position - self.worm.position
         direction_to_player.normalize_ip()
