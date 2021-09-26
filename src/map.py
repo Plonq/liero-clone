@@ -1,3 +1,5 @@
+import random
+
 import pygame as pg
 
 from src.assets import get_image
@@ -5,17 +7,42 @@ from src.engine.game import GameObject
 
 
 class Map(GameObject):
-    def __init__(self, game):
+    def __init__(self, game, size=(1024, 1024)):
         self.game = game
-        destructible = get_image("maps/default/main.png")
-        indestructible = get_image("maps/default/obstacles.png")
-        self.destructible = destructible
-        self.indestructible = indestructible
-        self.destructible_mask = pg.mask.from_surface(destructible)
-        self.indestructible_mask = pg.mask.from_surface(indestructible)
-        self.size = destructible.get_size()
+        self.size = size
+        self._build_map()
         self.needs_cleanup = False
         self.time_since_cleanup = 0
+
+    def _build_map(self):
+        dirt_tile = get_image("maps/default/dirt.png").convert()
+        bg_tile = get_image("maps/default/bg.png").convert()
+        rock_32 = get_image("maps/default/obstacles/rock-32.png").convert_alpha()
+
+        tile_size = dirt_tile.get_size()
+
+        dirt_img = pg.Surface(self.size)
+        bg_img = pg.Surface(self.size)
+        obstacle_img = pg.Surface(self.size).convert_alpha()
+
+        for y in range(self.size[1] // tile_size[1]):
+            for x in range(self.size[0] // tile_size[0]):
+                location = (x * tile_size[0], y * tile_size[1])
+                bg_img.blit(bg_tile, location)
+                dirt_img.blit(dirt_tile, location)
+                if random.randint(1, 10) == 5:
+                    offset = random.randint(
+                        0, tile_size[0] - rock_32.get_width()
+                    ), random.randint(0, tile_size[1] - rock_32.get_height())
+                    obstacle_img.blit(
+                        rock_32, (location[0] + offset[0], location[1] + offset[1])
+                    )
+
+        self.bg = bg_img
+        self.destructible = dirt_img
+        self.destructible_mask = pg.Mask(self.size, fill=True)
+        self.indestructible = obstacle_img
+        self.indestructible_mask = pg.mask.from_surface(obstacle_img)
 
     def update(self, dt, offset):
         # Throttle cleanup for performance
@@ -29,7 +56,7 @@ class Map(GameObject):
         adjusted_offset = (-offset.x, -offset.y)
 
         # Background
-        surface.fill((53, 29, 15))
+        surface.blit(self.bg, adjusted_offset)
 
         # Destructible map - clipped to undestroyed parts
         clipping_mask = self.destructible_mask.to_surface(
