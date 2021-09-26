@@ -39,7 +39,7 @@ class Worm(Entity):
         self.ctrl.update(dt, offset)
 
         if not self.alive:
-            self.spawn_timer -= dt
+            self.spawn_timer = max(0, self.spawn_timer - dt)
             return
 
         self.current_weapon.update(dt)

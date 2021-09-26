@@ -139,3 +139,19 @@ class HUD(GameObject):
                 self.weapon_name_current_color,
                 worm_pos + worm_offset - offset,
             )
+
+        # Death spawn text
+        if not self.worm.alive and self.worm.lives > 0:
+            center_of_screen = Vector2(
+                self.game.display_size[0] // 2, self.game.display_size[1] // 2
+            )
+            if self.worm.spawn_timer == 0:
+                text = "Press Fire to spawn"
+            else:
+                text = "Raspawn in {:.2f}".format(self.worm.spawn_timer)
+            self.font.draw_centered(
+                surface,
+                text,
+                pg.Color("white"),
+                center_of_screen,
+            )

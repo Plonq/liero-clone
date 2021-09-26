@@ -1,4 +1,6 @@
 import pygame as pg
+from pygame.math import Vector2
+
 from src.engine.sprite import SpriteSheetExtractor
 
 CHARACTER_ORDER = [
@@ -132,6 +134,14 @@ class Font:
                 x_offset += self.characters[char].get_width() + self.spacing
             else:
                 x_offset += self.space_width + self.spacing
+
+    def draw_centered(self, surface, text, color, location):
+        width = self.calculate_width(text)
+        new_pos = Vector2(
+            location.x - width // 2,
+            location.y - self.height // 2,
+        )
+        self.draw(surface, text, color, new_pos)
 
     def calculate_width(self, text):
         total_width = 0
