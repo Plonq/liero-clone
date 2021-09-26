@@ -201,6 +201,7 @@ class Worm(Entity):
     def die(self):
         self.grapple.remove()
         self.alive = False
+        self.velocity = Vector2(0)
         self.lives -= 1
         self.spawn_timer = self.spawn_cooldown
         if self.lives <= 0:
