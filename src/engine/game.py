@@ -79,7 +79,7 @@ class Game:
         pass
 
     def _draw(self, surface, offset):
-        for game_object in self.game_objects:
+        for game_object in sorted(self.game_objects, key=lambda obj: obj.z_index):
             game_object.draw(surface, offset)
 
     def update_offset(self, dt):
@@ -112,6 +112,8 @@ class Game:
 
 
 class GameObject:
+    z_index = 0
+
     def update(self, dt, offset):
         pass
 

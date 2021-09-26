@@ -15,6 +15,7 @@ from src.weapon import Weapon
 class Worm(Entity):
     def __init__(self, game, name, controller, x=0, y=0):
         super().__init__(game, name, x, y, 12, 14)
+        self.z_index = 30
         self.ctrl = controller
         self.ctrl.set_worm(self)
         self.alive = False
@@ -47,6 +48,13 @@ class Worm(Entity):
 
         self._update_ammo()
         self.move(self.game.get_collision_rects(), self.game.get_collision_mask(), dt)
+
+        emit_event(
+            "cast_shadow",
+            mask=self.get_current_mask(),
+            position=self.position,
+            centered=True,
+        )
 
     def set_aim_direction(self, direction):
         self.aim_direction = direction.normalize()
@@ -210,6 +218,7 @@ class Worm(Entity):
     def draw(self, surface, offset):
         if not self.alive:
             return
+
         super().draw(surface, offset)
         # reticule_pos = self.position - offset + (self.aim_direction * 15)
         # pg.draw.rect(surface, pg.Color("red"), (reticule_pos.x, reticule_pos.y, 4, 4))

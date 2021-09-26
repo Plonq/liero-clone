@@ -1,14 +1,18 @@
 import random
 
 import pygame as pg
+from pygame.math import Vector2
 
 from src.assets import get_image
 from src.engine.game import GameObject
+from src.engine.signals import observe
+from src.engine.utils import blit_centered
 
 
 class Map(GameObject):
     def __init__(self, game, size=(1024, 1024)):
         self.game = game
+        self.z_index = 50
         self.size = size
         self._build_map()
         self.needs_cleanup = False
@@ -45,7 +49,11 @@ class Map(GameObject):
                     )
         dirt_img.blit(obstacle_img, (0, 0))
 
-        self.bg = bg_img
+        self.bg = Background(bg_img)
+        self.game.add_object(self.bg)
+        self.shadow = Shadow(self.size)
+        self.game.add_object(self.shadow)
+
         self.destructible = dirt_img
         self.destructible_mask = pg.Mask(self.size, fill=True)
         self.indestructible_mask = pg.mask.from_surface(obstacle_img)
@@ -62,24 +70,12 @@ class Map(GameObject):
         adjusted_offset = (-offset.x, -offset.y)
 
         # Background
-        surface.blit(self.bg, adjusted_offset)
 
         clipping_mask = self.destructible_mask.to_surface(
             unsetcolor=(0, 0, 0, 0)
         ).convert_alpha()
 
-        # Shadow
-        shadow_temp = pg.Surface(self.size).convert_alpha()
-        shadow_temp.fill((200, 200, 220))
-        shadow_temp.blit(clipping_mask, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
-        shadow = pg.Surface(self.size).convert_alpha()
-        shadow.fill(pg.Color("white"))
-        shadow.blit(shadow_temp, (0, 0))
-        surface.blit(
-            shadow,
-            (adjusted_offset[0] - 3, adjusted_offset[1] + 3),
-            special_flags=pg.BLEND_RGBA_MULT,
-        )
+        self.shadow.draw_shadow_with_clipping_mask(clipping_mask, Vector2(0))
 
         # Destructible map
         destructible_copy = self.destructible.copy()
@@ -121,3 +117,45 @@ class Map(GameObject):
     def get_collision_masks(self):
         """Return masks used for collision as list."""
         return [self.destructible_mask, self.indestructible_mask]
+
+
+class Background(GameObject):
+    def __init__(self, img):
+        self.z_index = 0
+        self.img = img
+
+    def draw(self, surface, offset):
+        surface.blit(self.img, offset * -1)
+
+
+class Shadow(GameObject):
+    def __init__(self, size):
+        self.z_index = 10
+        self.shadow_img = pg.Surface(size)
+        self.reset()
+        observe("cast_shadow", self.draw_shadow)
+
+    def reset(self):
+        self.shadow_img.fill(pg.Color("white"))
+
+    def draw_shadow(self, mask, position, centered=False):
+        clipping_mask = mask.to_surface(unsetcolor=(0, 0, 0, 0)).convert_alpha()
+        self.draw_shadow_with_clipping_mask(clipping_mask, position, centered)
+
+    def draw_shadow_with_clipping_mask(self, clipping_mask, position, centered=False):
+
+        shadow = pg.Surface(clipping_mask.get_size()).convert_alpha()
+        shadow.fill((200, 200, 220))
+        shadow.blit(clipping_mask, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
+        if centered:
+            blit_centered(shadow, self.shadow_img, position)
+        else:
+            self.shadow_img.blit(shadow, position)
+
+    def draw(self, surface, offset: Vector2):
+        surface.blit(
+            self.shadow_img,
+            offset * -1 + Vector2(-3, 3),
+            special_flags=pg.BLEND_RGBA_MULT,
+        )
+        self.reset()

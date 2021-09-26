@@ -18,6 +18,7 @@ class SmallExplosion(Effect):
             sprite_strip=assets["img"]["explosions"]["small"],
             lifespan=0.3,
         )
+        self.z_index = 70
 
 
 class BloodParticle(ParticleCollisionMixin, GameObject):
@@ -26,6 +27,7 @@ class BloodParticle(ParticleCollisionMixin, GameObject):
 
     def __init__(self, game, position, velocity, drip=False):
         self.game = game
+        self.z_index = 60
         self.image = (
             self.big_img.copy().convert_alpha()
             if drip
