@@ -171,11 +171,13 @@ class Worm(Entity):
             self.die()
 
     def spray_blood(self, dmg, source_direction):
-        for _ in range(random.randint(dmg, dmg * 2)):
+        for _ in range(random.randint(2, 3)):
             angle = random.randint(-45, 45)
             direction = source_direction.rotate(angle)
             self.game.add_object(
-                BloodParticle(self.game, self.position, direction.normalize() * 100)
+                BloodParticle(
+                    self.game, self.position, direction.normalize() * 50, drip=True
+                )
             )
 
     def die(self):
