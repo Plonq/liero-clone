@@ -21,8 +21,8 @@ class Map(GameObject):
 
         tile_size = dirt_tile.get_size()
 
-        dirt_img = pg.Surface(self.size)
-        bg_img = pg.Surface(self.size)
+        dirt_img = pg.Surface(self.size).convert_alpha()
+        bg_img = pg.Surface(self.size).convert_alpha()
         obstacle_img = pg.Surface(self.size).convert_alpha()
 
         for y in range(self.size[1] // tile_size[1]):
@@ -37,11 +37,11 @@ class Map(GameObject):
                     obstacle_img.blit(
                         rock1, (location[0] + offset[0], location[1] + offset[1])
                     )
+        dirt_img.blit(obstacle_img, (0, 0))
 
         self.bg = bg_img
         self.destructible = dirt_img
         self.destructible_mask = pg.Mask(self.size, fill=True)
-        self.indestructible = obstacle_img
         self.indestructible_mask = pg.mask.from_surface(obstacle_img)
 
     def update(self, dt, offset):
@@ -66,9 +66,6 @@ class Map(GameObject):
         destructible_copy.blit(clipping_mask, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
         surface.blit(destructible_copy, adjusted_offset)
 
-        # Indestructible map (rocks and such)
-        surface.blit(self.indestructible, adjusted_offset)
-
     def destroy_terrain(self, location, radius):
         # Create a mask of a circle
         circle_img = pg.Surface((radius * 2, radius * 2))
@@ -80,6 +77,7 @@ class Map(GameObject):
         self.destructible_mask.erase(
             circle_mask, (int(location.x - radius), int(location.y - radius))
         )
+        self.destructible_mask.draw(self.indestructible_mask, (0, 0))
         self.needs_cleanup = True
 
     def stain_map(self, position, image):
