@@ -232,7 +232,7 @@ class Grapple(GameObject):
             self.direction = self.player.position - self.position
             vector = self.direction.normalize() * self.speed * 3 * dt
             self.position += vector
-            if self.position.distance_to(self.player.position) < 10:
+            if self.position.distance_to(self.player.position) < self.speed * 3 * dt:
                 self.game.remove_object(self)
                 self.retracting = False
         else:
