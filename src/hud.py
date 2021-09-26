@@ -64,9 +64,10 @@ class HUD(GameObject):
                 self.bar_max_width
                 + self.font.calculate_width("health")
                 + self.margin * 3,
-                self.font.height * 2 + self.margin * 2 + self.spacing,
+                self.font.height * 3 + self.margin * 2 + self.spacing * 2,
             ),
         )
+
         # Health
         self.font.draw(
             surface,
@@ -85,6 +86,7 @@ class HUD(GameObject):
             rect.width = self.bar_max_width * health_perc
             color = self.health_bar_zero.lerp(self.health_bar_full, health_perc)
             pg.draw.rect(surface, color, rect)
+
         # Ammo bar
         self.font.draw(
             surface,
@@ -114,6 +116,16 @@ class HUD(GameObject):
         rect.width = self.bar_max_width * ammo_perc
         color = self.ammo_bar_zero.lerp(self.ammo_bar_full, ammo_perc)
         pg.draw.rect(surface, color, rect)
+
+        # Lives
+        self.font.draw(
+            surface,
+            f"lives: {self.worm.lives}",
+            pg.Color("white"),
+            Vector2(
+                self.margin * 2, self.margin * 2 + (self.font.height + self.spacing) * 2
+            ),
+        )
 
         # Weapon name
         if self.weapon_name_current_color != pg.Color(0, 0, 0, 0):
