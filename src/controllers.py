@@ -28,8 +28,9 @@ class PlayerController(Controller):
         if self.worm is None:
             return
 
-        if not self.worm.alive and is_action_just_pressed("attack"):
-            self.worm.spawn()
+        if not self.worm.alive:
+            if is_action_just_pressed("attack"):
+                self.worm.spawn()
             return
 
         self.worm.set_aim_direction(
