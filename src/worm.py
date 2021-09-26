@@ -40,7 +40,7 @@ class Worm(Entity):
         self.ctrl.update(dt, offset)
 
         self._update_ammo()
-        self.move(self.game.get_collision_mask(), dt)
+        self.move(self.game.get_collision_rects(), self.game.get_collision_mask(), dt)
 
     def set_aim_direction(self, direction):
         self.aim_direction = direction.normalize()
@@ -102,7 +102,7 @@ class Worm(Entity):
             / self.current_weapon.rounds_per_magazine,
         )
 
-    def move(self, collision_masks, dt):
+    def move(self, collision_rects, collision_masks, dt):
         if self.is_on_ground() and not self.grapple.stuck:
             # Fixed movement on ground
             if self.direction_x != 0:
@@ -122,7 +122,9 @@ class Worm(Entity):
         self._apply_gravity(6)
         velocity = self.velocity * dt
 
-        collision_directions = self._move_and_collide(velocity, collision_masks)
+        collision_directions = self._move_and_collide(
+            velocity, collision_rects, collision_masks
+        )
 
         if collision_directions["bottom"]:
             self.velocity.y = 0
@@ -228,6 +230,8 @@ class Grapple(GameObject):
             self.position = new_position
 
     def test_collision(self, position):
+        if not self.game.is_within_map(position):
+            return True
         int_pos = (int(-position.x), int(-position.y))
         mask_collided = self.mask.overlap(self.game.get_collision_mask(), int_pos)
         return mask_collided is not None

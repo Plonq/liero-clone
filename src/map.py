@@ -13,6 +13,12 @@ class Map(GameObject):
         self._build_map()
         self.needs_cleanup = False
         self.time_since_cleanup = 0
+        self.map_boundary_rects = (
+            pg.Rect(-50, -50, self.size[0] + 50, 50),
+            pg.Rect(-50, 0, 50, self.size[1]),
+            pg.Rect(self.size[0], 0, 50, self.size[1]),
+            pg.Rect(-50, self.size[1], self.size[0] + 50, 50),
+        )
 
     def _build_map(self):
         dirt_tile = get_image("maps/default/dirt.png").convert()
