@@ -101,7 +101,7 @@ class AiController(Controller):
         else:
             self.worm.stop()
 
-        if distance_to_player < 900:
+        if distance_to_player < 100:
             self.worm.pull_and_release_trigger()
 
         if self.time_at_current_pos > 0.2:
