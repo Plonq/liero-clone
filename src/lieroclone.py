@@ -32,7 +32,7 @@ class LieroClone(Game):
         self.add_object(self.opponent)
         self.hud = HUD(self, self.player)
         self._register_actions()
-        # self.sound = SoundEffects()
+        self.sound = SoundEffects(self, self.player)
         self.true_offset = [0, 0]
 
     def _register_actions(self):
@@ -46,6 +46,7 @@ class LieroClone(Game):
 
     def post_update(self, dt, offset):
         self.hud.update(dt, offset)
+        self.sound.update(dt)
 
     def _draw(self, surface, offset):
         super()._draw(surface, offset)

@@ -204,6 +204,7 @@ class Worm(Entity):
         self.velocity = Vector2(0)
         self.lives -= 1
         self.spawn_timer = self.spawn_cooldown
+        emit_event("worm_died", worm=self)
         if self.lives <= 0:
             print("game over")
 

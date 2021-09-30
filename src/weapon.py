@@ -1,6 +1,6 @@
 import random
 
-from src import config
+from src.config import config
 from src.assets import get_image
 from src.engine.signals import emit_event
 from src.projectile import Projectile
@@ -11,16 +11,16 @@ class Weapon:
         self.game = game
         self.owner = owner
         self.name = name
-        self.type = config.weapons[name]["type"]
-        self.automatic = config.weapons[name]["automatic"]
-        self.bullets_per_round = config.weapons[name]["bullets_per_round"]
-        self.rounds_per_magazine = config.weapons[name]["rounds_per_magazine"]
-        self.reload_time = config.weapons[name]["reload_time"]
-        self.round_cooldown = config.weapons[name]["round_cooldown"]
-        self.bullet_speed = config.weapons[name]["bullet_speed"]
-        self.bullet_speed_jitter = config.weapons[name]["bullet_speed_jitter"]
-        self.accuracy = config.weapons[name]["accuracy"]
-        self.damage = config.weapons[name]["damage"]
+        self.type = config["weapons"][name]["type"]
+        self.automatic = config["weapons"][name]["automatic"]
+        self.bullets_per_round = config["weapons"][name]["bullets_per_round"]
+        self.rounds_per_magazine = config["weapons"][name]["rounds_per_magazine"]
+        self.reload_time = config["weapons"][name]["reload_time"]
+        self.round_cooldown = config["weapons"][name]["round_cooldown"]
+        self.bullet_speed = config["weapons"][name]["bullet_speed"]
+        self.bullet_speed_jitter = config["weapons"][name]["bullet_speed_jitter"]
+        self.accuracy = config["weapons"][name]["accuracy"]
+        self.damage = config["weapons"][name]["damage"]
         self.current_cooldown = 0
         self.is_firing = False
         self.is_reloading = False
@@ -62,7 +62,7 @@ class Weapon:
                         self.damage,
                     )
                 )
-                emit_event("gunshot", source=self.owner)
+                emit_event("gunshot", worm=self.owner)
             self.current_cooldown = self.round_cooldown
             self.rounds_left -= 1
             if self.rounds_left <= 0:

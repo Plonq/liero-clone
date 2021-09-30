@@ -18,10 +18,22 @@ def init():
         "small": SpriteStrip(get_image("gfx/explosion-small.png"))
     }
     # Sounds
-    assets["sound"]["explosions"] = {
-        "small": pg.mixer.Sound(ROOT_DIR / "assets/sounds/Explosion2.wav")
-    }
-    assets["sound"]["gunshot"] = pg.mixer.Sound(ROOT_DIR / "assets/sounds/Gunshot7.wav")
+    # assets["sound"]["explosions"] = {
+    #     "small": pg.mixer.Sound(ROOT_DIR / "assets/sounds/Explosion2.wav")
+    # }
+    assets["sound"]["explosions"] = {}
+    for i in range(1, 11):
+        assets["sound"]["explosions"][i] = pg.mixer.Sound(
+            ROOT_DIR / f"assets/sounds/Explosion{i}.wav"
+        )
+    assets["sound"]["death"] = pg.mixer.Sound(ROOT_DIR / "assets/sounds/HitGore3.wav")
+
+    assets["sound"]["gunshots"] = {}
+    for i in range(1, 12):
+        assets["sound"]["gunshots"][i] = pg.mixer.Sound(
+            ROOT_DIR / f"assets/sounds/Gunshot{i}.wav"
+        )
+
     # Fonts
     assets["font"]["small"] = pg.image.load(
         ROOT_DIR / "assets/fonts/small_font.png"
