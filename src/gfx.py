@@ -6,6 +6,7 @@ from pygame.math import Vector2
 from src.assets import assets
 from src.engine.game import GameObject
 from src.engine.gfx import Effect
+from src.engine.signals import emit_event
 from src.engine.utils import blit_centered
 from src.mixins import ParticleCollisionMixin
 
@@ -19,6 +20,7 @@ class SmallExplosion(Effect):
             lifespan=0.3,
         )
         self.z_index = 70
+        emit_event("small_explosion", position=position)
 
 
 class BloodParticle(ParticleCollisionMixin, GameObject):

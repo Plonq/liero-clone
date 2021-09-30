@@ -39,7 +39,6 @@ class Projectile(ParticleCollisionMixin, WormCollisionMixin, GameObject):
         self.game.destroy_terrain(self.position, 7)
         self.game.remove_object(self)
         self.game.add_object(SmallExplosion(self.game, self.position))
-        emit_event("small_explosion")
 
     def draw(self, surface, offset):
         blit_centered(self.image, surface, self.position - offset)
