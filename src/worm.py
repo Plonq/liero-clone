@@ -181,6 +181,7 @@ class Worm(Entity):
     def damage(self, dmg, direction, location):
         self.health -= dmg
         self.spray_blood(direction, location, amount=random.randint(2, 3))
+        emit_event("worm_damaged", dmg=dmg, worm=self)
         if self.health <= 0:
             self.die()
 

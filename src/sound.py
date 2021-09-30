@@ -11,11 +11,14 @@ class SoundEffects:
     def __init__(self, game, player):
         self.game = game
         self.player = player
-        self.time_of_last_explosion = 0
         self.queue = set()
         observe("small_explosion", self._small_explosion)
         observe("gunshot", self._gunshot)
         observe("worm_died", self._death)
+        observe("worm_damaged", self._worm_damaged)
+        # Throttling
+        self.time_of_last_explosion = 0
+        self.time_of_last_grunt = 0
 
     def update(self, dt):
         for sound_def in self.queue:
@@ -57,6 +60,13 @@ class SoundEffects:
         snd = assets["sound"]["death"]
         snd.set_volume(0.4)
         self.queue.add(SoundDef(snd, worm.position))
+
+    def _worm_damaged(self, dmg, worm):
+        snd = assets["sound"]["grunts"][1]
+        if time.time() - self.time_of_last_grunt > 0.6 + random.randint(-10, 10) / 10:
+            snd.set_volume(0.05)
+            self.queue.add(SoundDef(snd, worm.position))
+            self.time_of_last_grunt = time.time()
 
 
 class SoundDef:
