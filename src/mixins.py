@@ -7,7 +7,7 @@ class ParticleCollisionMixin:
             return True
         int_pos = (int(-position.x), int(-position.y))
         has_collided = False
-        for game_mask in game.get_collision_masks():
+        for game_mask in game.get_collision_masks(combined=False):
             if mask.overlap(game_mask, int_pos) is not None:
                 has_collided = True
         return has_collided

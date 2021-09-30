@@ -1,5 +1,6 @@
 import json
 import os
+from math import ceil
 
 import pygame as pg
 from pygame.math import Vector2
@@ -147,13 +148,20 @@ class Entity(GameObject):
                 collision_types["top"] = True
 
         if self._collided_with_mask(collision_mask):
+            abs_vel = int(ceil(abs(velocity[1])))
             if velocity[1] > 0:
-                while self._collided_with_mask(collision_mask):
-                    self.position.y -= 1
+                for _ in range(abs_vel):
+                    if self._collided_with_mask(collision_mask):
+                        self.position.y -= 1
+                if self._collided_with_mask(collision_mask):
+                    print("OMG STILL STUCK falling")
                 collision_types["bottom"] = True
             elif velocity[1] < 0:
-                while self._collided_with_mask(collision_mask):
-                    self.position.y += 1
+                for _ in range(abs_vel):
+                    if self._collided_with_mask(collision_mask):
+                        self.position.y += 1
+                if self._collided_with_mask(collision_mask):
+                    print("OMG STILL STUCK jumping")
                 collision_types["top"] = True
 
         return collision_types

@@ -40,6 +40,7 @@ class Map(GameObject):
                 location = (x * tile_size[0], y * tile_size[1])
                 bg_img.blit(bg_tile, location)
                 dirt_img.blit(dirt_tile, location)
+                # Place obstacles
                 if random.randint(1, 10) == 5:
                     offset = random.randint(
                         0, tile_size[0] - rock1.get_width()

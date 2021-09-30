@@ -46,7 +46,7 @@ class Worm(Entity):
 
         self.current_weapon.update(dt)
 
-        self.move(self.game.get_collision_rects(), self.game.get_collision_mask(), dt)
+        self.move(self.game.get_collision_rects(), self.game.get_collision_masks(), dt)
 
         emit_event(
             "cast_shadow",
@@ -168,13 +168,20 @@ class Worm(Entity):
     def spawn(self):
         if self.spawn_timer > 0:
             return
-        position = Vector2(
-            random.randint(self.width, self.game.display_size[0] - self.width),
-            random.randint(self.height, self.game.display_size[1] - self.height),
-        )
+
+        def rand_spawn_location():
+            return Vector2(
+                random.randint(self.width, self.game.display_size[0] - self.width),
+                random.randint(self.height, self.game.display_size[1] - self.height),
+            )
+
+        self.position = rand_spawn_location()
+        while self._collided_with_mask(
+            self.game.get_collision_mask(destructible=False)
+        ):
+            self.position = rand_spawn_location()
         self.health = self.max_health
-        self.game.destroy_terrain(position, radius=self.height * 0.8)
-        self.position = position
+        self.game.destroy_terrain(self.position, radius=self.height * 0.8)
         self.alive = True
         self.spawning = True
 
@@ -257,7 +264,7 @@ class Grapple(GameObject):
         if not self.game.is_within_map(position):
             return True
         int_pos = (int(-position.x), int(-position.y))
-        mask_collided = self.mask.overlap(self.game.get_collision_mask(), int_pos)
+        mask_collided = self.mask.overlap(self.game.get_collision_masks(), int_pos)
         return mask_collided is not None
 
     def draw(self, surface, offset):

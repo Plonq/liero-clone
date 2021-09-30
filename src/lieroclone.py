@@ -52,16 +52,6 @@ class LieroClone(Game):
         super()._draw(surface, offset)
         self.hud.draw(surface, offset)
 
-    def spawn(self):
-        position = Vector2(
-            random.randint(self.player.width, self.display_size[0] - self.player.width),
-            random.randint(
-                self.player.height, self.display_size[1] - self.player.height
-            ),
-        )
-        self.player.spawn(position)
-        self.opponent.spawn(Vector2(100, 100))
-
     def get_visible_rect(self):
         return pg.Rect(
             self.offset.x,
@@ -101,10 +91,14 @@ class LieroClone(Game):
     def get_collision_rects(self):
         return self.map.map_boundary_rects
 
-    def get_collision_mask(self):
-        return self.map.get_collision_mask()
+    def get_collision_mask(self, destructible=True):
+        if destructible:
+            return self.map.destructible_mask
+        return self.map.indestructible_mask
 
-    def get_collision_masks(self):
+    def get_collision_masks(self, combined=True):
+        if combined:
+            return self.map.get_collision_mask()
         return self.map.get_collision_masks()
 
     def get_living_worms(self):
