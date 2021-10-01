@@ -15,7 +15,7 @@ from src.weapon import Weapon
 class Worm(Entity):
     def __init__(self, game, name, controller, x=0, y=0):
         super().__init__(game, name, x, y, 12, 14)
-        self.z_index = 30
+        self.z_index = 100
         self.ctrl = controller
         self.ctrl.set_worm(self)
         self.alive = False
@@ -228,6 +228,7 @@ class Worm(Entity):
 class Grapple(GameObject):
     def __init__(self, game, player):
         self.game = game
+        self.z_index = 90
         self.player = player
         self.image = get_image("weapons/grapple.png")
         self.mask = pg.Mask((1, 1), True)
