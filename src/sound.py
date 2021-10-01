@@ -16,6 +16,7 @@ class SoundEffects:
         observe("gunshot", self._gunshot)
         observe("worm_died", self._death)
         observe("worm_damaged", self._worm_damaged)
+        observe("grapple_launched", self._grapple_launched)
         # Throttling
         self.time_of_last_explosion = 0
         self.time_of_last_grunt = 0
@@ -67,6 +68,11 @@ class SoundEffects:
             snd.set_volume(0.05)
             self.queue.add(SoundDef(snd, worm.position))
             self.time_of_last_grunt = time.time()
+
+    def _grapple_launched(self, grapple):
+        snd = assets["sound"]["slash"]
+        snd.set_volume(0.2)
+        self.queue.add(SoundDef(snd, grapple.position))
 
 
 class SoundDef:

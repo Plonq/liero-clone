@@ -292,6 +292,7 @@ class Grapple(GameObject):
         self.direction = direction
         self.game.add_object(self)
         self.launched = True
+        emit_event("grapple_launched", grapple=self)
 
     def retract(self):
         if self.launched:
