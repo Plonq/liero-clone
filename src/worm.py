@@ -207,7 +207,7 @@ class Worm(Entity):
 
     def die(self):
         self.spray_blood(Vector2(1), self.position, arc_angle=180, amount=150)
-        self.grapple.remove()
+        self.grapple.retract()
         self.alive = False
         self.velocity = Vector2(0)
         self.lives -= 1
