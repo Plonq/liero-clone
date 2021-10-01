@@ -13,7 +13,7 @@ class SoundEffects:
         self.player = player
         self.queue = set()
         observe("small_explosion", self._small_explosion)
-        observe("gunshot", self._gunshot)
+        observe("weapon_fired", self._weapon_fired)
         observe("worm_died", self._death)
         observe("worm_damaged", self._worm_damaged)
         observe("grapple_launched", self._grapple_launched)
@@ -52,10 +52,16 @@ class SoundEffects:
             self.queue.add(SoundDef(snd, position))
             self.time_of_last_explosion = time.time()
 
-    def _gunshot(self, worm):
-        snd = assets["sound"]["gunshots"][5]
-        snd.set_volume(0.03)
-        self.queue.add(SoundDef(snd, worm.position))
+    def _weapon_fired(self, weapon):
+        if weapon.name == "minigun":
+            snd = assets["sound"]["gunshots"][5]
+            snd.set_volume(0.03)
+            self.queue.add(SoundDef(snd, weapon.owner.position))
+
+        elif weapon.name == "shotgun":
+            snd = assets["sound"]["gunshots"][7]
+            snd.set_volume(0.1)
+            self.queue.add(SoundDef(snd, weapon.owner.position))
 
     def _death(self, worm):
         snd = assets["sound"]["death"]

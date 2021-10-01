@@ -62,7 +62,7 @@ class Weapon:
                         self.damage,
                     )
                 )
-                emit_event("gunshot", worm=self.owner)
+                emit_event("weapon_fired", weapon=self)
             self.current_cooldown = self.round_cooldown
             self.rounds_left -= 1
             if self.rounds_left <= 0:
