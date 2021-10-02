@@ -1,38 +1,54 @@
 {
   "minigun": {
-    "type": "projectile",
+    "projectile_type": "bullet",
+    "reload_time": 2.5,
+    "accuracy": 0.99,
     "automatic": true,
     "bullets_per_round": 1,
     "rounds_per_magazine": 100,
-    "reload_time": 2.5,
     "round_cooldown": 2,
     "bullet_speed": 300,
     "bullet_speed_jitter": 0,
-    "accuracy": 0.99,
-    "damage": 5
+    "damage": 5,
+    "aoe_range": 0
   },
   "shotgun": {
-    "type": "projectile",
+    "projectile_type": "bullet",
+    "reload_time": 1.5,
+    "accuracy": 0.94,
     "automatic": false,
     "bullets_per_round": 20,
     "rounds_per_magazine": 2,
-    "reload_time": 1.5,
     "round_cooldown": 0,
     "bullet_speed": 400,
     "bullet_speed_jitter": 100,
-    "accuracy": 0.94,
-    "damage": 10
+    "damage": 10,
+    "aoe_range": 0
   },
   "super_shotgun": {
-    "type": "projectile",
+    "projectile_type": "bullet",
+    "reload_time": 1.5,
+    "accuracy": 0.93,
     "automatic": false,
     "bullets_per_round": 200,
     "rounds_per_magazine": 200,
-    "reload_time": 1.5,
     "round_cooldown": 0,
     "bullet_speed": 400,
     "bullet_speed_jitter": 100,
-    "accuracy": 0.93,
-    "damage": 5
+    "damage": 5,
+    "aoe_range": 0
+  },
+  "rpg": {
+    "projectile_type": "rocket",
+    "reload_time": 0.5,
+    "accuracy": 1,
+    "automatic": false,
+    "bullets_per_round": 1,
+    "rounds_per_magazine": 1,
+    "round_cooldown": 0,
+    "bullet_speed": 200,
+    "bullet_speed_jitter": 0,
+    "damage": 50,
+    "aoe_range": 50
   }
 }

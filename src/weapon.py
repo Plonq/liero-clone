@@ -6,7 +6,7 @@ from pygame.math import Vector2
 from src.config import config
 from src.assets import get_image
 from src.engine.signals import emit_event
-from src.projectile import Projectile
+from src.projectile import Bullet, Rocket
 
 
 class Weapon:
@@ -14,16 +14,18 @@ class Weapon:
         self.game = game
         self.owner = owner
         self.name = name
-        self.type = config["weapons"][name]["type"]
-        self.automatic = config["weapons"][name]["automatic"]
-        self.bullets_per_round = config["weapons"][name]["bullets_per_round"]
-        self.rounds_per_magazine = config["weapons"][name]["rounds_per_magazine"]
-        self.reload_time = config["weapons"][name]["reload_time"]
-        self.round_cooldown = config["weapons"][name]["round_cooldown"]
-        self.bullet_speed = config["weapons"][name]["bullet_speed"]
-        self.bullet_speed_jitter = config["weapons"][name]["bullet_speed_jitter"]
-        self.accuracy = config["weapons"][name]["accuracy"]
-        self.damage = config["weapons"][name]["damage"]
+        cfg = config["weapons"][name]
+        self.projectile_type = cfg["projectile_type"]
+        self.automatic = cfg["automatic"]
+        self.bullets_per_round = cfg["bullets_per_round"]
+        self.rounds_per_magazine = cfg["rounds_per_magazine"]
+        self.reload_time = cfg["reload_time"]
+        self.round_cooldown = cfg["round_cooldown"]
+        self.bullet_speed = cfg["bullet_speed"]
+        self.bullet_speed_jitter = cfg["bullet_speed_jitter"]
+        self.accuracy = cfg["accuracy"]
+        self.damage = cfg["damage"]
+        self.aoe_range = cfg["aoe_range"]
         self.current_cooldown = 0
         self.is_firing = False
         self.is_reloading = False
@@ -70,16 +72,24 @@ class Weapon:
                 -self.bullet_speed_jitter, self.bullet_speed_jitter
             )
             start_velocity = start_direction * (self.bullet_speed + speed_adjustment)
-            self.bullet_queue.append(
-                Projectile(
-                    self.game,
-                    get_image("weapons/basic-projectile.png"),
-                    cur_pos,
-                    start_velocity,
-                    self.damage,
-                )
-            )
+            self.launch_projectile(cur_pos, start_velocity)
             emit_event("weapon_fired", weapon=self)
         self.rounds_left -= 1
         if self.rounds_left <= 0:
             self.is_reloading = True
+
+    def launch_projectile(self, position, velocity):
+        projectile = None
+        if self.projectile_type == "bullet":
+            projectile = Bullet(
+                self.game,
+                position,
+                velocity,
+                self.damage,
+            )
+        if self.projectile_type == "rocket":
+            projectile = Rocket(
+                self.game, position, velocity, self.damage, self.aoe_range
+            )
+        if projectile:
+            self.bullet_queue.append(projectile)

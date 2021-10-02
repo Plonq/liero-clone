@@ -26,6 +26,7 @@ class Worm(Entity):
         self.available_weapons = [
             Weapon(game, self, "minigun"),
             Weapon(game, self, "shotgun"),
+            Weapon(game, self, "rpg"),
             Weapon(game, self, "super_shotgun"),
         ]
         self.current_weapon = self.available_weapons[0]
@@ -185,21 +186,22 @@ class Worm(Entity):
         self.alive = True
         self.spawning = True
 
-    def damage(self, dmg, direction, location):
-        self.health -= dmg
-        self.spray_blood(direction, location, amount=random.randint(2, 3))
+    def damage(self, dmg, direction, location=None):
+        # self.health -= dmg
+        amount = dmg // 5 + random.randint(1, 2)
+        self.spray_blood(direction, location, amount=amount)
         emit_event("worm_damaged", dmg=dmg, worm=self)
-        if self.health <= 0:
-            self.die()
+        # if self.health <= 0:
+        # self.die()
 
-    def spray_blood(self, source_direction, from_position, arc_angle=45, amount=2):
+    def spray_blood(self, source_direction, from_position=None, arc_angle=45, amount=2):
         for _ in range(amount):
             angle = random.randint(-arc_angle, arc_angle)
             direction = source_direction.rotate(angle)
             self.game.add_object(
                 BloodParticle(
                     self.game,
-                    Vector2(from_position),
+                    Vector2(from_position) if from_position else Vector2(self.position),
                     direction.normalize() * 50,
                     drip=True,
                 )
