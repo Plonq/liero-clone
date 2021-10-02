@@ -77,7 +77,7 @@ class Rocket(Projectile):
         for worm in self.game.get_living_worms():
             dist = self.position.distance_to(worm.position)
             if dist < self.aoe_range:
-                dmg = int(self.damage * (dist / self.aoe_range))
+                dmg = self.damage - int(self.damage * (dist / self.aoe_range))
                 worm.damage(dmg, self.velocity)
 
         self.game.remove_object(self)
