@@ -44,9 +44,9 @@ class Worm(Entity):
             self.spawn_timer = max(0, self.spawn_timer - dt)
             return
 
-        self.current_weapon.update(dt)
-
         self.move(self.game.get_collision_rects(), self.game.get_collision_masks(), dt)
+
+        self.current_weapon.update(dt)
 
         emit_event(
             "cast_shadow",
@@ -81,10 +81,10 @@ class Worm(Entity):
         self.grapple.retract()
 
     def pull_trigger(self):
-        self.current_weapon.pull_trigger(self.position, self.aim_direction)
+        self.current_weapon.pull_trigger()
 
     def pull_and_release_trigger(self):
-        self.current_weapon.pull_trigger(self.position, self.aim_direction)
+        self.current_weapon.pull_trigger()
         self.current_weapon.release_trigger()
 
     def release_trigger(self):

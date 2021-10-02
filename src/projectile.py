@@ -9,17 +9,16 @@ from src.mixins import ParticleCollisionMixin, WormCollisionMixin
 
 
 class Projectile(ParticleCollisionMixin, WormCollisionMixin, GameObject):
-    def __init__(self, game, img, start_pos, direction, speed, damage):
+    def __init__(self, game, img, start_pos, velocity, damage):
         self.game = game
         self.image = img
         self.mask = pg.Mask((1, 1), True)
         self.position = start_pos
-        self.direction = direction.normalize()
-        self.speed = speed
+        self.velocity = velocity
         self.damage = damage
 
     def update(self, dt, offset):
-        movement = self.direction * self.speed * dt
+        movement = self.velocity * dt
         new_position = self.position + movement
         if self.collided_with_map(new_position, self.mask, self.game):
             # Find exact point of collision (edge of object)
@@ -31,7 +30,7 @@ class Projectile(ParticleCollisionMixin, WormCollisionMixin, GameObject):
                     return
         for worm in self.game.get_living_worms():
             if self.collided_with_worm(self.position, worm, self.mask):
-                worm.damage(self.damage, self.direction, self.position)
+                worm.damage(self.damage, self.velocity, self.position)
                 self.game.remove_object(self)
         self.position = new_position
 

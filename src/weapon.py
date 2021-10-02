@@ -1,4 +1,7 @@
 import random
+from collections import deque
+
+from pygame.math import Vector2
 
 from src.config import config
 from src.assets import get_image
@@ -26,6 +29,7 @@ class Weapon:
         self.is_reloading = False
         self.reload_time_elapsed = 0
         self.rounds_left = self.rounds_per_magazine
+        self.bullet_queue = deque()
 
     def update(self, dt):
         if self.current_cooldown > 0:
@@ -36,8 +40,12 @@ class Weapon:
                 self.is_reloading = False
                 self.reload_time_elapsed = 0
                 self.rounds_left = self.rounds_per_magazine
+        while len(self.bullet_queue) > 0:
+            projectile = self.bullet_queue.popleft()
+            projectile.velocity += self.owner.velocity
+            self.game.add_object(projectile)
 
-    def pull_trigger(self, start_pos, direction):
+    def pull_trigger(self):
         if self.is_reloading:
             return
         if not self.automatic and self.is_firing:
@@ -45,20 +53,24 @@ class Weapon:
         if self.current_cooldown == 0:
             self.is_firing = True
             angle_offset = round((1 - self.accuracy) * 180)
+            start_pos = self.owner.position
+            fire_direction = Vector2(self.owner.aim_direction)
             for _ in range(self.bullets_per_round):
                 angle = random.randint(-angle_offset, angle_offset)
-                cur_direction = direction.rotate(angle)
-                cur_pos = start_pos + (cur_direction * 14)
+                start_direction = fire_direction.rotate(angle)
+                cur_pos = start_pos + (start_direction * 14)
                 speed_adjustment = random.randint(
                     -self.bullet_speed_jitter, self.bullet_speed_jitter
                 )
-                self.game.add_object(
+                start_velocity = start_direction * (
+                    self.bullet_speed + speed_adjustment
+                )
+                self.bullet_queue.append(
                     Projectile(
                         self.game,
                         get_image("weapons/basic-projectile.png"),
                         cur_pos,
-                        cur_direction,
-                        self.bullet_speed + speed_adjustment,
+                        start_velocity,
                         self.damage,
                     )
                 )
