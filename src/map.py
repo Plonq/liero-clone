@@ -45,7 +45,7 @@ class Map(GameObject):
                 # Destructible
                 bg_img.blit(bg_tile, location)
                 dirt_img.blit(dirt_tile, location)
-                if random.randint(1, 8) == 5:
+                if random.randint(1, 3) == 1:
                     offset = random.randint(
                         0, tile_size[0] - detail12.get_width()
                     ), random.randint(0, tile_size[1] - detail12.get_height())
