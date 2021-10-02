@@ -46,7 +46,6 @@ class HUD(GameObject):
                 self.time_of_last_weapon_switch = time.time()
 
     def _worm_damaged(self, dmg, worm):
-        print(dmg, worm.name)
         self.game.add_object(
             DamageIndicator(
                 self.game, self.font, position=worm.position - Vector2(0, 10), value=dmg
