@@ -35,7 +35,9 @@ class BloodParticle(ParticleCollisionMixin, GameObject):
             if drip
             else self.small_img.copy().convert_alpha()
         )
-        self.color = pg.Color(165, 10, 28, random.randint(120, 250))
+        color = pg.Color(0, 0, 0)
+        color.hsva = (353, 94, random.randint(40, 70), random.randint(45, 95))
+        self.color = color
         self.image.fill(self.color)
         self.mask = pg.Mask((1, 1), fill=True)
         self.position = position
