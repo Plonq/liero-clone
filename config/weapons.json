@@ -6,7 +6,7 @@
     "rounds_per_magazine": 100,
     "reload_time": 2.5,
     "round_cooldown": 2,
-    "bullet_speed": 200,
+    "bullet_speed": 300,
     "bullet_speed_jitter": 0,
     "accuracy": 0.99,
     "damage": 5
@@ -18,9 +18,9 @@
     "rounds_per_magazine": 2,
     "reload_time": 1.5,
     "round_cooldown": 0,
-    "bullet_speed": 300,
+    "bullet_speed": 400,
     "bullet_speed_jitter": 100,
-    "accuracy": 0.93,
+    "accuracy": 0.94,
     "damage": 10
   },
   "super_shotgun": {
@@ -30,7 +30,7 @@
     "rounds_per_magazine": 200,
     "reload_time": 1.5,
     "round_cooldown": 0,
-    "bullet_speed": 300,
+    "bullet_speed": 400,
     "bullet_speed_jitter": 100,
     "accuracy": 0.93,
     "damage": 5
