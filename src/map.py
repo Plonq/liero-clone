@@ -27,7 +27,8 @@ class Map(GameObject):
     def _build_map(self):
         dirt_tile = get_image("maps/default/dirt.png").convert()
         bg_tile = get_image("maps/default/bg.png").convert()
-        rock1 = get_image("maps/default/obstacles/rock1.png").convert_alpha()
+        rock64 = get_image("maps/default/obstacles/rock-64x48.png").convert_alpha()
+        rock16 = get_image("maps/default/obstacles/rock-16x16.png").convert_alpha()
 
         tile_size = dirt_tile.get_size()
 
@@ -41,13 +42,23 @@ class Map(GameObject):
                 bg_img.blit(bg_tile, location)
                 dirt_img.blit(dirt_tile, location)
                 # Place obstacles
+                placed_rock = False
                 if random.randint(1, 10) == 5:
                     offset = random.randint(
-                        0, tile_size[0] - rock1.get_width()
-                    ), random.randint(0, tile_size[1] - rock1.get_height())
+                        0, tile_size[0] - rock64.get_width()
+                    ), random.randint(0, tile_size[1] - rock64.get_height())
                     obstacle_img.blit(
-                        rock1, (location[0] + offset[0], location[1] + offset[1])
+                        rock64, (location[0] + offset[0], location[1] + offset[1])
                     )
+                    placed_rock = True
+                if not placed_rock and random.randint(1, 10) == 5:
+                    offset = random.randint(
+                        0, tile_size[0] - rock16.get_width()
+                    ), random.randint(0, tile_size[1] - rock16.get_height())
+                    obstacle_img.blit(
+                        rock16, (location[0] + offset[0], location[1] + offset[1])
+                    )
+
         dirt_img.blit(obstacle_img, (0, 0))
 
         self.bg = Background(bg_img)
