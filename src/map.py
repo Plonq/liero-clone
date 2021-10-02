@@ -27,6 +27,7 @@ class Map(GameObject):
     def _build_map(self):
         dirt_tile = get_image("maps/default/dirt.png").convert()
         bg_tile = get_image("maps/default/bg.png").convert()
+        detail12 = get_image("maps/default/obstacles/detail-12x12.png").convert_alpha()
         rock16 = get_image("maps/default/obstacles/rock-16x16.png").convert_alpha()
         rock32 = get_image("maps/default/obstacles/rock-32x32.png").convert_alpha()
         rock64 = get_image("maps/default/obstacles/rock-64x48.png").convert_alpha()
@@ -40,9 +41,19 @@ class Map(GameObject):
         for y in range(self.size[1] // tile_size[1]):
             for x in range(self.size[0] // tile_size[0]):
                 location = (x * tile_size[0], y * tile_size[1])
+
+                # Destructible
                 bg_img.blit(bg_tile, location)
                 dirt_img.blit(dirt_tile, location)
-                # Place obstacles
+                if random.randint(1, 8) == 5:
+                    offset = random.randint(
+                        0, tile_size[0] - detail12.get_width()
+                    ), random.randint(0, tile_size[1] - detail12.get_height())
+                    dirt_img.blit(
+                        detail12, (location[0] + offset[0], location[1] + offset[1])
+                    )
+
+                # Indestructible
                 if random.randint(1, 10) == 5:
                     offset = random.randint(
                         0, tile_size[0] - rock32.get_width()
