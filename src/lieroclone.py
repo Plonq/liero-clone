@@ -31,6 +31,7 @@ class LieroClone(Game):
         self.add_object(self.player)
         self.add_object(self.opponent)
         self.hud = HUD(self, self.player)
+        self.add_object(self.hud)
         self._register_actions()
         self.sound = SoundEffects(self, self.player)
         self.true_offset = [0, 0]
@@ -45,7 +46,6 @@ class LieroClone(Game):
         register_key_action("grapple", pg.K_e)
 
     def post_update(self, dt, offset):
-        self.hud.update(dt, offset)
         self.sound.update(dt)
 
     def _draw(self, surface, offset):

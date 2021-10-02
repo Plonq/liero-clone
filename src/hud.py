@@ -1,3 +1,4 @@
+import random
 import time
 
 import pygame as pg
@@ -13,6 +14,7 @@ from src.engine.utils import clamp
 class HUD(GameObject):
     def __init__(self, game, worm):
         self.game = game
+        self.z_index = 1000
         self.worm = worm
         self.font = Font(assets["font"]["small"])
         self.margin = 3
@@ -33,6 +35,7 @@ class HUD(GameObject):
         self.weapon_name_fade_time = 5
         # Listen to events
         observe("switched_weapon", self._on_switched_weapon)
+        observe("worm_damaged", self._worm_damaged)
 
     def _on_switched_weapon(self, previous, current, worm):
         if worm == self.worm:
@@ -41,6 +44,14 @@ class HUD(GameObject):
                 # Reset color to white to display it
                 self.weapon_name_current_color = pg.Color("white")
                 self.time_of_last_weapon_switch = time.time()
+
+    def _worm_damaged(self, dmg, worm):
+        print(dmg, worm.name)
+        self.game.add_object(
+            DamageIndicator(
+                self.game, self.font, position=worm.position - Vector2(0, 10), value=dmg
+            )
+        )
 
     def update(self, dt, offset):
         if self.weapon_name_current_color != pg.Color(0, 0, 0, 0):
@@ -156,3 +167,31 @@ class HUD(GameObject):
                 pg.Color("white"),
                 center_of_screen,
             )
+
+
+class DamageIndicator(GameObject):
+    def __init__(self, game, font, position, value=0):
+        self.game = game
+        self.z_index = 1000
+        self.font = font
+        self.position = position + Vector2(
+            random.randint(-10, 10), random.randint(-10, 10)
+        )
+        self.value = value
+        self.lifespan = 1
+        self.age = 0
+        self.color = pg.Color("white")
+
+    def update(self, dt, offset):
+        self.age += dt
+        if self.age >= self.lifespan:
+            self.game.remove_object(self)
+            return
+        self.position -= Vector2(0, 1)
+        alpha = (1 - self.age / self.lifespan) * 255
+        self.color.a = int(alpha)
+
+    def draw(self, surface, offset):
+        self.font.draw_centered(
+            surface, str(self.value), self.color, self.position - offset
+        )
