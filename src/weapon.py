@@ -51,34 +51,35 @@ class Weapon:
         if not self.automatic and self.is_firing:
             return
         if self.current_cooldown == 0:
-            self.is_firing = True
-            angle_offset = round((1 - self.accuracy) * 180)
-            start_pos = self.owner.position
-            fire_direction = Vector2(self.owner.aim_direction)
-            for _ in range(self.bullets_per_round):
-                angle = random.randint(-angle_offset, angle_offset)
-                start_direction = fire_direction.rotate(angle)
-                cur_pos = start_pos + (start_direction * 14)
-                speed_adjustment = random.randint(
-                    -self.bullet_speed_jitter, self.bullet_speed_jitter
-                )
-                start_velocity = start_direction * (
-                    self.bullet_speed + speed_adjustment
-                )
-                self.bullet_queue.append(
-                    Projectile(
-                        self.game,
-                        get_image("weapons/basic-projectile.png"),
-                        cur_pos,
-                        start_velocity,
-                        self.damage,
-                    )
-                )
-                emit_event("weapon_fired", weapon=self)
+            self.fire()
             self.current_cooldown = self.round_cooldown
-            self.rounds_left -= 1
-            if self.rounds_left <= 0:
-                self.is_reloading = True
 
     def release_trigger(self):
         self.is_firing = False
+
+    def fire(self):
+        self.is_firing = True
+        angle_offset = round((1 - self.accuracy) * 180)
+        start_pos = self.owner.position
+        fire_direction = Vector2(self.owner.aim_direction)
+        for _ in range(self.bullets_per_round):
+            angle = random.randint(-angle_offset, angle_offset)
+            start_direction = fire_direction.rotate(angle)
+            cur_pos = start_pos + (start_direction * 14)
+            speed_adjustment = random.randint(
+                -self.bullet_speed_jitter, self.bullet_speed_jitter
+            )
+            start_velocity = start_direction * (self.bullet_speed + speed_adjustment)
+            self.bullet_queue.append(
+                Projectile(
+                    self.game,
+                    get_image("weapons/basic-projectile.png"),
+                    cur_pos,
+                    start_velocity,
+                    self.damage,
+                )
+            )
+            emit_event("weapon_fired", weapon=self)
+        self.rounds_left -= 1
+        if self.rounds_left <= 0:
+            self.is_reloading = True
