@@ -154,14 +154,14 @@ class Entity(GameObject):
                     if self._collided_with_mask(collision_mask):
                         self.position.y -= 1
                 if self._collided_with_mask(collision_mask):
-                    print("OMG STILL STUCK falling")
+                    print("OMG STILL STUCK falling", self.name)
                 collision_types["bottom"] = True
             elif velocity[1] < 0:
                 for _ in range(abs_vel):
                     if self._collided_with_mask(collision_mask):
                         self.position.y += 1
                 if self._collided_with_mask(collision_mask):
-                    print("OMG STILL STUCK jumping")
+                    print("OMG STILL STUCK jumping", self.name)
                 collision_types["top"] = True
 
         return collision_types
