@@ -187,12 +187,12 @@ class Worm(Entity):
         self.spawning = True
 
     def damage(self, dmg, direction, location=None):
-        # self.health -= dmg
+        self.health -= dmg
         amount = dmg // 5 + random.randint(1, 2)
         self.spray_blood(direction, location, amount=amount)
         emit_event("worm_damaged", dmg=dmg, worm=self)
-        # if self.health <= 0:
-        # self.die()
+        if self.health <= 0:
+            self.die()
 
     def spray_blood(self, source_direction, from_position=None, arc_angle=45, amount=2):
         for _ in range(amount):
