@@ -1,4 +1,7 @@
 # General utils
+import functools
+import random
+import time
 
 
 def clamp(n, minn, maxn):
@@ -7,6 +10,24 @@ def clamp(n, minn, maxn):
 
 def is_same_sign(num1, num2):
     return num1 >= 0 and num2 >= 0 or num1 < 0 and num2 < 0
+
+
+def throttle(timeout_ms=1, variance=0):
+    time_of_last_call = 0
+
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            nonlocal time_of_last_call
+            next_call_time = (timeout_ms + random.randint(-variance, variance)) / 1000
+            # print(next_call_time)
+            if time.time() - time_of_last_call > next_call_time:
+                func(*args, **kwargs)
+                time_of_last_call = time.time()
+
+        return wrapper
+
+    return decorator
 
 
 # Pygame utils

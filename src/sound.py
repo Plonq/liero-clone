@@ -5,6 +5,7 @@ import time
 from src.config import config
 from src.assets import assets
 from src.engine.signals import observe
+from src.engine.utils import throttle
 
 
 class SoundEffects:
@@ -42,15 +43,12 @@ class SoundEffects:
         sound_def.adjust_volume(effects_vol * master_vol * distance_multiplier)
         sound_def.play()
 
+    @throttle(timeout_ms=500, variance=500)
     def _small_explosion(self, position):
-        if (
-            time.time() - self.time_of_last_explosion
-            > 0.4 + random.randint(-10, 10) / 10
-        ):
-            snd = assets["sound"]["explosions"][random.randint(2, 3)]
-            snd.set_volume(0.07)
-            self.queue.add(SoundDef(snd, position))
-            self.time_of_last_explosion = time.time()
+        snd = assets["sound"]["explosions"][random.randint(2, 3)]
+        snd.set_volume(0.07)
+        self.queue.add(SoundDef(snd, position))
+        self.time_of_last_explosion = time.time()
 
     def _weapon_fired(self, weapon):
         if weapon.name == "minigun":
@@ -63,17 +61,22 @@ class SoundEffects:
             snd.set_volume(0.1)
             self.queue.add(SoundDef(snd, weapon.owner.position))
 
+        elif weapon.name == "rpg":
+            snd = assets["sound"]["explosions"][2]
+            snd.set_volume(0.1)
+            self.queue.add(SoundDef(snd, weapon.owner.position))
+
     def _death(self, worm):
         snd = assets["sound"]["death"]
         snd.set_volume(0.4)
         self.queue.add(SoundDef(snd, worm.position))
 
+    @throttle(timeout_ms=600, variance=1000)
     def _worm_damaged(self, dmg, worm):
         snd = assets["sound"]["grunts"][1]
-        if time.time() - self.time_of_last_grunt > 0.6 + random.randint(-10, 10) / 10:
-            snd.set_volume(0.05)
-            self.queue.add(SoundDef(snd, worm.position))
-            self.time_of_last_grunt = time.time()
+        snd.set_volume(0.05)
+        self.queue.add(SoundDef(snd, worm.position))
+        self.time_of_last_grunt = time.time()
 
     def _grapple_launched(self, grapple):
         snd = assets["sound"]["slash"]
