@@ -48,7 +48,7 @@
     "round_cooldown": 0,
     "bullet_speed": 200,
     "bullet_speed_jitter": 0,
-    "damage": 50,
-    "aoe_range": 100
+    "damage": 100,
+    "aoe_range": 50
   }
 }
