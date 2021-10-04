@@ -24,6 +24,9 @@ def init():
             ROOT_DIR / f"assets/sounds/Explosion{i}.wav"
         )
     assets["sound"]["death"] = pg.mixer.Sound(ROOT_DIR / "assets/sounds/HitGore3.wav")
+    assets["sound"]["worm-impact"] = pg.mixer.Sound(
+        ROOT_DIR / "assets/sounds/worm-impact.wav"
+    )
 
     assets["sound"]["gunshots"] = {}
     for i in range(1, 12):

@@ -133,6 +133,8 @@ class Worm(Entity):
         )
 
         if collision_directions["bottom"]:
+            if abs(self.velocity.y) > 80:
+                emit_event("worm_impact", worm=self)
             self.velocity.y = 0
             self.air_timer = 0
             self._apply_x_resistance(40)

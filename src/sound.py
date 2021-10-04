@@ -17,6 +17,7 @@ class SoundEffects:
         observe("weapon_fired", self._weapon_fired)
         observe("worm_died", self._death)
         observe("worm_damaged", self._worm_damaged)
+        observe("worm_impact", self._worm_impact)
         observe("grapple_launched", self._grapple_launched)
         # Throttling
         self.time_of_last_explosion = 0
@@ -48,7 +49,6 @@ class SoundEffects:
         snd = assets["sound"]["explosions"][random.randint(2, 3)]
         snd.set_volume(0.07)
         self.queue.add(SoundDef(snd, position))
-        self.time_of_last_explosion = time.time()
 
     def _weapon_fired(self, weapon):
         if weapon.name == "minigun":
@@ -76,7 +76,11 @@ class SoundEffects:
         snd = assets["sound"]["grunts"][1]
         snd.set_volume(0.05)
         self.queue.add(SoundDef(snd, worm.position))
-        self.time_of_last_grunt = time.time()
+
+    def _worm_impact(self, worm):
+        snd = assets["sound"]["worm-impact"]
+        snd.set_volume(0.3)
+        self.queue.add(SoundDef(snd, worm.position))
 
     def _grapple_launched(self, grapple):
         snd = assets["sound"]["slash"]
