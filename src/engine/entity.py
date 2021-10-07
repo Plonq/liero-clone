@@ -68,6 +68,8 @@ class Entity(GameObject):
                 self.action = action
                 self.frame = 0
                 self.time_since_last_frame = 0
+        else:
+            self._set_action("idle")
 
     def _animate(self, dt):
         self.time_since_last_frame += dt
@@ -75,10 +77,10 @@ class Entity(GameObject):
         # Facing left or right?
         if self.direction_x < 0:
             self.frames_since_idle = 0
-            self.flip = True
+            # self.flip = True
         elif self.direction_x > 0:
             self.frames_since_idle = 0
-            self.flip = False
+            # self.flip = False
 
         # In the air?
         if self.air_timer > self.jump_buffer:
@@ -99,7 +101,6 @@ class Entity(GameObject):
                 else:
                     self._set_action("afk")
 
-        #
         cur_anim = animations[self.name][self.action]
         if self.time_since_last_frame > cur_anim[self.frame]["time"]:
             self.frame += 1

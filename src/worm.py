@@ -58,6 +58,10 @@ class Worm(Entity):
 
     def set_aim_direction(self, direction):
         self.aim_direction = direction.normalize()
+        if self.aim_direction.x < 0:
+            self.flip = True
+        elif self.aim_direction.x > 0:
+            self.flip = False
 
     def move_right(self):
         self.direction_x = 1
@@ -227,8 +231,10 @@ class Worm(Entity):
             return
 
         super().draw(surface, offset)
-        # reticule_pos = self.position - offset + (self.aim_direction * 15)
-        # pg.draw.rect(surface, pg.Color("red"), (reticule_pos.x, reticule_pos.y, 4, 4))
+        reticule_pos = self.position - offset + (self.aim_direction * 25)
+        pg.draw.rect(
+            surface, pg.Color("red"), (int(reticule_pos.x), int(reticule_pos.y), 4, 4)
+        )
 
 
 class Grapple(GameObject):

@@ -1,13 +1,21 @@
 {
   "player": {
      "idle": {
-        "timings": [5, 0.1, 5, 3],
+        "timings": [1],
         "loop": true
-     }
+     },
+    "run": {
+      "timings": [0.1, 0.1, 0.1, 0.1],
+      "loop": true
+    }
   },
   "opponent": {
     "idle": {
-      "timings": [5, 0.1, 5, 3],
+      "timings": [1],
+      "loop": true
+    },
+    "run": {
+      "timings": [0.1, 0.1, 0.1, 0.1],
       "loop": true
     }
   }
