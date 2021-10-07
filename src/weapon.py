@@ -4,7 +4,6 @@ from collections import deque
 from pygame.math import Vector2
 
 from src.config import config
-from src.assets import get_image
 from src.engine.signals import emit_event
 from src.projectile import Bullet, Rocket
 
@@ -44,7 +43,6 @@ class Weapon:
                 self.rounds_left = self.rounds_per_magazine
         while len(self.bullet_queue) > 0:
             projectile = self.bullet_queue.popleft()
-            projectile.velocity += self.owner.velocity
             self.game.add_object(projectile)
 
     def pull_trigger(self):
