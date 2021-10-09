@@ -141,7 +141,7 @@ class Worm(Entity):
         )
 
         if collision_directions["bottom"]:
-            if abs(self.velocity.y) > 150:
+            if abs(self.velocity.y) > 250:
                 emit_event("worm_impact", worm=self)
                 self.velocity.y = self.velocity.y * -0.5
             else:
