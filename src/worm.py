@@ -238,7 +238,9 @@ class Worm(Entity):
         rotation = (
             atan2(self.aim_direction.x, self.aim_direction.y) * (180 / math.pi) - 90
         )
-        rotated_weapon_img = pg.transform.rotate(self.weapon_img, rotation)
+        rotated_weapon_img = pg.transform.rotate(
+            pg.transform.flip(self.weapon_img, False, self.flip), rotation
+        )
         blit_centered(rotated_weapon_img, surface, self.position - offset)
 
         reticule_pos = self.position - offset + (self.aim_direction * 25)
