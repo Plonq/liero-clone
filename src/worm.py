@@ -1,4 +1,6 @@
+import math
 import random
+from math import atan2
 
 import pygame as pg
 from pygame.math import Vector2
@@ -35,6 +37,8 @@ class Worm(Entity):
         self.spawn_cooldown = 5
         self.spawn_timer = 0
         self.spawning = False
+        self.weapon_img = get_image("entities/player/weapon.png").convert()
+        self.weapon_img.set_colorkey(pg.Color("black"))
 
     def update(self, dt, offset):
         super().update(dt, offset)
@@ -231,9 +235,17 @@ class Worm(Entity):
             return
 
         super().draw(surface, offset)
+        rotation = (
+            atan2(self.aim_direction.x, self.aim_direction.y) * (180 / math.pi) - 90
+        )
+        rotated_weapon_img = pg.transform.rotate(self.weapon_img, rotation)
+        blit_centered(rotated_weapon_img, surface, self.position - offset)
+
         reticule_pos = self.position - offset + (self.aim_direction * 25)
         pg.draw.rect(
-            surface, pg.Color("red"), (int(reticule_pos.x), int(reticule_pos.y), 4, 4)
+            surface,
+            pg.Color("red"),
+            (int(reticule_pos.x), int(reticule_pos.y), 2, 2),
         )
 
 
