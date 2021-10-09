@@ -258,7 +258,7 @@ class Grapple(GameObject):
         self.mask = pg.Mask((1, 1), True)
         self.position = Vector2(0, 0)
         self.direction = Vector2(0, 0)
-        self.speed = 300
+        self.speed = 500
         self.launched = False
         self.stuck = False
         self.retracting = False
