@@ -17,6 +17,7 @@ class Map(GameObject):
         self._build_map()
         self.needs_cleanup = False
         self.time_since_cleanup = 0
+        self.minimap = pg.Surface((128, 128))
         self.map_boundary_rects = (
             pg.Rect(-50, -50, self.size[0] + 50, 50),
             pg.Rect(-50, 0, 50, self.size[1]),
@@ -83,7 +84,7 @@ class Map(GameObject):
         self.shadow = Shadow(self.size)
         self.game.add_object(self.shadow)
 
-        self.destructible = dirt_img
+        self.main_img = dirt_img
         self.destructible_mask = pg.Mask(self.size, fill=True)
         self.indestructible_mask = pg.mask.from_surface(obstacle_img)
 
@@ -106,10 +107,10 @@ class Map(GameObject):
 
         self.shadow.draw_shadow_with_clipping_mask(clipping_mask, Vector2(0))
 
-        # Destructible map
-        destructible_copy = self.destructible.copy()
-        destructible_copy.blit(clipping_mask, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
-        surface.blit(destructible_copy, adjusted_offset)
+        main_img_clipped = self.main_img.copy()
+        main_img_clipped.blit(clipping_mask, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
+        surface.blit(main_img_clipped, adjusted_offset)
+        pg.transform.scale(main_img_clipped, self.minimap.get_size(), self.minimap)
 
     def destroy_terrain(self, location, radius):
         # Create a mask of a circle
@@ -126,7 +127,7 @@ class Map(GameObject):
         self.needs_cleanup = True
 
     def stain_map(self, position, image):
-        self.destructible.blit(image, position)
+        self.main_img.blit(image, position)
 
     def clean_up(self):
         """Remove areas of destructible that are smaller than 20 pixels."""

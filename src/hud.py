@@ -167,6 +167,18 @@ class HUD(GameObject):
                 center_of_screen,
             )
 
+        minimap = self.game.get_minimap()
+        minimap_size = minimap.get_size()
+        x = self.game.display_size[0] - minimap_size[0] - 5
+        y = 5
+        surface.blit(minimap, (x, y))
+        pg.draw.rect(
+            surface,
+            pg.Color("white"),
+            (x - 1, y - 1, minimap_size[0] + 2, minimap_size[1] + 2),
+            width=1,
+        )
+
 
 class DamageIndicator(GameObject):
     def __init__(self, game, font, position, value=0):

@@ -113,6 +113,9 @@ class LieroClone(Game):
     def get_player_position(self):
         return self.player.position
 
+    def get_minimap(self):
+        return self.map.minimap
+
 
 if __name__ == "__main__":
     LieroClone().run()
