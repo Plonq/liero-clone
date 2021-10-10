@@ -1,24 +1,20 @@
 {
   "player": {
      "idle": {
-       "has_direction": false,
         "timings": [1],
         "loop": true
      },
     "run": {
-      "has_direction": true,
       "timings": [0.1, 0.1, 0.1, 0.1],
       "loop": true
     }
   },
   "opponent": {
     "idle": {
-      "has_direction": false,
       "timings": [1],
       "loop": true
     },
     "run": {
-      "has_direction": true,
       "timings": [0.1, 0.1, 0.1, 0.1],
       "loop": true
     }
