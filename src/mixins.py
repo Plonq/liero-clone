@@ -14,7 +14,7 @@ class ParticleCollisionMixin:
 
 class WormCollisionMixin:
     def collided_with_worm(self, position, worm, mask):
-        if worm.position.distance_squared_to(position) < 20 ^ 2:
+        if worm.position.distance_squared_to(position) < 50 ^ 2:
             int_pos = (int(position.x), int(position.y))
             worm_mask = worm.get_current_mask()
             worm_topleft = int(worm.position.x - worm_mask.get_size()[0] / 2), int(
