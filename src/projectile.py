@@ -46,9 +46,9 @@ class Projectile(ParticleCollisionMixin, WormCollisionMixin, GameObject):
 
 class Bullet(Projectile):
     def __init__(self, game, start_pos, velocity, damage):
-        super().__init__(
-            game, get_image("weapons/basic-projectile.png"), start_pos, velocity, damage
-        )
+        img = pg.Surface((1, 1)).convert()
+        img.fill(pg.Color("white"))
+        super().__init__(game, img, start_pos, velocity, damage)
 
     def update(self, dt, offset):
         collision = self._move_and_collide(dt)
