@@ -1,5 +1,7 @@
 import json
+import math
 import os
+import pprint
 from math import ceil
 
 import pygame as pg
@@ -28,12 +30,14 @@ class Entity(GameObject):
         self.frame = 0
         self.time_since_last_frame = 0
         self.frames_since_idle = 0
+        self.aim_direction = Vector2(0, 0)
         self.flip = False
-        self.img = pg.transform.flip(
-            animations[self.name][self.action][self.frame]["img"],
-            self.flip,
-            False,
-        )
+        # self.img = pg.transform.flip(
+        #     animations[self.name][self.action][self.frame]["img"],
+        #     self.flip,
+        #     False,
+        # )
+        self._update_image()
         self.mask = pg.mask.Mask(self.rect.size, True)
 
     @property
@@ -101,14 +105,28 @@ class Entity(GameObject):
                 else:
                     self._set_action("afk")
 
+        self._update_image()
+
+    def _update_image(self):
         cur_anim = animations[self.name][self.action]
         if self.time_since_last_frame > cur_anim[self.frame]["time"]:
             self.frame += 1
             if self.frame >= len(cur_anim):
                 self.frame = 0
             self.time_since_last_frame = 0
-        img = cur_anim[self.frame]["img"]
+        img = cur_anim[self.frame][f"img_{self.look_direction}"]
         self.img = pg.transform.flip(img, self.flip, False)
+
+    @property
+    def look_direction(self):
+        angle = math.atan2(self.aim_direction.x, self.aim_direction.y) * (180 / math.pi)
+        # if self.name == "player":
+        #     print(angle)
+        if abs(angle) > 135:
+            return "up"
+        if abs(angle) > 45:
+            return "fwd"
+        return "dwn"
 
     def _move_and_collide(self, velocity, collision_rects, collision_mask=None):
         collision_types = {"top": False, "bottom": False, "right": False, "left": False}
@@ -188,7 +206,11 @@ class Entity(GameObject):
         return False
 
     def get_current_mask(self):
-        key = "img_mask_flip" if self.flip else "img_mask"
+        key = (
+            f"img_mask_flip_{self.look_direction}"
+            if self.flip
+            else f"img_mask_{self.look_direction}"
+        )
         return animations[self.name][self.action][self.frame][key]
 
 
@@ -204,22 +226,70 @@ def load_sprites(entities_dir):
             entity_sprites[action] = []
             num_frames = len(entity_cfg[action]["timings"])
 
-            spritesheet = pg.image.load(
-                os.path.join(entities_dir, entity, f"{entity}_{action}.png")
-            ).convert_alpha()
-            images = SpriteSheetExtractor(spritesheet).load_strip(
-                (0, 0, spritesheet.get_width() / num_frames, spritesheet.get_height()),
+            spritesheet_forward = pg.image.load(
+                os.path.join(entities_dir, entity, f"{entity}_{action}_forward.png")
+            ).convert()
+            images_forward = SpriteSheetExtractor(
+                spritesheet_forward, colorkey=pg.Color("black")
+            ).load_strip(
+                (
+                    0,
+                    0,
+                    spritesheet_forward.get_width() / num_frames,
+                    spritesheet_forward.get_height(),
+                ),
+                image_count=num_frames,
+            )
+
+            spritesheet_up = pg.image.load(
+                os.path.join(entities_dir, entity, f"{entity}_{action}_up.png")
+            ).convert()
+            images_up = SpriteSheetExtractor(
+                spritesheet_up, colorkey=pg.Color("black")
+            ).load_strip(
+                (
+                    0,
+                    0,
+                    spritesheet_up.get_width() / num_frames,
+                    spritesheet_up.get_height(),
+                ),
+                image_count=num_frames,
+            )
+
+            spritesheet_down = pg.image.load(
+                os.path.join(entities_dir, entity, f"{entity}_{action}_down.png")
+            ).convert()
+            images_down = SpriteSheetExtractor(
+                spritesheet_down, colorkey=pg.Color("black")
+            ).load_strip(
+                (
+                    0,
+                    0,
+                    spritesheet_down.get_width() / num_frames,
+                    spritesheet_down.get_height(),
+                ),
                 image_count=num_frames,
             )
 
             for n, frame_time in enumerate(entity_cfg[action]["timings"]):
                 entity_sprites[action].append(
                     {
-                        "img": images[n],
+                        "img_fwd": images_forward[n],
+                        "img_up": images_up[n],
+                        "img_dwn": images_down[n],
                         "time": frame_time,
-                        "img_mask": pg.mask.from_surface(images[n]),
-                        "img_mask_flip": pg.mask.from_surface(
-                            pg.transform.flip(images[n], True, False)
+                        "img_mask_fwd": pg.mask.from_surface(images_forward[n]),
+                        "img_mask_up": pg.mask.from_surface(images_up[n]),
+                        "img_mask_dwn": pg.mask.from_surface(images_down[n]),
+                        "img_mask_flip_fwd": pg.mask.from_surface(
+                            pg.transform.flip(images_forward[n], True, False)
+                        ),
+                        "img_mask_flip_up": pg.mask.from_surface(
+                            pg.transform.flip(images_up[n], True, False)
+                        ),
+                        "img_mask_flip_dwn": pg.mask.from_surface(
+                            pg.transform.flip(images_down[n], True, False)
                         ),
                     }
                 )
+    pprint.pprint(animations)

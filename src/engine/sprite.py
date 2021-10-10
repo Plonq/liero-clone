@@ -9,7 +9,11 @@ class SpriteSheetExtractor:
     def image_at(self, rectangle, colorkey=None):
         """Load a specific image from a specific rect."""
         rect = pg.Rect(rectangle)
-        image = pg.Surface(rect.size).convert_alpha()
+        if colorkey:
+            image = pg.Surface(rect.size).convert()
+            image.set_colorkey(colorkey)
+        else:
+            image = pg.Surface(rect.size).convert_alpha()
         image.blit(self.sheet, (0, 0), rect)
         return image
 

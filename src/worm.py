@@ -24,7 +24,6 @@ class Worm(Entity):
         self.max_health = 500
         self.lives = 5
         self.health = self.max_health
-        self.aim_direction = Vector2(0, 0)
         self.available_weapons = [
             Weapon(game, self, "minigun"),
             Weapon(game, self, "shotgun"),
