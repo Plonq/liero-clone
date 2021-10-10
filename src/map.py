@@ -17,7 +17,7 @@ class Map(GameObject):
         self._build_map()
         self.needs_cleanup = False
         self.time_since_cleanup = 0
-        self.minimap = pg.Surface((128, 128))
+        self.minimap = pg.Surface((96, 96))
         self.map_boundary_rects = (
             pg.Rect(-50, -50, self.size[0] + 50, 50),
             pg.Rect(-50, 0, 50, self.size[1]),
