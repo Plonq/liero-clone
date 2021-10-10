@@ -36,7 +36,7 @@ class BloodParticle(ParticleCollisionMixin, GameObject):
             else self.small_img.copy().convert_alpha()
         )
         color = pg.Color(0, 0, 0)
-        color.hsva = (353, 94, random.randint(40, 70), random.randint(45, 95))
+        color.hsva = (353, 94, random.randint(60, 70), random.randint(45, 95))
         self.color = color
         self.image.fill(self.color)
         self.mask = pg.Mask((1, 1), fill=True)
