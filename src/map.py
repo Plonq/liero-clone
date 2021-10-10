@@ -35,7 +35,7 @@ class Map(GameObject):
 
         tile_size = dirt_tile.get_size()
 
-        dirt_img = pg.Surface(self.size).convert_alpha()
+        main_img = pg.Surface(self.size).convert_alpha()
         bg_img = pg.Surface(self.size).convert_alpha()
         obstacle_img = pg.Surface(self.size).convert_alpha()
 
@@ -45,12 +45,12 @@ class Map(GameObject):
 
                 # Destructible
                 bg_img.blit(bg_tile, location)
-                dirt_img.blit(dirt_tile, location)
+                main_img.blit(dirt_tile, location)
                 if random.randint(1, 3) == 1:
                     offset = random.randint(
                         0, tile_size[0] - detail12.get_width()
                     ), random.randint(0, tile_size[1] - detail12.get_height())
-                    dirt_img.blit(
+                    main_img.blit(
                         detail12, (location[0] + offset[0], location[1] + offset[1])
                     )
 
@@ -77,14 +77,14 @@ class Map(GameObject):
                         rock16, (location[0] + offset[0], location[1] + offset[1])
                     )
 
-        dirt_img.blit(obstacle_img, (0, 0))
+        main_img.blit(obstacle_img, (0, 0))
 
         self.bg = Background(bg_img)
         self.game.add_object(self.bg)
         self.shadow = Shadow(self.size)
         self.game.add_object(self.shadow)
 
-        self.main_img = dirt_img
+        self.main_img = main_img
         self.destructible_mask = pg.Mask(self.size, fill=True)
         self.indestructible_mask = pg.mask.from_surface(obstacle_img)
 
