@@ -7,7 +7,7 @@ from pygame.math import Vector2
 
 from src.assets import get_image
 from src.engine.entity import Entity
-from src.engine.signals import emit_event
+from src.engine.signals import emit_event, observe
 from src.engine.game import GameObject
 from src.engine.utils import blit_centered, is_same_sign
 from src.gfx import BloodParticle
@@ -38,6 +38,11 @@ class Worm(Entity):
         self.spawning = False
         self.weapon_img = get_image("entities/player/weapon.png").convert()
         self.weapon_img.set_colorkey(pg.Color("black"))
+        self.muzzle_flash_img = get_image("weapons/muzzle-flash.png").convert()
+        self.muzzle_flash_img.set_colorkey(pg.Color("black"))
+        self.should_muzzle_flash = False
+        self.muzzle_flashed_time = 0
+        observe("weapon_fired", self._on_weapon_fired)
 
     def update(self, dt, offset):
         super().update(dt, offset)
@@ -51,6 +56,10 @@ class Worm(Entity):
         self.move(self.game.get_collision_rects(), self.game.get_collision_masks(), dt)
 
         self.current_weapon.update(dt)
+
+        self.muzzle_flashed_time += dt
+        if self.muzzle_flashed_time > 0.1:
+            self.should_muzzle_flash = False
 
         emit_event(
             "cast_shadow",
@@ -229,11 +238,19 @@ class Worm(Entity):
         if self.lives <= 0:
             print("game over")
 
+    def _on_weapon_fired(self, weapon):
+        if not weapon.owner == self:
+            return
+        self.should_muzzle_flash = True
+        self.muzzle_flashed_time = 0
+
     def draw(self, surface, offset):
         if not self.alive:
             return
 
         super().draw(surface, offset)
+
+        # Weapon
         rotation = (
             atan2(self.aim_direction.x, self.aim_direction.y) * (180 / math.pi) - 90
         )
@@ -241,8 +258,14 @@ class Worm(Entity):
             pg.transform.flip(self.weapon_img, False, self.flip), rotation
         )
         blit_centered(rotated_weapon_img, surface, self.position - offset)
+        if self.should_muzzle_flash:
+            rotated_muzzle_flash_img = pg.transform.rotate(
+                self.muzzle_flash_img, rotation
+            )
+            blit_centered(rotated_muzzle_flash_img, surface, self.position - offset)
 
-        reticule_pos = self.position - offset + (self.aim_direction * 25)
+        # Reticule
+        reticule_pos = self.position - offset + (self.aim_direction * 35)
         pg.draw.rect(
             surface,
             pg.Color("red"),
