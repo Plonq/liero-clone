@@ -1,7 +1,6 @@
 import json
 import math
 import os
-import pprint
 from math import ceil
 
 import pygame as pg
@@ -9,7 +8,7 @@ from pygame.math import Vector2
 
 from .game import GameObject
 from .sprite import SpriteSheetExtractor
-from .utils import blit_aligned, blit_centered
+from .utils import blit_centered
 
 animations = {}
 
@@ -292,4 +291,3 @@ def load_sprites(entities_dir):
                         ),
                     }
                 )
-    pprint.pprint(animations)
