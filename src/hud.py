@@ -65,6 +65,11 @@ class HUD(GameObject):
             )
 
     def draw(self, surface, offset):
+        self._draw_player_stats(surface, offset)
+        self._draw_targeted_overlay(surface, offset)
+        self._draw_minimap(surface, offset)
+
+    def _draw_player_stats(self, surface, offset):
         # Background
         pg.draw.rect(
             surface,
@@ -138,6 +143,7 @@ class HUD(GameObject):
             ),
         )
 
+    def _draw_targeted_overlay(self, surface, offset):
         # Weapon name
         if self.weapon_name_current_color != pg.Color(0, 0, 0, 0):
             worm_pos = self.worm.position
@@ -167,8 +173,12 @@ class HUD(GameObject):
                 center_of_screen,
             )
 
+    def _draw_minimap(self, surface, offset):
         minimap = self.game.get_minimap()
         minimap_size = minimap.get_size()
+        scale = minimap_size[0] / self.game.map.size[0]
+        for worm in self.game.get_living_worms():
+            pg.draw.circle(minimap, worm.color, worm.position * scale, 1)
         x = self.game.display_size[0] - minimap_size[0] - 5
         y = 5
         surface.blit(minimap, (x, y))

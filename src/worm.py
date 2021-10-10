@@ -15,9 +15,10 @@ from src.weapon import Weapon
 
 
 class Worm(Entity):
-    def __init__(self, game, name, controller, x=0, y=0):
+    def __init__(self, game, name, color, controller, x=0, y=0):
         super().__init__(game, name, x, y, 12, 14)
         self.z_index = 100
+        self.color = color
         self.ctrl = controller
         self.ctrl.set_worm(self)
         self.alive = False
