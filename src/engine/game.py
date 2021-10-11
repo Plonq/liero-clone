@@ -7,8 +7,6 @@ from .input import process_input_events, update_input_states
 
 clock = pg.time.Clock()
 
-WINDOW_SIZE = (1216, 800)
-DISPLAY_SIZE = (608, 400)
 FPS = 60
 
 
@@ -20,9 +18,12 @@ class Game:
         pg.mixer.set_num_channels(512)
         self.dt = 0
         self.last_time = time.time()
+        self.orig_window_size = window_size
+        self.monitor_size = (pg.display.Info().current_w, pg.display.Info().current_h)
         self.window_size = window_size
         self.display_size = display_size
-        self.screen = pg.display.set_mode(self.window_size, 0, 32)
+        self.fullscreen = False
+        self.screen = pg.display.set_mode(self.window_size, pg.RESIZABLE, 32)
         self.display = pg.Surface(self.display_size)
         self.game_objects = []
         self.offset = Vector2(0, 0)
@@ -53,7 +54,32 @@ class Game:
         update_input_states()
         input_events = []
         for event in pg.event.get():
-            if event.type in [
+            if event.type == pg.QUIT:
+                pg.quit()
+                exit()
+            elif event.type == pg.VIDEORESIZE:
+                if not self.fullscreen:
+                    self.window_size = (event.w, event.h)
+                    self.screen = pg.display.set_mode(
+                        self.window_size, pg.RESIZABLE, 32
+                    )
+            elif (
+                event.type == pg.KEYDOWN
+                and event.key == pg.K_RETURN
+                and event.mod == pg.KMOD_LCTRL
+            ):
+                self.fullscreen = not self.fullscreen
+                if self.fullscreen:
+                    self.window_size = self.monitor_size
+                    self.screen = pg.display.set_mode(
+                        self.window_size, pg.FULLSCREEN, 32
+                    )
+                else:
+                    self.window_size = self.orig_window_size
+                    self.screen = pg.display.set_mode(
+                        self.window_size, pg.RESIZABLE, 32
+                    )
+            elif event.type in [
                 pg.MOUSEBUTTONUP,
                 pg.MOUSEBUTTONDOWN,
                 pg.MOUSEMOTION,
@@ -61,9 +87,6 @@ class Game:
                 pg.KEYDOWN,
             ]:
                 input_events.append(event)
-            elif event.type == pg.QUIT:
-                pg.quit()
-                exit()
         process_input_events(self, input_events)
 
     def pre_update(self, dt, offset):
