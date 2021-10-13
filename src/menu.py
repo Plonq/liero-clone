@@ -68,6 +68,12 @@ class Menu(GameObject):
         surface.blit(self.bg, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
         pos = Vector2(self.center_of_screen.x, self.start_y)
         for option in self.options:
+            self.font.draw_centered(
+                surface,
+                option["text"](),
+                pg.Color("black"),
+                Vector2(pos.x + 1, pos.y + 1),
+            )
             color = (
                 pg.Color("red")
                 if option["name"] == self.selected_option
