@@ -48,6 +48,7 @@ def init():
     assets["font"]["large"] = pg.image.load(
         ROOT_DIR / "assets/fonts/large_font.png"
     ).convert()
+    assets["font"]["large"].set_colorkey((0, 0, 0))
 
 
 def get_image(relative_path, alpha=True):

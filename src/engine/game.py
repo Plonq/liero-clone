@@ -63,22 +63,6 @@ class Game:
                     self.screen = pg.display.set_mode(
                         self.window_size, pg.RESIZABLE, 32
                     )
-            elif (
-                event.type == pg.KEYDOWN
-                and event.key == pg.K_RETURN
-                and event.mod == pg.KMOD_LCTRL
-            ):
-                self.fullscreen = not self.fullscreen
-                if self.fullscreen:
-                    self.window_size = self.monitor_size
-                    self.screen = pg.display.set_mode(
-                        self.window_size, pg.FULLSCREEN, 32
-                    )
-                else:
-                    self.window_size = self.orig_window_size
-                    self.screen = pg.display.set_mode(
-                        self.window_size, pg.RESIZABLE, 32
-                    )
             elif event.type in [
                 pg.MOUSEBUTTONUP,
                 pg.MOUSEBUTTONDOWN,
@@ -113,6 +97,15 @@ class Game:
         self.screen.blit(pg.transform.scale(self.display, self.window_size), (0, 0))
         pg.display.update()
         clock.tick(FPS)
+
+    def toggle_fullscreen(self):
+        self.fullscreen = not self.fullscreen
+        if self.fullscreen:
+            self.window_size = self.monitor_size
+            self.screen = pg.display.set_mode(self.window_size, pg.FULLSCREEN, 32)
+        else:
+            self.window_size = self.orig_window_size
+            self.screen = pg.display.set_mode(self.window_size, pg.RESIZABLE, 32)
 
     def quit(self):
         pg.quit()
