@@ -24,6 +24,7 @@ class Worm(Entity):
         self.alive = False
         self.max_health = 500
         self.lives = 5
+        self.kills = 0
         self.health = self.max_health
         self.available_weapons = [
             Weapon(game, self, "minigun"),
@@ -207,13 +208,13 @@ class Worm(Entity):
         self.alive = True
         self.spawning = True
 
-    def damage(self, dmg, direction, location=None):
+    def damage(self, dmg, direction, attacker, location=None):
         self.health -= dmg
         amount = dmg // 5 + random.randint(1, 2)
         self.spray_blood(direction, location, amount=amount)
         emit_event("worm_damaged", dmg=dmg, worm=self)
         if self.health <= 0:
-            self.die()
+            self.die(killer=attacker)
 
     def spray_blood(self, source_direction, from_position=None, arc_angle=45, amount=2):
         for _ in range(amount):
@@ -228,16 +229,17 @@ class Worm(Entity):
                 )
             )
 
-    def die(self):
+    def die(self, killer):
         self.spray_blood(Vector2(1), self.position, arc_angle=180, amount=150)
         self.grapple.retract()
         self.alive = False
         self.velocity = Vector2(0)
         self.lives -= 1
         self.spawn_timer = self.spawn_cooldown
-        emit_event("worm_died", worm=self)
+        killer.kills += 1
+        emit_event("worm_died", worm=self, killer=killer)
         if self.lives <= 0:
-            print("game over")
+            emit_event("game_over", winner=killer, loser=self)
 
     def _on_weapon_fired(self, weapon):
         if not weapon.owner == self:

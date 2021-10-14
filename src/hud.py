@@ -87,13 +87,13 @@ class HUD(GameObject):
         # Health
         self.font.draw(
             surface,
-            "health",
+            "Health",
             pg.Color("white"),
             Vector2(self.margin * 2, self.margin * 2),
         )
         if self.worm.alive:
             rect = pg.Rect(
-                self.font.calculate_width("health") + self.margin * 3,
+                self.font.calculate_width("Health") + self.margin * 3,
                 self.margin * 2 + self.font.height // 2 - self.bar_height // 2,
                 self.bar_max_width,
                 self.bar_height,
@@ -106,12 +106,12 @@ class HUD(GameObject):
         # Ammo bar
         self.font.draw(
             surface,
-            "ammo",
+            "Ammo",
             pg.Color("white"),
             Vector2(self.margin * 2, self.margin * 2 + self.font.height + self.spacing),
         )
         rect = pg.Rect(
-            self.font.calculate_width("health") + self.margin * 3,
+            self.font.calculate_width("Health") + self.margin * 3,
             self.margin * 2
             + self.font.height
             + self.spacing
@@ -134,12 +134,24 @@ class HUD(GameObject):
         pg.draw.rect(surface, color, rect)
 
         # Lives
+        lives_text = f"Lives: {self.worm.lives}"
         self.font.draw(
             surface,
-            f"lives: {self.worm.lives}",
-            pg.Color("white"),
+            lives_text,
+            pg.Color(255, 70, 70),
             Vector2(
                 self.margin * 2, self.margin * 2 + (self.font.height + self.spacing) * 2
+            ),
+        )
+
+        # Kills
+        self.font.draw(
+            surface,
+            f"Kills: {self.worm.kills}",
+            pg.Color(80, 230, 100),
+            Vector2(
+                self.margin * 5 + self.font.calculate_width(lives_text),
+                self.margin * 2 + (self.font.height + self.spacing) * 2,
             ),
         )
 

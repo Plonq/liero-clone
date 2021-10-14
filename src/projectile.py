@@ -10,8 +10,9 @@ from src.mixins import ParticleCollisionMixin, WormCollisionMixin
 
 
 class Projectile(ParticleCollisionMixin, WormCollisionMixin, GameObject):
-    def __init__(self, game, img, start_pos, velocity, damage):
+    def __init__(self, game, worm, img, start_pos, velocity, damage):
         self.game = game
+        self.worm = worm
         self.image = img
         self.mask = pg.Mask((1, 1), True)
         self.position = start_pos
@@ -45,24 +46,31 @@ class Projectile(ParticleCollisionMixin, WormCollisionMixin, GameObject):
 
 
 class Bullet(Projectile):
-    def __init__(self, game, start_pos, velocity, damage):
+    def __init__(self, game, worm, start_pos, velocity, damage):
         img = pg.Surface((1, 1)).convert()
         img.fill(pg.Color("white"))
-        super().__init__(game, img, start_pos, velocity, damage)
+        super().__init__(game, worm, img, start_pos, velocity, damage)
 
     def update(self, dt, offset):
         collision = self._move_and_collide(dt)
         if collision["type"] == "map":
             self.explode()
         elif collision["type"] == "worm":
-            collision["worm"].damage(self.damage, self.velocity, self.position)
+            collision["worm"].damage(
+                self.damage, self.velocity, attacker=self.worm, location=self.position
+            )
             self.game.remove_object(self)
 
 
 class Rocket(Projectile):
-    def __init__(self, game, start_pos, velocity, damage, aoe_range):
+    def __init__(self, game, worm, start_pos, velocity, damage, aoe_range):
         super().__init__(
-            game, get_image("weapons/placeholder.png"), start_pos, velocity, damage
+            game,
+            worm,
+            get_image("weapons/placeholder.png"),
+            start_pos,
+            velocity,
+            damage,
         )
         self.aoe_range = aoe_range
         self.mask = pg.Mask((5, 5), True)
@@ -78,6 +86,6 @@ class Rocket(Projectile):
             dist = self.position.distance_to(worm.position)
             if dist < self.aoe_range:
                 dmg = self.damage - int(self.damage * (dist / self.aoe_range))
-                worm.damage(dmg, self.velocity)
+                worm.damage(dmg, self.velocity, attacker=self.worm)
 
         self.game.remove_object(self)

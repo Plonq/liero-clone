@@ -81,13 +81,14 @@ class Weapon:
         if self.projectile_type == "bullet":
             projectile = Bullet(
                 self.game,
+                self.owner,
                 position,
                 velocity,
                 self.damage,
             )
         if self.projectile_type == "rocket":
             projectile = Rocket(
-                self.game, position, velocity, self.damage, self.aoe_range
+                self.game, self.owner, position, velocity, self.damage, self.aoe_range
             )
         if projectile:
             self.bullet_queue.append(projectile)
