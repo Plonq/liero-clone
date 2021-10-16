@@ -19,9 +19,6 @@ class SoundEffects:
         observe("worm_damaged", self._worm_damaged)
         observe("worm_impact", self._worm_impact)
         observe("grapple_launched", self._grapple_launched)
-        # Throttling
-        self.time_of_last_explosion = 0
-        self.time_of_last_grunt = 0
 
     def update(self, dt):
         for sound_def in self.queue:
