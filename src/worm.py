@@ -15,6 +15,9 @@ from src.weapon import Weapon
 
 
 class Worm(Entity):
+    max_lives = 5
+    max_health = 500
+
     def __init__(self, game, name, color, controller, x=0, y=0):
         super().__init__(game, name, x, y, 12, 14)
         self.z_index = 100
@@ -22,10 +25,12 @@ class Worm(Entity):
         self.ctrl = controller
         self.ctrl.set_worm(self)
         self.alive = False
-        self.max_health = 500
-        self.lives = 5
+        self.lives = self.max_lives
         self.kills = 0
         self.health = self.max_health
+        self.spawn_cooldown = 5
+        self.spawn_timer = 0
+        self.spawning = False
         self.available_weapons = [
             Weapon(game, self, "minigun"),
             Weapon(game, self, "shotgun"),
@@ -35,9 +40,6 @@ class Worm(Entity):
         self.current_weapon = self.available_weapons[0]
         self.grapple = Grapple(game, self)
         self.terminal_velocity = 300
-        self.spawn_cooldown = 5
-        self.spawn_timer = 0
-        self.spawning = False
         self.weapon_img = get_image("entities/player/weapon.png").convert()
         self.weapon_img.set_colorkey(pg.Color("black"))
         self.muzzle_flash_img = get_image("weapons/muzzle-flash.png").convert()
@@ -246,6 +248,16 @@ class Worm(Entity):
             return
         self.should_muzzle_flash = True
         self.muzzle_flashed_time = 0
+
+    def reset(self):
+        self.alive = False
+        self.lives = self.max_lives
+        self.health = self.max_health
+        self.kills = 0
+        self.current_weapon = self.available_weapons[0]
+        self.spawn_cooldown = 5
+        self.spawn_timer = 0
+        self.spawning = False
 
     def draw(self, surface, offset):
         if not self.alive:

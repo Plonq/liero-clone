@@ -117,7 +117,7 @@ class Font:
                 current_char_width += 1
         self.space_width = self.characters["A"].get_width()
 
-    def draw(self, surface, text, color, location):
+    def draw(self, surface, text, color, location, scale=1):
         x_offset = 0
         for char in text:
             if char != " ":
@@ -130,24 +130,29 @@ class Font:
                     set_color=color,
                     inverse_set=True,
                 )
-                surface.blit(img, (location.x + x_offset, location.y))
-                x_offset += self.characters[char].get_width() + self.spacing
+                surface.blit(
+                    pg.transform.scale(
+                        img, (img.get_width() * scale, img.get_height() * scale)
+                    ),
+                    (location.x + x_offset, location.y),
+                )
+                x_offset += self.characters[char].get_width() * scale + self.spacing
             else:
                 x_offset += self.space_width + self.spacing
 
-    def draw_centered(self, surface, text, color, location):
-        width = self.calculate_width(text)
+    def draw_centered(self, surface, text, color, location, scale=1):
+        width = self.calculate_width(text, scale)
         new_pos = Vector2(
             location.x - width // 2,
             location.y - self.height // 2,
         )
-        self.draw(surface, text, color, new_pos)
+        self.draw(surface, text, color, new_pos, scale)
 
-    def calculate_width(self, text):
+    def calculate_width(self, text, scale=1):
         total_width = 0
         for char in text:
             if char == " ":
                 total_width += self.space_width + self.spacing
             else:
-                total_width += self.characters[char].get_width() + self.spacing
+                total_width += self.characters[char].get_width() * scale + self.spacing
         return total_width - self.spacing

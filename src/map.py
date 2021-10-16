@@ -88,6 +88,9 @@ class Map(GameObject):
         self.destructible_mask = pg.Mask(self.size, fill=True)
         self.indestructible_mask = pg.mask.from_surface(obstacle_img)
 
+    def reset(self):
+        self._build_map()
+
     def update(self, dt, offset):
         # Throttle cleanup for performance
         self.time_since_cleanup += dt

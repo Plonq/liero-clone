@@ -9,9 +9,11 @@ from src.engine.input import (
     register_key_action,
     register_mouse_action,
 )
+from src.engine.signals import observe
 from src.engine.utils import clamp
+from src.game_over import GameOver
 from src.hud import HUD
-from src.menu import Menu
+from src.main_menu import MainMenu
 from src.worm import Worm
 from src.map import Map
 from src.sound import SoundEffects
@@ -31,11 +33,13 @@ class LieroClone(Game):
         self.add_object(self.player)
         self.add_object(self.opponent)
         self.hud = HUD(self, self.player)
-        self.menu = Menu(self)
+        self.menu = MainMenu(self)
+        self.game_over = GameOver(self)
         self._register_actions()
         self.sound = SoundEffects(self, self.player)
         self.true_offset = [0, 0]
         self.state = "menu"
+        observe("game_over", self._on_game_over)
 
     def _register_actions(self):
         # Menu
@@ -54,6 +58,9 @@ class LieroClone(Game):
         register_key_action("switch_weapon", pg.K_f)
         register_key_action("grapple", pg.K_e)
 
+    def _on_game_over(self, winner, loser):
+        self.set_state("over")
+
     def pre_update(self, dt, offset):
         if is_action_just_pressed("menu"):
             self.state = "playing" if self.state == "menu" else "menu"
@@ -64,14 +71,20 @@ class LieroClone(Game):
             self.hud.update(dt, offset)
             self.sound.update(dt)
         else:
-            self.menu.update(dt, offset)
+            if self.state == "menu":
+                self.menu.update(dt, offset)
+            elif self.state == "over":
+                self.game_over.update(dt, offset)
 
     def _draw(self, surface, offset):
         super()._draw(surface, offset)
         if self.state == "playing":
             self.hud.draw(surface, offset)
         else:
-            self.menu.draw(surface, offset)
+            if self.state == "menu":
+                self.menu.draw(surface, offset)
+            elif self.state == "over":
+                self.game_over.draw(surface, offset)
 
     def get_visible_rect(self):
         return pg.Rect(
@@ -105,6 +118,16 @@ class LieroClone(Game):
 
     def set_state(self, state):
         self.state = state
+
+    def reset_game(self):
+        self.game_objects = []
+        self.map.reset()
+        for worm in [self.player, self.opponent]:
+            worm.reset()
+        self.add_object(self.map)
+        self.add_object(self.player)
+        self.add_object(self.opponent)
+        self.set_state("playing")
 
     def is_within_map(self, position):
         return self.get_map_rect().collidepoint(position.x, position.y)
