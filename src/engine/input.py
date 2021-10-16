@@ -1,14 +1,13 @@
 import logging
 
 import pygame as pg
-from pygame.math import Vector2
 
 logger = logging.getLogger(__name__)
 
 
 _actions = {"mouse": {}, "key": {}}
 _actions_by_name = {}
-_mouse_pos = Vector2(0, 0)
+_mouse_move_hooks = []
 
 
 def register_action(name, input_type, input_value):
@@ -21,6 +20,14 @@ def register_action(name, input_type, input_value):
 
 def register_mouse_action(name, button):
     register_action(name, "mouse", button)
+
+
+def register_mouse_move_hook(fn):
+    _mouse_move_hooks.append(fn)
+
+
+def unregister_mouse_move_hook(fn):
+    _mouse_move_hooks.remove(fn)
 
 
 def register_key_action(name, key):
@@ -46,10 +53,6 @@ def was_action_just_released(name):
     if not action:
         return False
     return action.was_just_released
-
-
-def get_mouse_pos():
-    return _mouse_pos
 
 
 def _get_action(name):
@@ -85,7 +88,8 @@ def process_input_events(game, input_events):
                         action.deactivate()
 
         if event.type == pg.MOUSEMOTION:
-            _mouse_pos.xy = game.get_display_mouse_pos(event.pos)
+            for fn in _mouse_move_hooks:
+                fn(pos=event.pos, rel=event.rel)
 
         if event.type == pg.KEYDOWN:
             for key, actions in _actions["key"].items():

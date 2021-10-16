@@ -49,6 +49,7 @@ class LieroClone(Game):
         register_key_action("right", pg.K_RIGHT)
         register_key_action("select", pg.K_RETURN)
         register_key_action("menu", pg.K_ESCAPE)
+        register_mouse_action("menu_click", pg.BUTTON_LEFT)
         # In game
         register_mouse_action("attack", pg.BUTTON_LEFT)
         register_mouse_action("dig", pg.BUTTON_RIGHT)
