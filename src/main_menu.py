@@ -13,8 +13,12 @@ class MainMenu(GameObject):
         self.started = False
         options = [
             {
-                "text": lambda: "Resume" if self.started else "Start",
-                "execute": lambda: self.start(),
+                "text": lambda: "Resume" if self.started else "Single Player",
+                "execute": lambda: self.start(multi=False),
+            },
+            {
+                "text": lambda: "Resume" if self.started else "Multiplayer",
+                "execute": lambda: self.start(multi=True),
             },
             {
                 "text": lambda: "Toggle Fullscreen",
@@ -37,6 +41,6 @@ class MainMenu(GameObject):
         surface.blit(self.bg, (0, 0), special_flags=pg.BLEND_RGBA_MULT)
         self.menu.draw(surface, offset)
 
-    def start(self):
+    def start(self, multi=False):
         self.started = True
-        self.game.set_state("playing")
+        self.game.start_game(multi)

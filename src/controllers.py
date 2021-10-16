@@ -10,11 +10,8 @@ from src.engine.input import (
 class Controller:
     """Something that can control a worm."""
 
-    def __init__(self, game):
+    def __init__(self, game, worm):
         self.game = game
-        self.worm = None
-
-    def set_worm(self, worm):
         self.worm = worm
 
     def update(self, dt, offset):
@@ -69,8 +66,8 @@ class PlayerController(Controller):
 class AiController(Controller):
     """An AI controller."""
 
-    def __init__(self, game):
-        super().__init__(game)
+    def __init__(self, game, worm):
+        super().__init__(game, worm)
         self.last_pos = Vector2(0, 0)
         self.time_at_current_pos = 0
 
@@ -106,3 +103,11 @@ class AiController(Controller):
 
         if self.time_at_current_pos > 0.2:
             self.worm.dig()
+
+
+class NetworkController(Controller):
+    def move(self, position):
+        print("move", self.worm)
+        if self.worm:
+            print("moving", self.worm.name, "to", position)
+            self.worm.position = position

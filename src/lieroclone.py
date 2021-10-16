@@ -2,7 +2,7 @@ import pygame as pg
 from pygame.math import Vector2
 
 from src import assets
-from src.controllers import AiController, PlayerController
+from src.controllers import AiController, NetworkController, PlayerController
 from src.engine.game import Game
 from src.engine.input import (
     is_action_just_pressed,
@@ -14,6 +14,7 @@ from src.engine.utils import clamp
 from src.game_over import GameOver
 from src.hud import HUD
 from src.main_menu import MainMenu
+from src.network import Network
 from src.worm import Worm
 from src.map import Map
 from src.sound import SoundEffects
@@ -26,10 +27,13 @@ class LieroClone(Game):
     def __init__(self):
         super().__init__(WINDOW_SIZE, DISPLAY_SIZE, "Liero Clone")
         assets.init()
+        self.network = Network()
         self.map = Map(self)
         self.add_object(self.map)
-        self.player = Worm(self, "player", pg.Color("blue"), PlayerController(self))
-        self.opponent = Worm(self, "opponent", pg.Color("red"), AiController(self))
+        self.player = Worm(self, "player", pg.Color("blue"))
+        self.player_ctrl = None
+        self.opponent = Worm(self, "opponent", pg.Color("red"))
+        self.opponent_ctrl = None
         self.add_object(self.player)
         self.add_object(self.opponent)
         self.hud = HUD(self, self.player)
@@ -39,6 +43,7 @@ class LieroClone(Game):
         self.sound = SoundEffects(self, self.player)
         self.true_offset = [0, 0]
         self.state = "menu"
+        self.mode = "single"
         observe("game_over", self._on_game_over)
 
     def _register_actions(self):
@@ -59,6 +64,30 @@ class LieroClone(Game):
         register_key_action("switch_weapon", pg.K_f)
         register_key_action("grapple", pg.K_e)
 
+    def set_state(self, state):
+        self.state = state
+
+    def start_game(self, multi=False):
+        self.player_ctrl = PlayerController(self, self.player)
+        if multi:
+            print("starting multiplayer game")
+            self.mode = "multi"
+            self.opponent_ctrl = NetworkController(self, self.opponent)
+            self.opponent.spawn()
+        else:
+            self.mode = "single"
+            self.opponent_ctrl = AiController(self, self.opponent)
+        self.set_state("playing")
+
+    def reset_game(self):
+        self.game_objects = []
+        self.map.reset()
+        for worm in [self.player, self.opponent]:
+            worm.reset()
+        self.add_object(self.map)
+        self.add_object(self.player)
+        self.add_object(self.opponent)
+
     def _on_game_over(self, winner, loser):
         self.set_state("over")
 
@@ -69,6 +98,22 @@ class LieroClone(Game):
     def _update(self, dt, offset):
         if self.state == "playing":
             super()._update(dt, offset)
+            if self.player_ctrl:
+                self.player_ctrl.update(dt, offset)
+            if self.opponent_ctrl:
+                self.opponent_ctrl.update(dt, offset)
+
+            if self.mode == "multi":
+                reply = self.network.send(
+                    f"{self.network.id}:{self.player.position.x},{self.player.position.y}"
+                )
+                id, position = reply.split(":")
+                self.opponent_ctrl.move(
+                    Vector2(
+                        float(position.split(",")[0]), float(position.split(",")[1])
+                    )
+                )
+
             self.hud.update(dt, offset)
             self.sound.update(dt)
         else:
@@ -116,19 +161,6 @@ class LieroClone(Game):
             self.true_offset[1], 0, self.map.size[1] - self.display_size[1]
         )
         self.offset = Vector2(int(self.true_offset[0]), int(self.true_offset[1]))
-
-    def set_state(self, state):
-        self.state = state
-
-    def reset_game(self):
-        self.game_objects = []
-        self.map.reset()
-        for worm in [self.player, self.opponent]:
-            worm.reset()
-        self.add_object(self.map)
-        self.add_object(self.player)
-        self.add_object(self.opponent)
-        self.set_state("playing")
 
     def is_within_map(self, position):
         return self.get_map_rect().collidepoint(position.x, position.y)
