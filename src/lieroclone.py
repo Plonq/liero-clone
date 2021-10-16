@@ -27,7 +27,7 @@ class LieroClone(Game):
     def __init__(self):
         super().__init__(WINDOW_SIZE, DISPLAY_SIZE, "Liero Clone")
         assets.init()
-        self.network = Network()
+        self.network = None
         self.map = Map(self)
         self.add_object(self.map)
         self.player = Worm(self, "player", pg.Color("blue"))
@@ -71,6 +71,7 @@ class LieroClone(Game):
         self.player_ctrl = PlayerController(self, self.player)
         if multi:
             print("starting multiplayer game")
+            self.network = Network()
             self.mode = "multi"
             self.opponent_ctrl = NetworkController(self, self.opponent)
             self.opponent.spawn()
@@ -90,6 +91,7 @@ class LieroClone(Game):
 
     def _on_game_over(self, winner, loser):
         self.set_state("over")
+        self.game_over.winner = winner
 
     def pre_update(self, dt, offset):
         if is_action_just_pressed("menu"):

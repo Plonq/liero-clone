@@ -132,7 +132,8 @@ class Font:
                 )
                 surface.blit(
                     pg.transform.scale(
-                        img, (img.get_width() * scale, img.get_height() * scale)
+                        img,
+                        (int(img.get_width() * scale), int(img.get_height() * scale)),
                     ),
                     (location.x + x_offset, location.y),
                 )
