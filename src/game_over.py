@@ -31,7 +31,7 @@ class GameOver(GameObject):
         self.center_of_screen = Vector2(
             self.game.display_size[0] // 2, self.game.display_size[1] // 2
         )
-        self.menu = Menu(game, options, self.center_of_screen + Vector2(0, 100))
+        self.menu = Menu(game, options, self.center_of_screen + Vector2(0, 60))
         self.winner = None
         self.loser = None
 
@@ -44,16 +44,20 @@ class GameOver(GameObject):
             surface,
             "GAME OVER",
             pg.Color("white"),
-            self.center_of_screen - Vector2(0, 100),
+            self.center_of_screen - Vector2(0, 60),
             scale=2,
         )
         self._draw_winner(surface, offset)
         self.menu.draw(surface, offset)
 
     def _draw_winner(self, surface, offset):
+        if self.game.mode == "multi":
+            win_text = f"{self.winner.name} Wins!"
+        else:
+            win_text = "You Win!" if self.winner == self.game.player else "You Lose!"
         self.large_font.draw_centered(
             surface,
-            f"{self.winner.name} Wins!",
+            win_text,
             pg.Color("white"),
             Vector2(self.center_of_screen),
             scale=1.5,
