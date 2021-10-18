@@ -14,7 +14,6 @@ from src.engine.utils import clamp
 from src.game_over import GameOver
 from src.hud import HUD
 from src.main_menu import MainMenu
-from src.network import Network
 from src.worm import Worm
 from src.map import Map
 from src.sound import SoundEffects
@@ -71,10 +70,10 @@ class LieroClone(Game):
         self.player_ctrl = PlayerController(self, self.player)
         if multi:
             print("starting multiplayer game")
-            self.network = Network()
-            self.mode = "multi"
-            self.opponent_ctrl = NetworkController(self, self.opponent)
-            self.opponent.spawn()
+            # self.network = Network()
+            # self.mode = "multi"
+            # self.opponent_ctrl = NetworkController(self, self.opponent)
+            # self.opponent.spawn()
         else:
             self.mode = "single"
             self.opponent_ctrl = AiController(self, self.opponent)
