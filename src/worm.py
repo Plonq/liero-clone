@@ -11,6 +11,7 @@ from src.engine.signals import emit_event, observe
 from src.engine.game import GameObject
 from src.engine.utils import blit_centered, is_same_sign
 from src.gfx import BloodParticle
+from src.mixins import WormCollisionMixin
 from src.weapon import Weapon
 
 
@@ -284,11 +285,11 @@ class Worm(Entity):
         )
 
 
-class Grapple(GameObject):
-    def __init__(self, game, player):
+class Grapple(WormCollisionMixin, GameObject):
+    def __init__(self, game, worm):
         self.game = game
         self.z_index = 90
-        self.player = player
+        self.worm = worm
         self.image = get_image("weapons/grapple.png")
         self.mask = pg.Mask((1, 1), True)
         self.position = Vector2(0, 0)
@@ -297,15 +298,18 @@ class Grapple(GameObject):
         self.launched = False
         self.stuck = False
         self.retracting = False
+        self.stuck_to_worm = None
 
     def update(self, dt, offset):
-        if self.stuck and not self.test_collision(self.position):
+        if self.stuck_to_worm:
+            self.position = Vector2(self.stuck_to_worm.position)
+        elif self.stuck and not self.test_collision(self.position):
             self.retract()
         elif self.retracting:
-            self.direction = self.player.position - self.position
+            self.direction = self.worm.position - self.position
             vector = self.direction.normalize() * self.speed * 3 * dt
             self.position += vector
-            if self.position.distance_to(self.player.position) < self.speed * 3 * dt:
+            if self.position.distance_to(self.worm.position) < self.speed * 3 * dt:
                 self.game.remove_object(self)
                 self.retracting = False
         else:
@@ -318,6 +322,12 @@ class Grapple(GameObject):
                     self.position = pos
                     self.stuck = True
                     return
+            for worm in self.game.get_living_worms():
+                if worm == self.worm:
+                    continue
+                if self.collided_with_worm(self.position, worm, self.mask):
+                    self.stuck = True
+                    self.stuck_to_worm = worm
             self.position = new_position
 
     def test_collision(self, position):
@@ -331,14 +341,14 @@ class Grapple(GameObject):
         pg.draw.line(
             surface,
             (80, 80, 80),
-            self.player.position - offset,
+            self.worm.position - offset,
             self.position - offset,
             3,
         )
         pg.draw.line(
             surface,
             (150, 150, 150),
-            self.player.position - offset,
+            self.worm.position - offset,
             self.position - offset,
             1,
         )
@@ -348,7 +358,7 @@ class Grapple(GameObject):
         if self.retracting:
             self.retracting = False
             self.game.remove_object(self)
-        self.position = self.player.position
+        self.position = self.worm.position
         self.direction = direction
         self.game.add_object(self)
         self.launched = True
@@ -359,6 +369,7 @@ class Grapple(GameObject):
             self.retracting = True
         self.launched = False
         self.stuck = False
+        self.stuck_to_worm = None
 
     def remove(self):
         self.game.remove_object(self)
