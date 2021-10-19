@@ -278,11 +278,8 @@ class Worm(Entity):
 
         # Reticule
         reticule_pos = self.position - offset + (self.aim_direction * 35)
-        pg.draw.rect(
-            surface,
-            pg.Color("red"),
-            (int(reticule_pos.x), int(reticule_pos.y), 2, 2),
-        )
+        reticule_pos = Vector2(int(reticule_pos.x), int(reticule_pos.y))
+        pg.draw.circle(surface, pg.Color("red"), reticule_pos, 1)
 
 
 class Grapple(WormCollisionMixin, GameObject):
