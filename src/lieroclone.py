@@ -1,3 +1,5 @@
+import time
+
 import pygame as pg
 from pygame.math import Vector2
 
@@ -43,6 +45,7 @@ class LieroClone(Game):
         self.true_offset = [0, 0]
         self.state = "menu"
         self.mode = "single"
+        self.last_over_frame = 0
         observe("game_over", self._on_game_over)
 
     def _register_actions(self):
@@ -122,6 +125,9 @@ class LieroClone(Game):
                 self.menu.update(dt, offset)
             elif self.state == "over":
                 self.game_over.update(dt, offset)
+                if time.time() - self.last_over_frame > 0.08:
+                    super()._update(dt, offset)
+                    self.last_over_frame = time.time()
 
     def _draw(self, surface, offset):
         super()._draw(surface, offset)
