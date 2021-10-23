@@ -1,7 +1,7 @@
 import pygame as pg
 from pygame.math import Vector2
 
-from src.assets import get_image
+from src.assets import assets, get_image
 from src.engine.game import GameObject
 from src.engine.utils import blit_centered
 from src.gfx import Explosion
@@ -71,11 +71,21 @@ class Rocket(Projectile):
             damage,
         )
         self.mask = pg.Mask((5, 5), True)
+        self.time_since_last_puff = 0
 
     def update(self, dt, offset):
+        self.time_since_last_puff += dt
+        if self.time_since_last_puff > 0.03:
+            self._emit_puff()
+            self.time_since_last_puff = 0
         collision = self._move_and_collide(dt)
         if collision["type"]:
             self.explode()
+
+    def _emit_puff(self):
+        self.game.add_object(
+            FadingImage(self.game, assets["img"]["smoke"], self.position, 5)
+        )
 
     def explode(self):
         self.game.add_object(
@@ -84,3 +94,25 @@ class Rocket(Projectile):
             )
         )
         self.game.remove_object(self)
+
+
+class FadingImage(GameObject):
+    def __init__(self, game, img, position, lifespan):
+        self.game = game
+        self.img = img.copy()
+        self.position = Vector2(position)
+        self.lifespan = lifespan
+        self.time_since_born = 0
+
+    def update(self, dt, offset):
+        alpha = 255 - self.time_since_born / self.lifespan * 255
+        if alpha <= 20:
+            self.game.remove_object(self)
+        else:
+            self.img.fill(
+                (255, 255, 255, alpha), None, special_flags=pg.BLEND_RGBA_MULT
+            )
+            self.time_since_born += dt
+
+    def draw(self, surface, offset):
+        blit_centered(self.img, surface, self.position - offset)
