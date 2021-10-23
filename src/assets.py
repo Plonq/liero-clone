@@ -14,8 +14,11 @@ assets = {"img": {}, "sound": {}, "font": {}}
 def init():
     load_sprites(ROOT_DIR / "assets/images/entities")
     # Images
+    explosion_img = get_image("gfx/explosion.png")
     assets["img"]["explosions"] = {
-        "small": SpriteStrip(get_image("gfx/explosion-small.png"))
+        "large": SpriteStrip(explosion_img, start_frame=0),
+        "medium": SpriteStrip(explosion_img, start_frame=4),
+        "small": SpriteStrip(explosion_img, start_frame=9),
     }
     # Sounds
     assets["sound"]["explosions"] = {}

@@ -11,16 +11,28 @@ from src.engine.utils import blit_centered
 from src.mixins import ParticleCollisionMixin
 
 
-class SmallExplosion(Effect):
-    def __init__(self, game, position):
+class Explosion(Effect):
+    def __init__(self, game, position, size, multi=False):
         super().__init__(
             game,
             position=position,
-            sprite_strip=assets["img"]["explosions"]["small"],
+            sprite_strip=assets["img"]["explosions"][size],
             lifespan=0.3,
         )
         self.z_index = 70
+        self.multi = multi
+        self.time_since_last_multi = 0
         emit_event("small_explosion", position=position)
+
+    def update(self, dt, offset):
+        super().update(dt, offset)
+        if self.multi:
+            self.time_since_last_multi += dt
+            if self.time_since_last_multi > random.randint(0, 15) / 100:
+                pos = Vector2(self.position) + Vector2(
+                    random.randint(-20, 20), random.randint(-20, 20)
+                )
+                self.game.add_object(Explosion(self.game, pos, "small"))
 
 
 class BloodParticle(ParticleCollisionMixin, GameObject):

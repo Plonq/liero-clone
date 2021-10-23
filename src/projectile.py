@@ -5,7 +5,7 @@ from src.assets import get_image
 from src.engine.game import GameObject
 from src.engine.signals import emit_event
 from src.engine.utils import blit_centered
-from src.gfx import SmallExplosion
+from src.gfx import Explosion
 from src.mixins import ParticleCollisionMixin, WormCollisionMixin
 
 
@@ -39,7 +39,7 @@ class Projectile(ParticleCollisionMixin, WormCollisionMixin, GameObject):
     def explode(self):
         self.game.destroy_terrain(self.position, 7)
         self.game.remove_object(self)
-        self.game.add_object(SmallExplosion(self.game, self.position))
+        self.game.add_object(Explosion(self.game, self.position, "small"))
 
     def draw(self, surface, offset):
         blit_centered(self.image, surface, self.position - offset)
@@ -81,11 +81,12 @@ class Rocket(Projectile):
             self.explode()
 
     def explode(self):
-        self.game.destroy_terrain(self.position, 20)
+        self.game.destroy_terrain(self.position, 16)
         for worm in self.game.get_living_worms():
             dist = self.position.distance_to(worm.position)
             if dist < self.aoe_range:
                 dmg = self.damage - int(self.damage * (dist / self.aoe_range))
                 worm.damage(dmg, self.velocity, attacker=self.worm)
 
+        self.game.add_object(Explosion(self.game, self.position, "large", multi=True))
         self.game.remove_object(self)
