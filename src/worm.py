@@ -57,6 +57,8 @@ class Worm(Entity):
         self.move(self.game.get_collision_rects(), self.game.get_collision_masks(), dt)
 
         self.current_weapon.update(dt)
+        for weapon in [w for w in self.available_weapons if w != self.current_weapon]:
+            weapon.update_reload(dt)
 
         self.muzzle_flashed_time += dt
         if self.muzzle_flashed_time > 0.1:

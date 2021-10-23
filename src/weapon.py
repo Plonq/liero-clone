@@ -34,15 +34,18 @@ class Weapon:
     def update(self, dt):
         if self.current_cooldown > 0:
             self.current_cooldown -= 1
+        self.update_reload(dt)
+        while len(self.bullet_queue) > 0:
+            projectile = self.bullet_queue.popleft()
+            self.game.add_object(projectile)
+
+    def update_reload(self, dt):
         if self.is_reloading:
             self.reload_time_elapsed += dt
             if self.reload_time_elapsed >= self.reload_time:
                 self.is_reloading = False
                 self.reload_time_elapsed = 0
                 self.rounds_left = self.rounds_per_magazine
-        while len(self.bullet_queue) > 0:
-            projectile = self.bullet_queue.popleft()
-            self.game.add_object(projectile)
 
     def pull_trigger(self):
         if self.is_reloading:
