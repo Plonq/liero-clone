@@ -207,29 +207,31 @@ class Worm(Entity):
         self.alive = True
         self.spawning = True
 
-    def damage(self, dmg, direction, attacker, location=None):
+    def damage(self, dmg, attacker, location=None):
         self.health -= dmg
         amount = dmg // 5 + random.randint(1, 2)
-        self.spray_blood(direction, location, amount=amount)
+        self.spray_blood(location, amount=amount)
         emit_event("worm_damaged", dmg=dmg, worm=self)
         if self.health <= 0:
             self.die(killer=attacker)
 
-    def spray_blood(self, source_direction, from_position=None, arc_angle=45, amount=2):
+    def spray_blood(self, from_position=None, velocity=50, amount=2):
         for _ in range(amount):
-            angle = random.randint(-arc_angle, arc_angle)
-            direction = source_direction.rotate(angle)
+            angle = random.randint(0, 360)
+            direction = Vector2(1, 0).rotate(angle)
             self.game.add_object(
                 BloodParticle(
                     self.game,
-                    Vector2(from_position) if from_position else Vector2(self.position),
-                    direction.normalize() * 50,
+                    position=Vector2(from_position)
+                    if from_position
+                    else Vector2(self.position),
+                    velocity=direction.normalize() * velocity,
                     drip=True,
                 )
             )
 
     def die(self, killer):
-        self.spray_blood(Vector2(1), self.position, arc_angle=180, amount=150)
+        self.spray_blood(velocity=75, amount=500)
         self.grapple.retract()
         self.alive = False
         self.velocity = Vector2(0)

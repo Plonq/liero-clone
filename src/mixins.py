@@ -21,7 +21,4 @@ class WormCollisionMixin:
                 worm.position.y - worm_mask.get_size()[1] / 2
             )
             mask_offset = Vector2(worm_topleft) - Vector2(int_pos)
-            return (
-                mask.overlap(worm_mask, (int(mask_offset.x), int(mask_offset.y)))
-                is not None
-            )
+            return mask.overlap(worm_mask, (int(mask_offset.x), int(mask_offset.y)))

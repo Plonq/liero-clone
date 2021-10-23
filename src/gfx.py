@@ -7,26 +7,44 @@ from src.assets import assets
 from src.engine.game import GameObject
 from src.engine.gfx import Effect
 from src.engine.signals import emit_event
-from src.engine.utils import blit_centered
-from src.mixins import ParticleCollisionMixin
+from src.engine.utils import blit_centered, create_circle_mask
+from src.mixins import ParticleCollisionMixin, WormCollisionMixin
 
 
-class Explosion(Effect):
+class Explosion(WormCollisionMixin, Effect):
     explosion_sizes = {"small": 7, "medium": 12, "large": 16}
 
-    def __init__(self, game, position, size, multi=False):
+    def __init__(self, game, position, size, damage, worm, multi=False):
         super().__init__(
             game,
             position=position,
             sprite_strip=assets["img"]["explosions"][size],
             lifespan=0.3,
         )
-        self.z_index = 70
+        self.z_index = 110
         self.size = size
+        self.radius = self.explosion_sizes[size]
+        self.damage = damage
+        self.worm = worm
         self.multi = multi
         self.time_since_last_multi = 0
-        self.game.destroy_terrain(self.position, self.explosion_sizes[size])
+        self._explode()
         emit_event("small_explosion", position=position)
+
+    def _explode(self):
+        self.game.destroy_terrain(self.position, self.explosion_sizes[self.size])
+        circle_mask = create_circle_mask(self.radius)
+        for worm in self.game.get_living_worms():
+            collision_point = self.collided_with_worm(self.position, worm, circle_mask)
+            if collision_point:
+                collision_point = Vector2(collision_point) + self.position
+            print("collision", collision_point, "position", self.position)
+            if collision_point:
+                dist = self.position.distance_to(collision_point)
+                print(self.damage, dist, self.radius)
+                dmg = self.damage - int(self.damage * (dist / self.radius))
+                print("damage: ", dmg)
+                worm.damage(dmg, attacker=worm)
 
     def update(self, dt, offset):
         super().update(dt, offset)
@@ -35,15 +53,17 @@ class Explosion(Effect):
             if self.time_since_last_multi > random.randint(0, 15) / 100:
                 pos = Vector2(self.position) + Vector2(
                     random.randint(
-                        -self.explosion_sizes[self.size],
-                        self.explosion_sizes[self.size],
+                        -self.radius,
+                        self.radius,
                     ),
                     random.randint(
-                        -self.explosion_sizes[self.size],
-                        self.explosion_sizes[self.size],
+                        -self.radius,
+                        self.radius,
                     ),
                 )
-                self.game.add_object(Explosion(self.game, pos, "small"))
+                self.game.add_object(
+                    Explosion(self.game, pos, "small", self.damage // 3, self.worm)
+                )
 
 
 class BloodParticle(ParticleCollisionMixin, GameObject):

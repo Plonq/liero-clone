@@ -6,7 +6,7 @@ from pygame.math import Vector2
 from src.assets import get_image
 from src.engine.game import GameObject
 from src.engine.signals import observe
-from src.engine.utils import blit_centered
+from src.engine.utils import blit_centered, create_circle_mask
 
 
 class Map(GameObject):
@@ -117,11 +117,7 @@ class Map(GameObject):
 
     def destroy_terrain(self, location, radius):
         # Create a mask of a circle
-        circle_img = pg.Surface((radius * 2, radius * 2))
-        circle_img.fill((0, 0, 0))
-        circle_img.set_colorkey((0, 0, 0))
-        pg.draw.circle(circle_img, (255, 255, 255), (radius, radius), radius)
-        circle_mask = pg.mask.from_surface(circle_img)
+        circle_mask = create_circle_mask(radius)
         # Erase circular area of destructible mask
         self.destructible_mask.erase(
             circle_mask, (int(location.x - radius), int(location.y - radius))

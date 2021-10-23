@@ -3,7 +3,6 @@ from pygame.math import Vector2
 
 from src.assets import get_image
 from src.engine.game import GameObject
-from src.engine.signals import emit_event
 from src.engine.utils import blit_centered
 from src.gfx import Explosion
 from src.mixins import ParticleCollisionMixin, WormCollisionMixin
@@ -38,7 +37,9 @@ class Projectile(ParticleCollisionMixin, WormCollisionMixin, GameObject):
 
     def explode(self):
         self.game.remove_object(self)
-        self.game.add_object(Explosion(self.game, self.position, "small"))
+        self.game.add_object(
+            Explosion(self.game, self.position, "small", self.damage, self.worm)
+        )
 
     def draw(self, surface, offset):
         blit_centered(self.image, surface, self.position - offset)
@@ -52,17 +53,13 @@ class Bullet(Projectile):
 
     def update(self, dt, offset):
         collision = self._move_and_collide(dt)
-        if collision["type"] == "map":
+        if collision["type"] is not None:
             self.explode()
-        elif collision["type"] == "worm":
-            collision["worm"].damage(
-                self.damage, self.velocity, attacker=self.worm, location=self.position
-            )
             self.game.remove_object(self)
 
 
 class Rocket(Projectile):
-    def __init__(self, game, worm, start_pos, velocity, damage, aoe_range):
+    def __init__(self, game, worm, start_pos, velocity, damage):
         super().__init__(
             game,
             worm,
@@ -71,7 +68,6 @@ class Rocket(Projectile):
             velocity,
             damage,
         )
-        self.aoe_range = aoe_range
         self.mask = pg.Mask((5, 5), True)
 
     def update(self, dt, offset):
@@ -80,11 +76,9 @@ class Rocket(Projectile):
             self.explode()
 
     def explode(self):
-        for worm in self.game.get_living_worms():
-            dist = self.position.distance_to(worm.position)
-            if dist < self.aoe_range:
-                dmg = self.damage - int(self.damage * (dist / self.aoe_range))
-                worm.damage(dmg, self.velocity, attacker=self.worm)
-
-        self.game.add_object(Explosion(self.game, self.position, "large", multi=True))
+        self.game.add_object(
+            Explosion(
+                self.game, self.position, "large", self.damage, self.worm, multi=True
+            )
+        )
         self.game.remove_object(self)

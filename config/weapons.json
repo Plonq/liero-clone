@@ -22,8 +22,7 @@
     "round_cooldown": 0,
     "bullet_speed": 400,
     "bullet_speed_jitter": 100,
-    "damage": 10,
-    "aoe_range": 0
+    "damage": 10
   },
   "super_shotgun": {
     "projectile_type": "bullet",
@@ -35,8 +34,7 @@
     "round_cooldown": 0,
     "bullet_speed": 400,
     "bullet_speed_jitter": 100,
-    "damage": 5,
-    "aoe_range": 0
+    "damage": 5
   },
   "rpg": {
     "projectile_type": "rocket",
@@ -48,7 +46,6 @@
     "round_cooldown": 0,
     "bullet_speed": 300,
     "bullet_speed_jitter": 0,
-    "damage": 100,
-    "aoe_range": 50
+    "damage": 100
   }
 }

@@ -24,7 +24,6 @@ class Weapon:
         self.bullet_speed_jitter = cfg["bullet_speed_jitter"]
         self.accuracy = cfg["accuracy"]
         self.damage = cfg["damage"]
-        self.aoe_range = cfg["aoe_range"]
         self.current_cooldown = 0
         self.is_firing = False
         self.is_reloading = False
@@ -87,8 +86,6 @@ class Weapon:
                 self.damage,
             )
         if self.projectile_type == "rocket":
-            projectile = Rocket(
-                self.game, self.owner, position, velocity, self.damage, self.aoe_range
-            )
+            projectile = Rocket(self.game, self.owner, position, velocity, self.damage)
         if projectile:
             self.bullet_queue.append(projectile)

@@ -2,6 +2,7 @@
 import functools
 import random
 import time
+import pygame as pg
 
 
 def clamp(n, minn, maxn):
@@ -54,3 +55,11 @@ def blit_aligned(from_surf, to_surf, rect, h_align="center", v_align="center"):
     elif v_align == "bottom":
         target_pos[1] = rect.bottom - from_surf.get_height()
     to_surf.blit(from_surf, target_pos)
+
+
+def create_circle_mask(radius):
+    circle_img = pg.Surface((radius * 2, radius * 2))
+    circle_img.fill((0, 0, 0))
+    circle_img.set_colorkey((0, 0, 0))
+    pg.draw.circle(circle_img, (255, 255, 255), (radius, radius), radius)
+    return pg.mask.from_surface(circle_img)
