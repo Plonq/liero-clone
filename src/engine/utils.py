@@ -21,7 +21,6 @@ def throttle(timeout_ms=1, variance=0):
         def wrapper(*args, **kwargs):
             nonlocal time_of_last_call
             next_call_time = (timeout_ms + random.randint(-variance, variance)) / 1000
-            # print(next_call_time)
             if time.time() - time_of_last_call > next_call_time:
                 func(*args, **kwargs)
                 time_of_last_call = time.time()

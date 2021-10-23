@@ -38,12 +38,9 @@ class Explosion(WormCollisionMixin, Effect):
             collision_point = self.collided_with_worm(self.position, worm, circle_mask)
             # if collision_point:
             #     collision_point = Vector2(collision_point) + self.position
-            print("collision", collision_point, "position", self.position)
             if collision_point:
                 dist = self.position.distance_to(collision_point)
-                print(self.damage, dist, self.radius)
                 dmg = self.damage - int(self.damage * (dist / self.radius))
-                print("damage: ", dmg)
                 worm.damage(dmg, attacker=worm)
 
     def update(self, dt, offset):
