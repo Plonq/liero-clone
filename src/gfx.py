@@ -22,6 +22,7 @@ class Explosion(Effect):
             lifespan=0.3,
         )
         self.z_index = 70
+        self.size = size
         self.multi = multi
         self.time_since_last_multi = 0
         self.game.destroy_terrain(self.position, self.explosion_sizes[size])
@@ -33,7 +34,14 @@ class Explosion(Effect):
             self.time_since_last_multi += dt
             if self.time_since_last_multi > random.randint(0, 15) / 100:
                 pos = Vector2(self.position) + Vector2(
-                    random.randint(-20, 20), random.randint(-20, 20)
+                    random.randint(
+                        -self.explosion_sizes[self.size],
+                        self.explosion_sizes[self.size],
+                    ),
+                    random.randint(
+                        -self.explosion_sizes[self.size],
+                        self.explosion_sizes[self.size],
+                    ),
                 )
                 self.game.add_object(Explosion(self.game, pos, "small"))
 
