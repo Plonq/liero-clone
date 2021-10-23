@@ -36,8 +36,6 @@ class Explosion(WormCollisionMixin, Effect):
         circle_mask = create_circle_mask(self.radius)
         for worm in self.game.get_living_worms():
             collision_point = self.collided_with_worm(self.position, worm, circle_mask)
-            # if collision_point:
-            #     collision_point = Vector2(collision_point) + self.position
             if collision_point:
                 dist = self.position.distance_to(collision_point)
                 dmg = self.damage - int(self.damage * (dist / self.radius))
