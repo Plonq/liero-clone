@@ -42,6 +42,8 @@ class Explosion(WormCollisionMixin, Effect):
                 dist = self.position.distance_to(collision_point)
                 dmg = self.damage - int(self.damage * (dist / self.radius))
                 worm.damage(dmg, attacker=worm)
+        self.game.set_screen_flash(self.radius * 2)
+        self.game.set_screen_shake(self.radius ** 2 // 15)
 
     def update(self, dt, offset):
         super().update(dt, offset)

@@ -1,3 +1,4 @@
+import random
 import time
 
 import pygame as pg
@@ -46,6 +47,8 @@ class LieroClone(Game):
         self.state = "menu"
         self.mode = "single"
         self.last_over_frame = 0
+        self.screen_flash = None
+        self.screen_shake = 0
         observe("game_over", self._on_game_over)
 
     def _register_actions(self):
@@ -138,6 +141,11 @@ class LieroClone(Game):
                 self.menu.draw(surface, offset)
             elif self.state == "over":
                 self.game_over.draw(surface, offset)
+        if self.screen_flash:
+            img = pg.Surface(self.display_size).convert_alpha()
+            img.fill((255, 255, 255, self.screen_flash))
+            self.display.blit(img, (0, 0))
+            self.screen_flash = None
 
     def get_visible_rect(self):
         return pg.Rect(
@@ -167,7 +175,15 @@ class LieroClone(Game):
         self.true_offset[1] = clamp(
             self.true_offset[1], 0, self.map.size[1] - self.display_size[1]
         )
-        self.offset = Vector2(int(self.true_offset[0]), int(self.true_offset[1]))
+        offset = Vector2(int(self.true_offset[0]), int(self.true_offset[1]))
+        offset = offset + Vector2(
+            random.randint(-self.screen_shake, self.screen_shake),
+            random.randint(-self.screen_shake, self.screen_shake),
+        )
+        self.offset = offset
+        self.screen_shake -= 1
+        if self.screen_shake < 0:
+            self.screen_shake = 0
 
     def is_within_map(self, position):
         return self.get_map_rect().collidepoint(position.x, position.y)
@@ -202,6 +218,12 @@ class LieroClone(Game):
 
     def get_minimap(self):
         return self.map.minimap
+
+    def set_screen_flash(self, intensity=50):
+        self.screen_flash = intensity
+
+    def set_screen_shake(self, intensity=5):
+        self.screen_shake = intensity
 
 
 if __name__ == "__main__":
