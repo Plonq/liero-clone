@@ -16,7 +16,7 @@ from src.weapon import Weapon
 
 
 class Worm(Entity):
-    max_lives = 1  # TODO
+    max_lives = 5
     max_health = 500
 
     def __init__(self, game, name, color, x=0, y=0):
