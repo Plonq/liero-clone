@@ -1,3 +1,5 @@
+import random
+
 import pygame as pg
 from pygame.math import Vector2
 
@@ -84,7 +86,7 @@ class Rocket(Projectile):
 
     def _emit_puff(self):
         self.game.add_object(
-            FadingImage(self.game, assets["img"]["smoke"], self.position, 5)
+            FadingImage(self.game, assets["img"]["smoke"], self.position, 2)
         )
 
     def explode(self):
@@ -99,20 +101,33 @@ class Rocket(Projectile):
 class FadingImage(GameObject):
     def __init__(self, game, img, position, lifespan):
         self.game = game
-        self.img = img.copy()
+        self.orig_img = img
+        self.img = None
         self.position = Vector2(position)
         self.lifespan = lifespan
         self.time_since_born = 0
+        self.velocity = Vector2(
+            random.randint(-100, 100) / 500, random.randint(-100, 100) / 500
+        )
 
     def update(self, dt, offset):
+        self.position += self.velocity
         alpha = 255 - self.time_since_born / self.lifespan * 255
         if alpha <= 20:
             self.game.remove_object(self)
         else:
+            scale = (
+                (self.time_since_born + 1) / self.lifespan * self.orig_img.get_width()
+            )
+            self.img = pg.transform.scale(
+                self.orig_img.copy(),
+                (int(scale), int(scale)),
+            )
             self.img.fill(
                 (255, 255, 255, alpha), None, special_flags=pg.BLEND_RGBA_MULT
             )
             self.time_since_born += dt
 
     def draw(self, surface, offset):
-        blit_centered(self.img, surface, self.position - offset)
+        if self.img:
+            blit_centered(self.img, surface, self.position - offset)
