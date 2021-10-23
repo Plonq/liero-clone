@@ -13,6 +13,7 @@ assets = {"img": {}, "sound": {}, "font": {}}
 
 def init():
     load_sprites(ROOT_DIR / "assets/images/entities")
+
     # Images
     explosion_img = get_image("gfx/explosion.png")
     assets["img"]["explosions"] = {
