@@ -22,7 +22,7 @@ class Explosion(WormCollisionMixin, Effect):
             sprite_strip=assets["img"]["explosions"][size],
             lifespan=0.042 * self.radius,
         )
-        self.z_index = 110
+        self.z_index = random.randint(20, 120)
         self.size = size
         self.damage = damage
         self.worm = worm
