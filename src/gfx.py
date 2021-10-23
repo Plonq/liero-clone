@@ -7,7 +7,7 @@ from src.assets import assets
 from src.engine.game import GameObject
 from src.engine.gfx import Effect
 from src.engine.signals import emit_event
-from src.engine.utils import blit_centered, create_circle_mask
+from src.engine.utils import blit_centered
 from src.mixins import ParticleCollisionMixin, WormCollisionMixin
 
 
@@ -33,12 +33,10 @@ class Explosion(WormCollisionMixin, Effect):
 
     def _explode(self):
         self.game.destroy_terrain(self.position, self.explosion_sizes[self.size])
-        circle_mask = create_circle_mask(self.radius)
         for worm in self.game.get_living_worms():
-            collision_point = self.collided_with_worm(self.position, worm, circle_mask)
-            if collision_point:
-                dist = self.position.distance_to(collision_point)
-                dmg = self.damage - int(self.damage * (dist / self.radius))
+            dist = self.position.distance_to(worm.position)
+            dmg = self.damage - int(self.damage * (dist / self.radius))
+            if dmg > 0:
                 worm.damage(dmg, attacker=worm)
         self.game.set_screen_flash(self.radius * 2)
         self.game.set_screen_shake(self.radius ** 2 // 15)
