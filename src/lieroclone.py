@@ -31,9 +31,9 @@ class LieroClone(Game):
         self.network = None
         self.map = Map(self)
         self.add_object(self.map)
-        self.player = Worm(self, "player", pg.Color("blue"))
+        self.player = Worm(self, "player", pg.Color("#4560ea"))
         self.player_ctrl = None
-        self.opponent = Worm(self, "opponent", pg.Color("red"))
+        self.opponent = Worm(self, "opponent", pg.Color("#e84646"))
         self.opponent_ctrl = None
         self.add_object(self.player)
         self.add_object(self.opponent)
