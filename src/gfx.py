@@ -15,15 +15,15 @@ class Explosion(WormCollisionMixin, Effect):
     explosion_sizes = {"small": 7, "medium": 12, "large": 16}
 
     def __init__(self, game, position, size, damage, worm, multi=False):
+        self.radius = self.explosion_sizes[size]
         super().__init__(
             game,
             position=position,
             sprite_strip=assets["img"]["explosions"][size],
-            lifespan=0.3,
+            lifespan=0.042 * self.radius,
         )
         self.z_index = 110
         self.size = size
-        self.radius = self.explosion_sizes[size]
         self.damage = damage
         self.worm = worm
         self.multi = multi
