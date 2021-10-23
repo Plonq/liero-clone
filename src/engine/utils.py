@@ -2,6 +2,8 @@
 import functools
 import random
 import time
+
+import math
 import pygame as pg
 
 
@@ -28,6 +30,10 @@ def throttle(timeout_ms=1, variance=0):
         return wrapper
 
     return decorator
+
+
+def rad_to_deg(ang_rad):
+    return ang_rad * (180 / math.pi)
 
 
 # Pygame utils

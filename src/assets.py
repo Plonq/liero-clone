@@ -21,6 +21,10 @@ def init():
         "small": SpriteStrip(explosion_img, start_frame=9),
     }
     assets["img"]["smoke"] = get_image("gfx/smoke.png").convert_alpha()
+    assets["img"]["projectiles"] = {
+        "missile": get_image("weapons/missile.png").convert_alpha()
+    }
+
     # Sounds
     assets["sound"]["explosions"] = {}
     for i in range(1, 11):

@@ -9,7 +9,7 @@ from src.assets import get_image
 from src.engine.entity import Entity
 from src.engine.signals import emit_event, observe
 from src.engine.game import GameObject
-from src.engine.utils import blit_centered, is_same_sign
+from src.engine.utils import blit_centered, is_same_sign, rad_to_deg
 from src.gfx import BloodParticle
 from src.mixins import WormCollisionMixin
 from src.weapon import Weapon
@@ -265,9 +265,7 @@ class Worm(Entity):
         super().draw(surface, offset)
 
         # Weapon
-        rotation = (
-            atan2(self.aim_direction.x, self.aim_direction.y) * (180 / math.pi) - 90
-        )
+        rotation = rad_to_deg(atan2(self.aim_direction.x, self.aim_direction.y)) - 90
         rotated_weapon_img = pg.transform.rotate(
             pg.transform.flip(self.weapon_img, False, self.flip), rotation
         )

@@ -1,3 +1,4 @@
+import math
 import random
 
 import pygame as pg
@@ -5,7 +6,7 @@ from pygame.math import Vector2
 
 from src.assets import assets, get_image
 from src.engine.game import GameObject
-from src.engine.utils import blit_centered
+from src.engine.utils import blit_centered, rad_to_deg
 from src.gfx import Explosion
 from src.mixins import ParticleCollisionMixin, WormCollisionMixin
 
@@ -64,10 +65,14 @@ class Bullet(Projectile):
 
 class Rocket(Projectile):
     def __init__(self, game, worm, start_pos, velocity, damage):
+        rotated_img = pg.transform.rotate(
+            assets["img"]["projectiles"]["missile"],
+            -rad_to_deg(math.atan2(velocity.y, velocity.x)),
+        )
         super().__init__(
             game,
             worm,
-            get_image("weapons/placeholder.png"),
+            rotated_img,
             start_pos,
             velocity,
             damage,
