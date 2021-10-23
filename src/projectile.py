@@ -37,7 +37,6 @@ class Projectile(ParticleCollisionMixin, WormCollisionMixin, GameObject):
         return {"type": None}
 
     def explode(self):
-        self.game.destroy_terrain(self.position, 7)
         self.game.remove_object(self)
         self.game.add_object(Explosion(self.game, self.position, "small"))
 
@@ -81,7 +80,6 @@ class Rocket(Projectile):
             self.explode()
 
     def explode(self):
-        self.game.destroy_terrain(self.position, 16)
         for worm in self.game.get_living_worms():
             dist = self.position.distance_to(worm.position)
             if dist < self.aoe_range:

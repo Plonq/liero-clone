@@ -12,6 +12,8 @@ from src.mixins import ParticleCollisionMixin
 
 
 class Explosion(Effect):
+    explosion_sizes = {"small": 7, "medium": 12, "large": 16}
+
     def __init__(self, game, position, size, multi=False):
         super().__init__(
             game,
@@ -22,6 +24,7 @@ class Explosion(Effect):
         self.z_index = 70
         self.multi = multi
         self.time_since_last_multi = 0
+        self.game.destroy_terrain(self.position, self.explosion_sizes[size])
         emit_event("small_explosion", position=position)
 
     def update(self, dt, offset):
