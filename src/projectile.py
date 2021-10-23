@@ -99,7 +99,7 @@ class Rocket(Projectile):
 
 
 class FadingImage(GameObject):
-    def __init__(self, game, img, position, lifespan):
+    def __init__(self, game, img, position, lifespan, drift=100):
         self.game = game
         self.orig_img = img
         self.img = None
@@ -107,7 +107,7 @@ class FadingImage(GameObject):
         self.lifespan = lifespan
         self.time_since_born = 0
         self.velocity = Vector2(
-            random.randint(-100, 100) / 500, random.randint(-100, 100) / 500
+            random.randint(-drift, drift) / 500, random.randint(-drift, drift) / 500
         )
 
     def update(self, dt, offset):
