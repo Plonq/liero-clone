@@ -52,8 +52,7 @@ class Projectile(ParticleCollisionMixin, WormCollisionMixin, GameObject):
 
 class Bullet(Projectile):
     def __init__(self, game, worm, start_pos, velocity, damage):
-        img = pg.Surface((1, 1)).convert()
-        img.fill(pg.Color("white"))
+        img = assets["img"]["projectiles"]["bullet"]
         super().__init__(game, worm, img, start_pos, velocity, damage)
 
     def update(self, dt, offset):
