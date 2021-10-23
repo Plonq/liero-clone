@@ -21,16 +21,18 @@ class Projectile(ParticleCollisionMixin, WormCollisionMixin, GameObject):
     def _move_and_collide(self, dt):
         movement = self.velocity * dt
         new_position = self.position + movement
-        if self.collided_with_map(new_position, self.mask, self.game):
-            # Find exact point of collision (edge of object)
-            for i in range(10):
-                pos = self.position.lerp(new_position, i / 10)
-                if self.collided_with_map(pos, self.mask, self.game):
-                    self.position = pos
-                    return {"type": "map"}
+        collision = self.collided_with_map(
+            new_position, self.mask, self.game, previous_position=self.position
+        )
+        if collision:
+            self.position = Vector2(collision)
+            return {"type": "map"}
         for worm in self.game.get_living_worms():
-            if self.collided_with_worm(self.position, worm, self.mask):
-                self.position = new_position
+            collision = self.collided_with_worm(
+                self.position, worm, self.mask, previous_position=self.position
+            )
+            if collision:
+                self.position = Vector2(collision)
                 return {"type": "worm", "worm": worm}
         self.position = new_position
         return {"type": None}
