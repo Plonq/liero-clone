@@ -36,7 +36,7 @@
     "bullet_speed_jitter": 100,
     "damage": 5
   },
-  "rpg": {
+  "missile": {
     "projectile_type": "rocket",
     "reload_time": 0.5,
     "accuracy": 1,

@@ -58,7 +58,7 @@ class SoundEffects:
             snd.set_volume(0.1)
             self.queue.add(SoundDef(snd, weapon.owner.position))
 
-        elif weapon.name == "rpg":
+        elif weapon.name == "missile":
             snd = assets["sound"]["explosions"][2]
             snd.set_volume(0.1)
             self.queue.add(SoundDef(snd, weapon.owner.position))
