@@ -1,4 +1,5 @@
 import random
+import time
 
 import pygame as pg
 from pygame.math import Vector2
@@ -27,6 +28,7 @@ class Explosion(WormCollisionMixin, Effect):
         self.damage = damage
         self.worm = worm
         self.multi = multi
+        self.time_of_explode = time.time()
         self.time_since_last_multi = 0
         self._explode()
         emit_event("small_explosion", position=position)
@@ -45,20 +47,21 @@ class Explosion(WormCollisionMixin, Effect):
         super().update(dt, offset)
         if self.multi:
             self.time_since_last_multi += dt
-            if self.time_since_last_multi > random.randint(0, 15) / 100:
-                pos = Vector2(self.position) + Vector2(
-                    random.randint(
-                        -self.radius,
-                        self.radius,
-                    ),
-                    random.randint(
-                        -self.radius,
-                        self.radius,
-                    ),
-                )
-                self.game.add_object(
-                    Explosion(self.game, pos, "small", self.damage // 3, self.worm)
-                )
+            if time.time() - self.time_of_explode < 0.2:
+                if self.time_since_last_multi > random.randint(0, 1) / 100:
+                    pos = Vector2(self.position) + Vector2(
+                        random.randint(
+                            -self.radius,
+                            self.radius,
+                        ),
+                        random.randint(
+                            -self.radius,
+                            self.radius,
+                        ),
+                    )
+                    self.game.add_object(
+                        Explosion(self.game, pos, "small", self.damage // 3, self.worm)
+                    )
 
 
 class BloodParticle(ParticleCollisionMixin, GameObject):

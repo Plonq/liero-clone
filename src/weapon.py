@@ -5,7 +5,7 @@ from pygame.math import Vector2
 
 from src.config import config
 from src.engine.signals import emit_event
-from src.projectile import Bullet, Rocket
+from src.projectile import Bullet, Missile
 
 
 class Weapon:
@@ -89,6 +89,6 @@ class Weapon:
                 self.damage,
             )
         if self.projectile_type == "rocket":
-            projectile = Rocket(self.game, self.owner, position, velocity, self.damage)
+            projectile = Missile(self.game, self.owner, position, velocity, self.damage)
         if projectile:
             self.bullet_queue.append(projectile)

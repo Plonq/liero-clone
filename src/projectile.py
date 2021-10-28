@@ -62,7 +62,7 @@ class Bullet(Projectile):
             self.game.remove_object(self)
 
 
-class Rocket(Projectile):
+class Missile(Projectile):
     def __init__(self, game, worm, start_pos, velocity, damage):
         rotated_img = pg.transform.rotate(
             assets["img"]["projectiles"]["missile"],
