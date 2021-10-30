@@ -8,14 +8,14 @@ from src.assets import assets
 from src.engine.game import GameObject
 from src.engine.gfx import Effect
 from src.engine.signals import emit_event
-from src.engine.utils import blit_centered
+from src.engine.utils import blit_centered, create_circle_mask
 from src.mixins import ParticleCollisionMixin, WormCollisionMixin
 
 
 class Explosion(WormCollisionMixin, Effect):
     explosion_sizes = {"small": 7, "medium": 12, "large": 16}
 
-    def __init__(self, game, position, size, damage, worm, multi=False):
+    def __init__(self, game, position, size, damage, worm, aoe=False, multi=False):
         self.radius = self.explosion_sizes[size]
         super().__init__(
             game,
@@ -25,7 +25,9 @@ class Explosion(WormCollisionMixin, Effect):
         )
         self.z_index = random.randint(20, 120)
         self.size = size
+        self.mask = create_circle_mask(self.radius)
         self.damage = damage
+        self.aoe = aoe
         self.worm = worm
         self.multi = multi
         self.time_of_explode = time.time()
@@ -36,12 +38,20 @@ class Explosion(WormCollisionMixin, Effect):
     def _explode(self):
         self.game.destroy_terrain(self.position, self.explosion_sizes[self.size])
         for worm in self.game.get_living_worms():
-            dist = self.position.distance_to(worm.position)
-            dmg = self.damage - int(self.damage * (dist / self.radius))
-            if dmg > 0:
-                worm.damage(dmg, attacker=self.worm)
+            if self.aoe:
+                self._do_damage(worm, worm.position, dist_offset=10)
+            else:
+                collision = self.collided_with_worm(self.position, worm, self.mask)
+                if collision:
+                    self._do_damage(worm, collision)
         self.game.set_screen_flash(self.radius * 2)
         self.game.set_screen_shake(self.radius ** 2 // 15)
+
+    def _do_damage(self, worm, impact_position, dist_offset=0):
+        dist = self.position.distance_to(impact_position) - dist_offset
+        dmg = min(self.damage - int(self.damage * (dist / self.radius)), self.damage)
+        if dmg > 0:
+            worm.damage(dmg, attacker=self.worm)
 
     def update(self, dt, offset):
         super().update(dt, offset)

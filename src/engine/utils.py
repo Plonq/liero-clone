@@ -7,6 +7,9 @@ import math
 import pygame as pg
 
 
+mask_cache = {}
+
+
 def clamp(n, minn, maxn):
     return max(min(maxn, n), minn)
 
@@ -63,8 +66,10 @@ def blit_aligned(from_surf, to_surf, rect, h_align="center", v_align="center"):
 
 
 def create_circle_mask(radius):
-    circle_img = pg.Surface((radius * 2, radius * 2))
-    circle_img.fill((0, 0, 0))
-    circle_img.set_colorkey((0, 0, 0))
-    pg.draw.circle(circle_img, (255, 255, 255), (radius, radius), radius)
-    return pg.mask.from_surface(circle_img)
+    if radius not in mask_cache:
+        circle_img = pg.Surface((radius * 2, radius * 2))
+        circle_img.fill((0, 0, 0))
+        circle_img.set_colorkey((0, 0, 0))
+        pg.draw.circle(circle_img, (255, 255, 255), (radius, radius), radius)
+        mask_cache[radius] = pg.mask.from_surface(circle_img)
+    return mask_cache[radius]

@@ -96,7 +96,13 @@ class Missile(Projectile):
     def explode(self):
         self.game.add_object(
             Explosion(
-                self.game, self.position, "large", self.damage, self.worm, multi=True
+                self.game,
+                self.position,
+                "large",
+                self.damage,
+                self.worm,
+                aoe=True,
+                multi=False,
             )
         )
         self.game.remove_object(self)
