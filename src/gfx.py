@@ -70,7 +70,14 @@ class Explosion(WormCollisionMixin, Effect):
                         ),
                     )
                     self.game.add_object(
-                        Explosion(self.game, pos, "small", self.damage // 3, self.worm)
+                        Explosion(
+                            self.game,
+                            pos,
+                            "small",
+                            self.damage // 5,
+                            self.worm,
+                            aoe=True,
+                        )
                     )
 
 

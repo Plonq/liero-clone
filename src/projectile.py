@@ -102,7 +102,7 @@ class Missile(Projectile):
                 self.damage,
                 self.worm,
                 aoe=True,
-                multi=False,
+                multi=True,
             )
         )
         self.game.remove_object(self)
