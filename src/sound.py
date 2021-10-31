@@ -43,28 +43,28 @@ class SoundEffects:
 
     @throttle(timeout_ms=500, variance=500)
     def _small_explosion(self, position):
-        snd = assets["sound"]["explosions"][random.randint(2, 3)]
+        snd = assets["sound"]["explosions"][random.randint(1, 2)]
         snd.set_volume(0.07)
         self.queue.add(SoundDef(snd, position))
 
     def _weapon_fired(self, weapon):
         if weapon.name == "minigun":
-            snd = assets["sound"]["gunshots"][5]
+            snd = assets["sound"]["gunshots"][2]
             snd.set_volume(0.03)
             self.queue.add(SoundDef(snd, weapon.owner.position))
 
         elif weapon.name == "shotgun":
-            snd = assets["sound"]["gunshots"][7]
+            snd = assets["sound"]["gunshots"][3]
             snd.set_volume(0.1)
             self.queue.add(SoundDef(snd, weapon.owner.position))
 
         elif weapon.name == "missile":
-            snd = assets["sound"]["explosions"][2]
+            snd = assets["sound"]["explosions"][1]
             snd.set_volume(0.1)
             self.queue.add(SoundDef(snd, weapon.owner.position))
 
         elif weapon.name == "sniper":
-            snd = assets["sound"]["gunshots"][3]
+            snd = assets["sound"]["gunshots"][1]
             snd.set_volume(0.5)
             self.queue.add(SoundDef(snd, weapon.owner.position))
 
@@ -75,7 +75,7 @@ class SoundEffects:
 
     @throttle(timeout_ms=600, variance=1000)
     def _worm_damaged(self, dmg, worm):
-        snd = assets["sound"]["grunts"][1]
+        snd = assets["sound"]["grunt"]
         snd.set_volume(0.05)
         self.queue.add(SoundDef(snd, worm.position))
 

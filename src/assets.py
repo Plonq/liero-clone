@@ -31,7 +31,7 @@ def init():
 
     # Sounds
     assets["sound"]["explosions"] = {}
-    for i in range(1, 11):
+    for i in range(1, 3):
         assets["sound"]["explosions"][i] = pg.mixer.Sound(
             ROOT_DIR / f"assets/sounds/Explosion{i}.wav"
         )
@@ -41,16 +41,12 @@ def init():
     )
 
     assets["sound"]["gunshots"] = {}
-    for i in range(1, 12):
+    for i in range(1, 4):
         assets["sound"]["gunshots"][i] = pg.mixer.Sound(
             ROOT_DIR / f"assets/sounds/Gunshot{i}.wav"
         )
 
-    assets["sound"]["grunts"] = {}
-    for i in range(1, 9):
-        assets["sound"]["grunts"][i] = pg.mixer.Sound(
-            ROOT_DIR / f"assets/sounds/Male{i}.wav"
-        )
+    assets["sound"]["grunt"] = pg.mixer.Sound(ROOT_DIR / f"assets/sounds/Male1.wav")
     assets["sound"]["slash"] = pg.mixer.Sound(ROOT_DIR / "assets/sounds/Slash1.wav")
 
     # Fonts
