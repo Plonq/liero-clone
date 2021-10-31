@@ -33,7 +33,7 @@ class Worm(Entity):
             Weapon(game, self, "minigun"),
             Weapon(game, self, "shotgun"),
             Weapon(game, self, "missile"),
-            Weapon(game, self, "super_shotgun"),
+            # Weapon(game, self, "super_shotgun"),
             Weapon(game, self, "sniper"),
         ]
         self.current_weapon = self.available_weapons[0]
