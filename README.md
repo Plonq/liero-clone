@@ -18,8 +18,9 @@ it. It's functional, but missing a lot of features.
 Sorry, no executable files. All you need is [Pipenv](https://pypi.org/project/pipenv/) though.
 
 1. Clone the repo
-2. Run `pipenv install`
-3. Run `python src/launch_game.py`
+2. Install dependencies with `pipenv install`
+3. Enter pipenv shell with `pipenv shell`
+4. Run the game with `python src/launch_game.py`
 
 ## Screenshots
 
