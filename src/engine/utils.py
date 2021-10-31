@@ -5,7 +5,7 @@ import time
 
 import math
 import pygame as pg
-
+from pygame.math import Vector2
 
 mask_cache = {}
 
@@ -73,3 +73,47 @@ def create_circle_mask(radius):
         pg.draw.circle(circle_img, (255, 255, 255), (radius, radius), radius)
         mask_cache[radius] = pg.mask.from_surface(circle_img)
     return mask_cache[radius]
+
+
+def ray_cast(game, from_pos, direction, ignore_worm=None):
+    mask = pg.Mask((1, 1), True)
+    new_pos = Vector2(from_pos)
+
+    def is_collided_map(pos):
+        int_pos = (int(-pos.x), int(-pos.y))
+        for game_mask in game.get_collision_masks(combined=False):
+            if mask.overlap(game_mask, int_pos) is not None:
+                return True
+        return False
+
+    def is_collided_worm(pos, worm):
+        int_pos = (int(pos.x), int(pos.y))
+        worm_mask = worm.get_current_mask()
+        worm_topleft = int(worm.position.x - worm_mask.get_size()[0] / 2), int(
+            worm.position.y - worm_mask.get_size()[1] / 2
+        )
+        mask_offset = Vector2(worm_topleft) - Vector2(int_pos)
+        return mask.overlap(worm_mask, (int(mask_offset.x), int(mask_offset.y)))
+
+    hit_worm = None
+    while True:
+        if hit_worm:
+            break
+
+        new_pos += direction
+        if not game.is_within_map(new_pos):
+            break
+
+        collided = is_collided_map(new_pos)
+        if collided:
+            break
+        for worm in game.get_living_worms():
+            if worm != ignore_worm:
+                if is_collided_worm(new_pos, worm):
+                    hit_worm = worm
+                    break
+    return {
+        "point_of_collision": new_pos,
+        "type": "worm" if hit_worm else "map",
+        "worm": hit_worm,
+    }

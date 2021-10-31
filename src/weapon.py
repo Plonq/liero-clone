@@ -1,3 +1,4 @@
+import pygame as pg
 import random
 from collections import deque
 
@@ -5,6 +6,7 @@ from pygame.math import Vector2
 
 from src.config import config
 from src.engine.signals import emit_event
+from src.engine.utils import ray_cast
 from src.projectile import Bullet, Missile
 
 
@@ -39,6 +41,22 @@ class Weapon:
             projectile = self.bullet_queue.popleft()
             self.game.add_object(projectile)
 
+    def draw(self, surface, offset):
+        if self.projectile_type == "hitscan":
+            collision = ray_cast(
+                self.game,
+                self.owner.position,
+                self.owner.aim_direction,
+                ignore_worm=self.owner,
+            )
+            pg.draw.line(
+                surface,
+                pg.Color(120, 30, 30),
+                self.owner.get_weapon_pos() - offset,
+                collision["point_of_collision"] - offset,
+                1,
+            )
+
     def update_reload(self, dt):
         if self.is_reloading:
             self.reload_time_elapsed += dt
@@ -62,23 +80,32 @@ class Weapon:
     def fire(self):
         self.is_firing = True
         angle_offset = round((1 - self.accuracy) * 180)
-        start_pos = self.owner.position
         fire_direction = Vector2(self.owner.aim_direction)
         for _ in range(self.bullets_per_round):
             angle = random.randint(-angle_offset, angle_offset)
             start_direction = fire_direction.rotate(angle)
-            cur_pos = start_pos + (start_direction * 14)
             speed_adjustment = random.randint(
                 -self.bullet_speed_jitter, self.bullet_speed_jitter
             )
             start_velocity = start_direction * (self.bullet_speed + speed_adjustment)
-            self.launch_projectile(cur_pos, start_velocity)
+            self.launch_projectile(self.owner.get_weapon_pos(), start_velocity)
             emit_event("weapon_fired", weapon=self)
         self.rounds_left -= 1
         if self.rounds_left <= 0:
             self.is_reloading = True
 
     def launch_projectile(self, position, velocity):
+        if self.projectile_type == "hitscan":
+            collision = ray_cast(
+                self.game,
+                self.owner.position,
+                self.owner.aim_direction,
+                ignore_worm=self.owner,
+            )
+            if collision["type"] == "worm":
+                collision["worm"].damage(self.damage, attacker=self.owner)
+            return
+
         projectile = None
         if self.projectile_type == "bullet":
             projectile = Bullet(

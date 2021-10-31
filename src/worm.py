@@ -34,6 +34,7 @@ class Worm(Entity):
             Weapon(game, self, "shotgun"),
             Weapon(game, self, "missile"),
             Weapon(game, self, "super_shotgun"),
+            Weapon(game, self, "sniper"),
         ]
         self.current_weapon = self.available_weapons[0]
         self.grapple = Grapple(game, self)
@@ -249,6 +250,9 @@ class Worm(Entity):
         self.should_muzzle_flash = True
         self.muzzle_flashed_time = 0
 
+    def get_weapon_pos(self):
+        return Vector2(self.position + (self.aim_direction * 12))
+
     def reset(self):
         self.alive = False
         self.lives = self.max_lives
@@ -281,6 +285,8 @@ class Worm(Entity):
         reticule_pos = self.position - offset + (self.aim_direction * 35)
         reticule_pos = Vector2(int(reticule_pos.x), int(reticule_pos.y))
         pg.draw.circle(surface, pg.Color("red"), reticule_pos, 1)
+
+        self.current_weapon.draw(surface, offset)
 
 
 class Grapple(WormCollisionMixin, GameObject):

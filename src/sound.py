@@ -63,6 +63,11 @@ class SoundEffects:
             snd.set_volume(0.1)
             self.queue.add(SoundDef(snd, weapon.owner.position))
 
+        elif weapon.name == "sniper":
+            snd = assets["sound"]["gunshots"][3]
+            snd.set_volume(0.5)
+            self.queue.add(SoundDef(snd, weapon.owner.position))
+
     def _death(self, worm, killer):
         snd = assets["sound"]["death"]
         snd.set_volume(0.4)

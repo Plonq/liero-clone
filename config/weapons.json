@@ -47,5 +47,17 @@
     "bullet_speed": 300,
     "bullet_speed_jitter": 0,
     "damage": 100
+  },
+  "sniper": {
+    "projectile_type": "hitscan",
+    "reload_time": 4,
+    "accuracy": 1,
+    "automatic": false,
+    "bullets_per_round": 1,
+    "rounds_per_magazine": 1,
+    "round_cooldown": 0,
+    "bullet_speed": 0,
+    "bullet_speed_jitter": 0,
+    "damage": 200
   }
 }
