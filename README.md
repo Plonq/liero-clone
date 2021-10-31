@@ -4,7 +4,7 @@ Liero Clone
 ## About
 
 This is a clone (ish) of the 1999 game Liero, except with mouse aiming. I built this as a way to teach myself game
-development. It is not finished, will likely never be finished, but it's a functioning game.
+development. It is not finished, and will likely never be finished, but it's a functioning game.
 
 * Destructible map
 * Grappling hook
