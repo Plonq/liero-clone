@@ -3,19 +3,23 @@ Liero Clone
 
 ## About
 
-This is a sort of clone of the 1999 game Liero. I built this as a way to
-teach myself game development. It is not finished, but I doubt I will finish
-it. It's functional, but missing a lot of features.
+This is a clone (ish) of the 1999 game Liero, except with mouse aiming. I built this as a way to teach myself game
+development. It is not finished, will likely never be finished, but it's a functioning game.
 
 * Destructible map
-* Mouse aiming
-* Grapple
-* AI (can barely call it intelligent though)
+* Grappling hook
+* AI (barely)
 * 4 different weapons
+    * Minigun
+    * Shotgun
+    * Missile
+    * Sniper
+
+Rules: You have 5 lives. So does the opponent. First to kill the other worm 5 times wins.
 
 ## How to Play
 
-Sorry, no executable files. All you need is [Pipenv](https://pypi.org/project/pipenv/) though.
+Sorry, no executable files, but all you need is [Pipenv](https://pypi.org/project/pipenv/) though.
 
 1. Clone the repo
 2. Install dependencies with `pipenv install`
