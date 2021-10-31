@@ -194,9 +194,10 @@ class Worm(Entity):
             return
 
         def rand_spawn_location():
+            map_size = self.game.map.size
             return Vector2(
-                random.randint(self.width, self.game.display_size[0] - self.width),
-                random.randint(self.height, self.game.display_size[1] - self.height),
+                random.randint(self.width, map_size[0] - self.width),
+                random.randint(self.height, map_size[1] - self.height),
             )
 
         self.position = rand_spawn_location()
