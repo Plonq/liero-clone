@@ -9,6 +9,7 @@ development. It is not finished, will likely never be finished, but it's a funct
 * Destructible map
 * Grappling hook
 * AI (barely)
+* Lots of blood
 * 4 different weapons
     * Minigun
     * Shotgun
