@@ -78,7 +78,6 @@ class AiController(Controller):
         if not self.game.player.alive:
             return
 
-        return
         if (self.worm.position - self.last_pos).magnitude() < 1:
             self.time_at_current_pos += dt
         else:
