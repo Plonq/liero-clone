@@ -25,7 +25,7 @@ Sorry, no executable files, but all you need is [Pipenv](https://pypi.org/projec
 1. Clone the repo
 2. Install dependencies with `pipenv install`
 3. Enter pipenv shell with `pipenv shell`
-4. Run the game with `python src/launch_game.py`
+4. Run the game with `python -m src.launch_game`
 
 ## Screenshots
 
