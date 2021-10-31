@@ -39,8 +39,8 @@ Sorry, no executable files, but all you need is [Pipenv](https://pypi.org/projec
 
 ## Credits
 
-Coding: me
-Artwork: me
+Coding: me  
+Artwork: me  
 Sounds: https://simon13666.itch.io/sound-starter-pack
 
 ## License
