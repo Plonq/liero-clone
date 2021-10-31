@@ -16,10 +16,10 @@ class MainMenu(GameObject):
                 "text": lambda: "Resume" if self.started else "Single Player",
                 "execute": lambda: self.start(multi=False),
             },
-            {
-                "text": lambda: "Resume" if self.started else "Multiplayer",
-                "execute": lambda: self.start(multi=True),
-            },
+            # {
+            #     "text": lambda: "Resume" if self.started else "Multiplayer",
+            #     "execute": lambda: self.start(multi=True),
+            # },
             {
                 "text": lambda: "Toggle Fullscreen",
                 "execute": lambda: self.game.toggle_fullscreen(),
