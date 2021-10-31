@@ -31,3 +31,7 @@ Sorry, no executable files. All you need is [Pipenv](https://pypi.org/project/pi
 <img width="1214" alt="image" src="https://user-images.githubusercontent.com/7709415/139565481-ebf5eaa7-8278-4a31-a0d4-25ff96aecf53.png">
 
 <img width="1214" alt="image" src="https://user-images.githubusercontent.com/7709415/139565513-a2c7e0f0-744a-4de8-a6d1-e4b6c65a690f.png">
+
+## License
+
+MIT
