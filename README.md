@@ -36,6 +36,12 @@ Sorry, no executable files, but all you need is [Pipenv](https://pypi.org/projec
 
 <img width="1214" alt="image" src="https://user-images.githubusercontent.com/7709415/139565513-a2c7e0f0-744a-4de8-a6d1-e4b6c65a690f.png">
 
+## Credits
+
+Coding: me
+Artwork: me
+Sounds: https://simon13666.itch.io/sound-starter-pack
+
 ## License
 
 MIT
