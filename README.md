@@ -20,7 +20,7 @@ Rules: You have 5 lives. So does the opponent. First to kill the other worm 5 ti
 
 ## How to Play
 
-Sorry, no executable files, but all you need is [Pipenv](https://pypi.org/project/pipenv/) though.
+Sorry, no executable files, but all you need is [Pipenv](https://pypi.org/project/pipenv/).
 
 1. Clone the repo
 2. Install dependencies with `pipenv install`
